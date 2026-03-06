@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { IoMenu, IoClose, IoCartOutline, IoPersonOutline, IoLogOutOutline, IoReceiptOutline } from 'react-icons/io5'
+import { IoMenu, IoClose, IoCartOutline, IoPersonOutline, IoLogOutOutline, IoReceiptOutline, IoGridOutline } from 'react-icons/io5'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
@@ -298,6 +298,33 @@ function Navbar() {
                       <IoReceiptOutline />
                       My Orders
                     </Link>
+                    {(user?.role === 'event_admin' || user?.role === 'app_admin') && (
+                      <Link
+                        to="/admin/dashboard"
+                        onClick={() => setProfileOpen(false)}
+                        className="no-underline"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 10,
+                          padding: '10px 16px',
+                          color: '#f97316',
+                          fontSize: 13,
+                          transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#fb923c'
+                          e.currentTarget.style.background = 'rgba(249,115,22,0.08)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = '#f97316'
+                          e.currentTarget.style.background = 'transparent'
+                        }}
+                      >
+                        <IoGridOutline />
+                        Admin Panel
+                      </Link>
+                    )}
                     <button
                       onClick={handleLogout}
                       style={{
@@ -455,6 +482,22 @@ function Navbar() {
                   >
                     My Orders
                   </Link>
+                  {(user?.role === 'event_admin' || user?.role === 'app_admin') && (
+                    <Link
+                      to="/admin/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="no-underline block"
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 12,
+                        fontSize: 14,
+                        color: '#f97316',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      Admin Panel
+                    </Link>
+                  )}
                   <button
                     onClick={() => { handleLogout(); setMobileOpen(false) }}
                     style={{

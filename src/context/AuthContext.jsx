@@ -5,6 +5,9 @@ const AuthContext = createContext(null)
 const STORAGE_KEY = 'tixflow_auth'
 const USERS_KEY = 'tixflow_users'
 const ORDERS_KEY = 'tixflow_orders'
+const ADMIN_EVENTS_KEY = 'tixflow_admin_events'
+
+// Roles: 'customer' | 'event_admin' | 'app_admin'
 
 function loadFromStorage(key, fallback) {
   try {
@@ -24,6 +27,7 @@ function saveToStorage(key, data) {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => loadFromStorage(STORAGE_KEY, null))
   const [orders, setOrders] = useState(() => loadFromStorage(ORDERS_KEY, []))
+  const [adminEvents, setAdminEvents] = useState(() => loadFromStorage(ADMIN_EVENTS_KEY, []))
 
   useEffect(() => {
     saveToStorage(STORAGE_KEY, user)
@@ -32,6 +36,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     saveToStorage(ORDERS_KEY, orders)
   }, [orders])
+
+  useEffect(() => {
+    saveToStorage(ADMIN_EVENTS_KEY, adminEvents)
+  }, [adminEvents])
 
   const register = (userData) => {
     const users = loadFromStorage(USERS_KEY, [])
@@ -44,6 +52,7 @@ export function AuthProvider({ children }) {
       email: userData.email,
       password: userData.password,
       phone: userData.phone || '',
+      role: userData.role || 'customer',
       createdAt: new Date().toISOString(),
     }
     users.push(newUser)
@@ -86,6 +95,49 @@ export function AuthProvider({ children }) {
     return orders.filter(o => o.userId === user.id)
   }
 
+  // ─── Event Admin Functions ───
+  const addAdminEvent = (eventData) => {
+    const newEvent = {
+      ...eventData,
+      id: Date.now(),
+      createdBy: user?.id,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      status: 'published',
+      totalSold: 0,
+      totalRevenue: 0,
+    }
+    const updated = [newEvent, ...adminEvents]
+    setAdminEvents(updated)
+    return newEvent
+  }
+
+  const updateAdminEvent = (eventId, eventData) => {
+    const updated = adminEvents.map(e =>
+      e.id === eventId ? { ...e, ...eventData, updatedAt: new Date().toISOString() } : e
+    )
+    setAdminEvents(updated)
+  }
+
+  const deleteAdminEvent = (eventId) => {
+    setAdminEvents(adminEvents.filter(e => e.id !== eventId))
+  }
+
+  const getMyEvents = () => {
+    if (!user) return []
+    if (user.role === 'app_admin') return adminEvents
+    return adminEvents.filter(e => e.createdBy === user.id)
+  }
+
+  const getEventOrders = (eventId) => {
+    return orders.filter(o => {
+      if (!o.items) return false
+      return o.items.some(item => item.eventId === eventId || item.eventId === String(eventId))
+    })
+  }
+
+  const getAllOrders = () => orders
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -96,6 +148,14 @@ export function AuthProvider({ children }) {
       addOrder,
       getUserOrders,
       orders,
+      // Event admin
+      adminEvents,
+      addAdminEvent,
+      updateAdminEvent,
+      deleteAdminEvent,
+      getMyEvents,
+      getEventOrders,
+      getAllOrders,
     }}>
       {children}
     </AuthContext.Provider>

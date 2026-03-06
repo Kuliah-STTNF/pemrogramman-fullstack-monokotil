@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { IoPersonOutline, IoMailOutline, IoLockClosedOutline, IoCallOutline, IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5'
+import { IoPersonOutline, IoMailOutline, IoLockClosedOutline, IoCallOutline, IoEyeOutline, IoEyeOffOutline, IoShieldCheckmarkOutline } from 'react-icons/io5'
 import { useAuth } from '../context/AuthContext'
 
 function RegisterPage() {
   const { register, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '', role: 'customer' })
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({})
 
@@ -32,9 +32,9 @@ function RegisterPage() {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!validate()) return
-    const result = register(form)
+    const result = register({ ...form, role: form.role })
     if (result.success) {
-      navigate('/')
+      navigate(form.role === 'event_admin' ? '/admin/dashboard' : '/')
     } else {
       setErrors({ email: result.message })
     }
@@ -112,6 +112,31 @@ function RegisterPage() {
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
                 />
               </div>
+            </div>
+
+            <div>
+              <div className="relative">
+                <IoShieldCheckmarkOutline className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+                <select
+                  name="role"
+                  value={form.role}
+                  onChange={handleChange}
+                  className={inputClass}
+                  style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    appearance: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <option value="customer" style={{ background: '#1a1a2e' }}>Customer</option>
+                  <option value="event_admin" style={{ background: '#1a1a2e' }}>Event Organizer</option>
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none text-xs">▼</div>
+              </div>
+              <p className="text-white/30 text-[11px] mt-1 ml-1">
+                {form.role === 'event_admin' ? 'You can create and manage events' : 'Browse and purchase event tickets'}
+              </p>
             </div>
 
             <div>

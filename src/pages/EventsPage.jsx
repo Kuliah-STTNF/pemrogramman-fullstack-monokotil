@@ -4,10 +4,11 @@ import { motion } from 'framer-motion'
 import { IoGridOutline, IoListOutline, IoShirtOutline, IoClose } from 'react-icons/io5'
 import { allEvents } from '../data/events'
 import SearchBar from '../components/SearchBar'
-
-const categoryFilters = ['All', 'Concerts', 'Festivals', 'Comedy', 'Sports']
+import { useAuth } from '../context/AuthContext'
 
 function EventsPage() {
+  const { categories } = useAuth()
+  const categoryFilters = ['All', ...categories.map(c => c.name)]
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeCategory, setActiveCategory] = useState('All')
   const [viewMode, setViewMode] = useState('grid')

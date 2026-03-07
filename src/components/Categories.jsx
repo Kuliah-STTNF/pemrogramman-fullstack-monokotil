@@ -1,34 +1,20 @@
 import { motion } from 'framer-motion'
-import { IoMusicalNotes, IoFootball, IoHappy, IoSparkles } from 'react-icons/io5'
+import {
+  IoMusicalNotes, IoFootball, IoHappy, IoSparkles, IoColorPaletteOutline,
+  IoFilmOutline, IoRestaurantOutline, IoBriefcaseOutline, IoGameControllerOutline,
+  IoHeartOutline, IoBookOutline, IoAirplaneOutline, IoTrophyOutline
+} from 'react-icons/io5'
+import { useAuth } from '../context/AuthContext'
 
-const categories = [
-  {
-    id: 1,
-    name: 'Concerts',
-    icon: IoMusicalNotes,
-    gradient: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-  },
-  {
-    id: 2,
-    name: 'Sports',
-    icon: IoFootball,
-    gradient: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-  },
-  {
-    id: 3,
-    name: 'Comedy',
-    icon: IoHappy,
-    gradient: 'linear-gradient(135deg, #f97316, #ea580c)',
-  },
-  {
-    id: 4,
-    name: 'Festivals',
-    icon: IoSparkles,
-    gradient: 'linear-gradient(135deg, #ec4899, #db2777)',
-  },
-]
+const ICON_MAP = {
+  IoMusicalNotes, IoFootball, IoHappy, IoSparkles, IoColorPaletteOutline,
+  IoFilmOutline, IoRestaurantOutline, IoBriefcaseOutline, IoGameControllerOutline,
+  IoHeartOutline, IoBookOutline, IoAirplaneOutline, IoTrophyOutline,
+}
 
 function Categories() {
+  const { categories } = useAuth()
+
   return (
     <section className="py-14 px-6 md:px-10 bg-[#0B0D1A]">
       <div className="mx-auto">
@@ -49,7 +35,7 @@ function Categories() {
         {/* Category Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mt-8">
           {categories.map((cat, index) => {
-            const Icon = cat.icon
+            const Icon = ICON_MAP[cat.icon] || IoSparkles
             return (
               <motion.div
                 key={cat.id}
@@ -66,7 +52,7 @@ function Categories() {
               >
                 <div
                   className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                  style={{ background: cat.gradient }}
+                  style={{ background: cat.gradient || 'linear-gradient(135deg, #6366f1, #4f46e5)' }}
                 >
                   <Icon className="text-white text-3xl" />
                 </div>

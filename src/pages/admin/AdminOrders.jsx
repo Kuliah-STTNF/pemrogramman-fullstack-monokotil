@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { IoSearch, IoReceiptOutline, IoFilterOutline } from 'react-icons/io5'
+import { IoSearch, IoReceiptOutline, IoFilterOutline, IoChevronDownOutline } from 'react-icons/io5'
 import { useAuth } from '../../context/AuthContext'
 
 function AdminOrders() {
-  const { getMyEvents, orders } = useAuth()
+  const { getMyEvents, orders, updateOrderStatus } = useAuth()
   const myEvents = getMyEvents()
   const [searchQuery, setSearchQuery] = useState('')
   const [eventFilter, setEventFilter] = useState('all')
@@ -116,16 +116,23 @@ function AdminOrders() {
                   </div>
                   <div className="text-white/30 text-[11px]">{order.items?.length} item{order.items?.length !== 1 ? 's' : ''}</div>
                 </div>
-                <div className="col-span-2 text-white/50 text-sm truncate">{order.customerName || 'N/A'}</div>
+                <div className="col-span-2 text-white/50 text-sm truncate">{order.customer?.name || order.customerName || 'N/A'}</div>
                 <div className="col-span-2 text-white/50 text-sm">{new Date(order.date).toLocaleDateString()}</div>
                 <div className="col-span-1">
-                  <span className={`text-[11px] font-semibold px-2 py-1 rounded-full ${
-                    order.status === 'confirmed' ? 'bg-green-500/10 text-green-400' :
-                    order.status === 'pending' ? 'bg-yellow-500/10 text-yellow-400' :
-                    'bg-red-500/10 text-red-400'
-                  }`}>
-                    {order.status}
-                  </span>
+                  <select
+                    value={order.status}
+                    onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                    className={`text-[11px] font-semibold px-2 py-1 rounded-full border-none cursor-pointer outline-none ${
+                      order.status === 'confirmed' ? 'bg-green-500/10 text-green-400' :
+                      order.status === 'pending' ? 'bg-yellow-500/10 text-yellow-400' :
+                      'bg-red-500/10 text-red-400'
+                    }`}
+                    style={{ background: order.status === 'confirmed' ? 'rgba(34,197,94,0.1)' : order.status === 'pending' ? 'rgba(234,179,8,0.1)' : 'rgba(239,68,68,0.1)' }}
+                  >
+                    <option value="confirmed" style={{ background: '#1a1a2e' }}>confirmed</option>
+                    <option value="pending" style={{ background: '#1a1a2e' }}>pending</option>
+                    <option value="cancelled" style={{ background: '#1a1a2e' }}>cancelled</option>
+                  </select>
                 </div>
                 <div className="col-span-2 text-right">
                   <div className="text-white font-semibold text-sm">${(order.total || 0).toLocaleString()}</div>

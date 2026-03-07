@@ -322,7 +322,34 @@ function Navbar() {
                         }}
                       >
                         <IoGridOutline />
-                        Admin Panel
+                        Event Panel
+                      </Link>
+                    )}
+                    {user?.role === 'app_admin' && (
+                      <Link
+                        to="/app-admin/dashboard"
+                        onClick={() => setProfileOpen(false)}
+                        className="no-underline"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 10,
+                          padding: '10px 16px',
+                          color: '#a855f7',
+                          fontSize: 13,
+                          transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#c084fc'
+                          e.currentTarget.style.background = 'rgba(168,85,247,0.08)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = '#a855f7'
+                          e.currentTarget.style.background = 'transparent'
+                        }}
+                      >
+                        <IoGridOutline />
+                        App Admin
                       </Link>
                     )}
                     <button
@@ -495,7 +522,23 @@ function Navbar() {
                         transition: 'all 0.2s ease',
                       }}
                     >
-                      Admin Panel
+                      Event Panel
+                    </Link>
+                  )}
+                  {user?.role === 'app_admin' && (
+                    <Link
+                      to="/app-admin/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="no-underline block"
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 12,
+                        fontSize: 14,
+                        color: '#a855f7',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      App Admin
                     </Link>
                   )}
                   <button

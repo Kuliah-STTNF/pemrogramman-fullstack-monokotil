@@ -176,7 +176,16 @@ const inputStyle = {
     fontFamily: 'inherit',
     lineHeight: 1.4,
     maxHeight: 80,
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
 }
+
+/* Hide scrollbar for webkit browsers */
+const scrollbarHideStyle = `
+    textarea::-webkit-scrollbar {
+        display: none;
+    }
+`
 
 const sendBtnStyle = {
     width: 38,
@@ -332,19 +341,42 @@ function Chatbot() {
         }
     }
 
-    /* simple markdown-ish: bold **text** */
+    /* Improved markdown: bold **text**, line breaks, and list items */
     const renderText = (text) => {
-        const parts = text.split(/(\*\*[^*]+\*\*)/g)
-        return parts.map((part, i) => {
-            if (part.startsWith('**') && part.endsWith('**')) {
-                return <strong key={i} style={{ fontWeight: 600 }}>{part.slice(2, -2)}</strong>
+        const lines = text.split('\n').map((line, lineIdx) => {
+            // Handle bold **text**
+            const parts = line.split(/(\*\*[^*]+\*\*)/g)
+            const renderedParts = parts.map((part, partIdx) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                    return <strong key={partIdx} style={{ fontWeight: 600 }}>{part.slice(2, -2)}</strong>
+                }
+                return <span key={partIdx}>{part}</span>
+            })
+            
+            // Detect list items (- or •)
+            const trimmed = line.trim()
+            if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+                const content = trimmed.replace(/^[-•]\s*/, '')
+                return (
+                    <div key={lineIdx} style={{ marginLeft: 14, marginTop: 4 }}>
+                        • {content}
+                    </div>
+                )
             }
-            return <span key={i}>{part}</span>
+            
+            // Regular line with paragraph spacing
+            return (
+                <div key={lineIdx} style={{ marginTop: lineIdx > 0 && line ? 6 : 0 }}>
+                    {renderedParts}
+                </div>
+            )
         })
+        return lines
     }
 
     return (
         <>
+            <style>{scrollbarHideStyle}</style>
             {/* ── Floating Action Button ── */}
             <AnimatePresence>
                 {!open && (

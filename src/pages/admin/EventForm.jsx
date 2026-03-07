@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   IoArrowBack, IoArrowForward, IoAddCircleOutline, IoTrashOutline,
@@ -19,7 +19,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 })
 
-const CATEGORIES = ['Concerts', 'Festivals', 'Comedy', 'Sports']
 const PROVINCES = [
   'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'Jawa Timur', 'DI Yogyakarta',
   'Bali', 'Sulawesi Selatan', 'Sumatera Utara', 'Sumatera Barat', 'Sumatera Selatan',
@@ -54,7 +53,10 @@ function EventForm() {
   const { id } = useParams()
   const isEdit = !!id
   const navigate = useNavigate()
-  const { addAdminEvent, updateAdminEvent, adminEvents } = useAuth()
+  const location = useLocation()
+  const isAppAdmin = location.pathname.startsWith('/app-admin')
+  const backUrl = isAppAdmin ? '/app-admin/events' : '/admin/events'
+  const { addAdminEvent, updateAdminEvent, adminEvents, categories } = useAuth()
 
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({
@@ -91,7 +93,7 @@ function EventForm() {
           name: m.name, price: String(m.price), image: m.image,
           sizes: (m.sizes || []).join(', '), colors: (m.colors || []).join(', '), stock: String(m.stock),
         })) : [])
-      } else { navigate('/admin/events') }
+      } else { navigate(backUrl) }
     }
   }, [id, isEdit, adminEvents, navigate])
 
@@ -170,7 +172,7 @@ function EventForm() {
     }
     if (isEdit) { updateAdminEvent(Number(id), eventData) }
     else { addAdminEvent(eventData) }
-    navigate('/admin/events')
+    navigate(backUrl)
   }
 
   const inputCls = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/30 outline-none focus:border-orange-500/50 transition-colors"
@@ -184,7 +186,7 @@ function EventForm() {
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <button
-          onClick={() => navigate('/admin/events')}
+          onClick={() => navigate(backUrl)}
           className="w-9 h-9 rounded-xl flex items-center justify-center text-white/40 hover:text-white bg-white/5 hover:bg-white/10 border-none cursor-pointer transition-all"
         >
           <IoArrowBack />
@@ -244,7 +246,7 @@ function EventForm() {
                 <div>
                   <label className={labelCls}>Category *</label>
                   <select className={inputCls} value={form.category} onChange={(e) => updateField('category', e.target.value)} style={{ appearance: 'none' }}>
-                    {CATEGORIES.map(c => <option key={c} value={c} style={{ background: '#1a1a2e' }}>{c}</option>)}
+                    {categories.map(c => <option key={c.id} value={c.name} style={{ background: '#1a1a2e' }}>{c.name}</option>)}
                   </select>
                   {errors.category && <div className={errorCls}>{errors.category}</div>}
                 </div>
@@ -580,7 +582,7 @@ function EventForm() {
       <div className="flex items-center justify-between mt-6 pb-8">
         <button
           type="button"
-          onClick={step === 0 ? () => navigate('/admin/events') : goBack}
+          onClick={step === 0 ? () => navigate(backUrl) : goBack}
           className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium text-white/50 bg-white/5 border-none cursor-pointer hover:bg-white/10 transition-all"
         >
           <IoArrowBack className="text-sm" />

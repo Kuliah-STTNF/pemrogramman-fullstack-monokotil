@@ -7,6 +7,7 @@ import ScrollToTop from './components/ScrollToTop'
 import Chatbot from './components/Chatbot'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminLayout from './components/AdminLayout'
+import AppAdminLayout from './components/AppAdminLayout'
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
 import EventsPage from './pages/EventsPage'
@@ -25,6 +26,12 @@ import AdminEvents from './pages/admin/AdminEvents'
 import EventForm from './pages/admin/EventForm'
 import AdminOrders from './pages/admin/AdminOrders'
 import AdminAnalytics from './pages/admin/AdminAnalytics'
+import AppAdminDashboard from './pages/app-admin/AppAdminDashboard'
+import AppAdminUsers from './pages/app-admin/AppAdminUsers'
+import AppAdminEvents from './pages/app-admin/AppAdminEvents'
+import AppAdminOrders from './pages/app-admin/AppAdminOrders'
+import AppAdminAnalytics from './pages/app-admin/AppAdminAnalytics'
+import AppAdminCategories from './pages/app-admin/AppAdminCategories'
 
 function App() {
   return (
@@ -33,7 +40,7 @@ function App() {
         <CartProvider>
           <ScrollToTop />
           <Routes>
-            {/* Admin Routes */}
+            {/* Event Admin Routes */}
             <Route path="/admin/*" element={
               <ProtectedRoute roles={['event_admin', 'app_admin']}>
                 <AdminLayout>
@@ -46,6 +53,23 @@ function App() {
                     <Route path="analytics" element={<AdminAnalytics />} />
                   </Routes>
                 </AdminLayout>
+              </ProtectedRoute>
+            } />
+
+            {/* App Admin Routes */}
+            <Route path="/app-admin/*" element={
+              <ProtectedRoute roles={['app_admin']}>
+                <AppAdminLayout>
+                  <Routes>
+                    <Route path="dashboard" element={<AppAdminDashboard />} />
+                    <Route path="users" element={<AppAdminUsers />} />
+                    <Route path="categories" element={<AppAdminCategories />} />
+                    <Route path="events" element={<AppAdminEvents />} />
+                    <Route path="events/edit/:id" element={<EventForm />} />
+                    <Route path="orders" element={<AppAdminOrders />} />
+                    <Route path="analytics" element={<AppAdminAnalytics />} />
+                  </Routes>
+                </AppAdminLayout>
               </ProtectedRoute>
             } />
 

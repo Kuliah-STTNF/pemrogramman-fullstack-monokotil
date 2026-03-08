@@ -56,14 +56,14 @@ function AppAdminDashboard() {
   }
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white m-0">Platform Overview</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-white m-0">Platform Overview</h1>
         <p className="text-white/40 text-sm mt-1 m-0">Welcome back, {user?.name}</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
         {statCards.map((stat, i) => (
           <motion.div
             key={stat.label}

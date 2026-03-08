@@ -35,16 +35,16 @@ function AdminDashboard() {
   const recentEvents = myEvents.slice(0, 5)
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white m-0">Dashboard</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-white m-0">Dashboard</h1>
           <p className="text-white/40 text-sm mt-1 m-0">Welcome back, {user?.name}</p>
         </div>
         <Link
           to="/admin/events/create"
-          className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold no-underline transition-all hover:opacity-90"
+          className="flex items-center justify-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold no-underline transition-all hover:opacity-90 w-full sm:w-auto"
           style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
         >
           <IoAddCircleOutline className="text-lg" />

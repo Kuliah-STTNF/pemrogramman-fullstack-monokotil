@@ -1,17 +1,21 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { IoCalendarOutline, IoLocationSharp, IoTimeOutline, IoPersonOutline, IoBusinessOutline, IoArrowBack, IoTicketOutline, IoCartOutline, IoCheckmarkCircle, IoShirtOutline } from 'react-icons/io5'
-import { getEventById } from '../data/events'
+import { IoCalendarOutline, IoLocationSharp, IoTimeOutline, IoPersonOutline, IoBusinessOutline, IoArrowBack, IoTicketOutline, IoCartOutline, IoCheckmarkCircle, IoShirtOutline, IoChatbubbleEllipsesOutline } from 'react-icons/io5'
+import { getEventById, getDiscountedPrice } from '../data/events'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
 import TicketSelection from '../components/TicketSelection'
 import MerchandiseSection from '../components/MerchandiseSection'
+import OrganizerChat from '../components/OrganizerChat'
 
 function EventDetailPage() {
   const { id } = useParams()
   const event = getEventById(id)
   const { itemCount } = useCart()
+  const { isAuthenticated } = useAuth()
   const [activeTab, setActiveTab] = useState('tickets')
+  const [chatOpen, setChatOpen] = useState(false)
 
   if (!event) {
     return (
@@ -30,6 +34,7 @@ function EventDetailPage() {
   }
 
   const lowestPrice = Math.min(...event.tickets.map(t => t.price))
+  const discountedLowestPrice = event.discount ? getDiscountedPrice(lowestPrice, event.discount) : lowestPrice
 
   return (
     <div className="bg-[#0B0D1A] min-h-screen">
@@ -87,7 +92,17 @@ function EventDetailPage() {
                 {event.title}
               </h1>
               <p className="text-white/60 text-lg">
-                Tickets from <span className="text-orange-400 font-bold">${lowestPrice}</span>
+                Tickets from {event.discount && (
+                  <span className="text-white/40 line-through mr-2">${lowestPrice}</span>
+                )}
+                <span className="text-orange-400 font-bold">${discountedLowestPrice}</span>
+                {event.discount && (
+                  <span className="ml-2 text-xs font-semibold px-2 py-1 rounded-full text-emerald-300 inline-block"
+                    style={{ background: 'rgba(16,185,129,0.15)' }}
+                  >
+                    {event.discount.label} -{event.discount.percentage}%
+                  </span>
+                )}
               </p>
             </motion.div>
           </div>
@@ -135,6 +150,17 @@ function EventDetailPage() {
                 <IoBusinessOutline className="text-lg" />
                 <span>Organized by <span className="text-white/70">{event.organizer}</span></span>
               </div>
+              {isAuthenticated && (
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setChatOpen(true)}
+                  className="mt-3 flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm font-medium cursor-pointer bg-transparent border-none transition-colors"
+                >
+                  <IoChatbubbleEllipsesOutline className="text-lg" />
+                  Chat with Organizer
+                </motion.button>
+              )}
             </motion.div>
 
             {/* Venue Info */}
@@ -246,10 +272,25 @@ function EventDetailPage() {
 
                 <div className="border-t border-white/10 pt-4 mb-4">
                   <p className="text-white/40 text-xs mb-1">Starting from</p>
-                  <p className="text-3xl font-bold text-white">
-                    ${lowestPrice}
-                    <span className="text-sm text-white/40 font-normal ml-1">/ ticket</span>
-                  </p>
+                  {event.discount ? (
+                    <div>
+                      <span className="text-white/40 line-through text-lg mr-2">${lowestPrice}</span>
+                      <span className="text-3xl font-bold text-white">${discountedLowestPrice}</span>
+                      <span className="text-sm text-white/40 font-normal ml-1">/ ticket</span>
+                      <div className="mt-2">
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full text-emerald-300"
+                          style={{ background: 'rgba(16,185,129,0.15)' }}
+                        >
+                          {event.discount.label} — Save {event.discount.percentage}%
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-3xl font-bold text-white">
+                      ${lowestPrice}
+                      <span className="text-sm text-white/40 font-normal ml-1">/ ticket</span>
+                    </p>
+                  )}
                 </div>
 
                 <Link
@@ -281,6 +322,15 @@ function EventDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Organizer Chat Modal */}
+      {isAuthenticated && (
+        <OrganizerChat
+          isOpen={chatOpen}
+          onClose={() => setChatOpen(false)}
+          event={event}
+        />
+      )}
     </div>
   )
 }

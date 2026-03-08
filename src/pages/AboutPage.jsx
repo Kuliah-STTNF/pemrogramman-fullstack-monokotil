@@ -87,7 +87,7 @@ function AboutPage() {
             className="text-4xl md:text-6xl font-extrabold text-white mb-6"
             style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
           >
-            Connecting People Through<br />Unforgettable Moments
+            Connecting People Through Unforgettable Moments
           </motion.h1>
           <motion.p
             initial={{ y: 20, opacity: 0 }}

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoAdd, IoRemove, IoCheckmarkCircle, IoTicketOutline } from 'react-icons/io5'
 import { useCart } from '../context/CartContext'
+import { getDiscountedPrice } from '../data/events'
 
 function TicketSelection({ event }) {
   const { addTicket, items } = useCart()
@@ -28,7 +29,8 @@ function TicketSelection({ event }) {
       eventDate: event.date,
       eventImage: event.thumbnail,
       name: ticket.type,
-      price: ticket.price,
+      price: getDiscountedPrice(ticket.price, event.discount),
+      originalPrice: event.discount ? ticket.price : undefined,
       quantity: qty,
     })
 
@@ -73,7 +75,19 @@ function TicketSelection({ event }) {
                 </div>
                 <p className="text-white/50 text-sm mb-2 ml-7">{ticket.description}</p>
                 <div className="flex items-center gap-4 ml-7">
-                  <span className="text-white font-bold text-xl">${ticket.price}</span>
+                  {event.discount ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-white/40 line-through text-sm">${ticket.price}</span>
+                      <span className="text-white font-bold text-xl">${getDiscountedPrice(ticket.price, event.discount)}</span>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full text-emerald-300"
+                        style={{ background: 'rgba(16,185,129,0.15)' }}
+                      >
+                        -{event.discount.percentage}%
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-white font-bold text-xl">${ticket.price}</span>
+                  )}
                   <span className="text-white/30 text-xs">
                     {ticket.available > 0
                       ? `${ticket.available} remaining`

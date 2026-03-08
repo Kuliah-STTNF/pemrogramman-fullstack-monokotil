@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { IoCardOutline, IoLockClosedOutline, IoShieldCheckmarkOutline, IoTicketOutline, IoShirtOutline, IoArrowBack } from 'react-icons/io5'
+import { IoCardOutline, IoLockClosedOutline, IoShieldCheckmarkOutline, IoTicketOutline, IoShirtOutline, IoArrowBack, IoPricetagOutline } from 'react-icons/io5'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 
 function CheckoutPage() {
   const { items, total, itemCount, clearCart } = useCart()
-  const { user, isAuthenticated, addOrder } = useAuth()
+  const { user, isAuthenticated, addOrder, validateVoucher, useVoucher } = useAuth()
   const navigate = useNavigate()
   const [step, setStep] = useState(1) // 1: Info, 2: Payment, 3: Processing
   const [formData, setFormData] = useState({
@@ -26,11 +26,30 @@ function CheckoutPage() {
     zipCode: '',
   })
   const [errors, setErrors] = useState({})
+  const [voucherCode, setVoucherCode] = useState('')
+  const [voucherResult, setVoucherResult] = useState(null)
+  const [appliedVoucher, setAppliedVoucher] = useState(null)
 
   const tickets = items.filter(item => item.itemType === 'ticket')
   const merch = items.filter(item => item.itemType === 'merch')
-  const serviceFee = total * 0.05
-  const grandTotal = total + serviceFee
+  const voucherDiscount = appliedVoucher ? appliedVoucher.discount : 0
+  const serviceFee = Math.round((total - voucherDiscount) * 0.05 * 100) / 100
+  const grandTotal = Math.max(0, total - voucherDiscount + serviceFee)
+
+  const handleApplyVoucher = () => {
+    if (!voucherCode.trim()) return
+    const result = validateVoucher(voucherCode, total)
+    setVoucherResult(result)
+    if (result.valid) {
+      setAppliedVoucher({ code: voucherCode.toUpperCase(), discount: result.discount })
+    }
+  }
+
+  const handleRemoveVoucher = () => {
+    setAppliedVoucher(null)
+    setVoucherResult(null)
+    setVoucherCode('')
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -74,11 +93,13 @@ function CheckoutPage() {
 
   const processPayment = () => {
     setStep(3)
-    // Simulate payment processing
     setTimeout(() => {
+      if (appliedVoucher) useVoucher(appliedVoucher.code)
       const order = addOrder({
         items: items.map(item => ({ ...item })),
         subtotal: total,
+        voucherCode: appliedVoucher?.code || null,
+        voucherDiscount,
         serviceFee,
         grandTotal,
         customerInfo: {
@@ -434,10 +455,58 @@ function CheckoutPage() {
                 </div>
 
                 <div className="border-t border-white/10 pt-4 space-y-2">
+                  {/* Voucher Code Input */}
+                  <div className="mb-3">
+                    <label className="text-white/50 text-xs mb-1.5 block">Voucher Code</label>
+                    {appliedVoucher ? (
+                      <div className="flex items-center justify-between p-3 rounded-xl"
+                        style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <IoPricetagOutline className="text-emerald-400" />
+                          <span className="text-emerald-300 text-sm font-semibold">{appliedVoucher.code}</span>
+                        </div>
+                        <button onClick={handleRemoveVoucher}
+                          className="text-red-400 text-xs cursor-pointer bg-transparent border-none hover:text-red-300 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <input
+                          type="text" value={voucherCode}
+                          onChange={(e) => { setVoucherCode(e.target.value); setVoucherResult(null) }}
+                          placeholder="Enter code"
+                          className="flex-1 bg-transparent text-white text-sm py-2.5 px-3 rounded-lg outline-none placeholder-white/30"
+                          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        />
+                        <button onClick={handleApplyVoucher}
+                          className="text-white text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer border-none transition-all hover:opacity-90"
+                          style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    )}
+                    {voucherResult && !voucherResult.valid && (
+                      <p className="text-red-400 text-xs mt-1">{voucherResult.message}</p>
+                    )}
+                    {voucherResult && voucherResult.valid && !appliedVoucher && (
+                      <p className="text-emerald-400 text-xs mt-1">{voucherResult.message}</p>
+                    )}
+                  </div>
+
                   <div className="flex justify-between text-sm">
                     <span className="text-white/50">Subtotal</span>
                     <span className="text-white">${total.toFixed(2)}</span>
                   </div>
+                  {appliedVoucher && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-emerald-400">Voucher Discount</span>
+                      <span className="text-emerald-400">-${voucherDiscount.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-white/50">Service Fee (5%)</span>
                     <span className="text-white">${serviceFee.toFixed(2)}</span>

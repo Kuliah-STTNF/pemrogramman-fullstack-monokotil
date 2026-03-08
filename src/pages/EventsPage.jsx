@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { IoGridOutline, IoListOutline, IoShirtOutline, IoClose } from 'react-icons/io5'
-import { allEvents } from '../data/events'
+import { allEvents, getDiscountedPrice } from '../data/events'
 import SearchBar from '../components/SearchBar'
 import { useAuth } from '../context/AuthContext'
 
@@ -287,6 +287,13 @@ function EventsPage() {
                         Merch
                       </div>
                     )}
+                    {event.discount && (
+                      <div className="absolute top-3 left-3 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full"
+                        style={{ background: 'rgba(16,185,129,0.85)' }}
+                      >
+                        -{event.discount.percentage}% {event.discount.label}
+                      </div>
+                    )}
                   </div>
 
                   {/* Body */}
@@ -303,7 +310,14 @@ function EventsPage() {
                     <p className="text-white/40 text-sm mb-3">{event.venue}, {event.city}</p>
                     <div className="flex items-center justify-between">
                       <p className="text-white text-sm font-semibold">
-                        From <span className="text-orange-400">${Math.min(...event.tickets.map(t => t.price))}</span>
+                        {event.discount ? (
+                          <>
+                            <span className="text-white/40 line-through mr-1">${Math.min(...event.tickets.map(tk => tk.price))}</span>
+                            From <span className="text-orange-400">${getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount)}</span>
+                          </>
+                        ) : (
+                          <>From <span className="text-orange-400">${Math.min(...event.tickets.map(tk => tk.price))}</span></>
+                        )}
                       </p>
                       <div className="flex gap-1.5">
                         {event.tags.map((tag) => (

@@ -154,6 +154,12 @@ function OrderConfirmationPage() {
                 <span className="text-white/50">Subtotal</span>
                 <span className="text-white">${order.subtotal.toFixed(2)}</span>
               </div>
+              {order.voucherDiscount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-emerald-400">Voucher ({order.voucherCode})</span>
+                  <span className="text-emerald-400">-${order.voucherDiscount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm">
                 <span className="text-white/50">Service Fee</span>
                 <span className="text-white">${order.serviceFee.toFixed(2)}</span>

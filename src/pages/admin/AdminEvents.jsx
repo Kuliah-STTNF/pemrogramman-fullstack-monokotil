@@ -180,8 +180,8 @@ function AdminEvents() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute right-0 top-10 z-20 rounded-xl overflow-hidden py-1 w-44"
-                        style={{ background: 'rgba(20,22,45,0.98)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}
+                        className="absolute right-0 top-10 rounded-xl overflow-hidden py-1 w-44"
+                        style={{ background: 'rgba(20,22,45,0.98)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.4)', zIndex: 9999 }}
                       >
                         <button
                           onClick={() => { navigate(`/admin/events/edit/${event.id}`); setMenuOpen(null) }}

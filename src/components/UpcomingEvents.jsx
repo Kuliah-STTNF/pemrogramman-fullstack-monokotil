@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { IoChevronBack, IoChevronForward, IoShirtOutline } from 'react-icons/io5'
-import { getFeaturedEvents } from '../data/events'
+import { getFeaturedEvents, getDiscountedPrice } from '../data/events'
 
 const events = getFeaturedEvents()
 const CARD_WIDTH = 250
@@ -135,6 +135,13 @@ function FeaturedEvents() {
                       Merch
                     </div>
                   )}
+                  {event.discount && (
+                    <div className="absolute top-3 left-3 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full"
+                      style={{ background: 'rgba(16,185,129,0.85)' }}
+                    >
+                      -{event.discount.percentage}%
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Body */}
@@ -143,7 +150,14 @@ function FeaturedEvents() {
                   <p className="text-white/50 text-xs mb-0.5">{event.date}</p>
                   <p className="text-white/50 text-xs mb-2">{event.venue}</p>
                   <p className="text-white text-sm font-semibold mb-3">
-                    Tickets from <span className="text-orange-400">${Math.min(...event.tickets.map(t => t.price))}</span>
+                    {event.discount ? (
+                      <>
+                        <span className="text-white/40 line-through mr-1">${Math.min(...event.tickets.map(tk => tk.price))}</span>
+                        Tickets from <span className="text-orange-400">${getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount)}</span>
+                      </>
+                    ) : (
+                      <>Tickets from <span className="text-orange-400">${Math.min(...event.tickets.map(tk => tk.price))}</span></>
+                    )}
                   </p>
                   {/* Tags */}
                   <div className="flex gap-2">

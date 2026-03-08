@@ -32,6 +32,7 @@ export const allEvents = [
       { id: 'm1-4', name: 'Event Poster', price: 20, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=300&h=300&fit=crop', sizes: [], colors: [], stock: 300 },
     ],
     hasMerch: true,
+    discount: { percentage: 15, label: 'Early Bird Sale' },
   },
   {
     id: 2,
@@ -92,6 +93,7 @@ export const allEvents = [
     ],
     merchandise: [],
     hasMerch: false,
+    discount: { percentage: 20, label: 'Flash Sale' },
   },
   {
     id: 4,
@@ -152,6 +154,7 @@ export const allEvents = [
       { id: 'm5-3', name: 'Rock Legends Cap', price: 30, image: 'https://images.unsplash.com/photo-1588850561407-ed78c334e67a?w=300&h=300&fit=crop', sizes: ['One Size'], colors: ['Black', 'Red'], stock: 250 },
     ],
     hasMerch: true,
+    discount: { percentage: 10, label: 'Limited Offer' },
   },
   {
     id: 6,
@@ -238,6 +241,7 @@ export const allEvents = [
       { id: 'm8-1', name: 'Comedy Store Mug', price: 18, image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=300&h=300&fit=crop', sizes: [], colors: ['White'], stock: 100 },
     ],
     hasMerch: true,
+    discount: { percentage: 25, label: 'Weekend Deal' },
   },
   {
     id: 9,
@@ -345,6 +349,7 @@ export const allEvents = [
     ],
     merchandise: [],
     hasMerch: false,
+    discount: { percentage: 30, label: 'Special Promo' },
   },
   {
     id: 13,
@@ -655,4 +660,10 @@ export function getEventsByCity(city) {
 // Get events by province
 export function getEventsByProvince(province) {
   return allEvents.filter(event => event.province === province)
+}
+
+// Calculate discounted price
+export function getDiscountedPrice(price, discount) {
+  if (!discount) return price
+  return Math.round(price * (1 - discount.percentage / 100) * 100) / 100
 }

@@ -26,13 +26,13 @@ function AppAdminVouchers() {
     setEditingCode(v.code); setError(''); setShowModal(true)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.code.trim() || !form.value) { setError('Code and value are required'); return }
     if (editingCode) {
       updateVoucher(editingCode, { type: form.type, value: Number(form.value), minPurchase: Number(form.minPurchase) || 0, maxUses: Number(form.maxUses) || 100, description: form.description })
     } else {
-      const result = addVoucher(form)
+      const result = await addVoucher(form)
       if (!result.success) { setError(result.message); return }
     }
     setShowModal(false)

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoSearch, IoLocationSharp, IoCalendarOutline, IoCloseCircle, IoChevronBack, IoChevronForward, IoMusicalNotes } from 'react-icons/io5'
-import { allEvents } from '../data/events'
+import { useAuth } from '../context/AuthContext'
 
 // ─── Portal Dropdown (renders at body level to avoid overflow clipping) ───
 function PortalDropdown({ anchorRef, children, visible, align = 'left', dropdownRef }) {
@@ -46,7 +46,7 @@ function PortalDropdown({ anchorRef, children, visible, align = 'left', dropdown
 }
 
 // ─── Calendar Component ───
-function Calendar({ selectedDate, onSelectDate, onClose }) {
+function Calendar({ selectedDate, onSelectDate, onClose, events: allEvents }) {
   const [viewDate, setViewDate] = useState(() => {
     const d = selectedDate ? new Date(selectedDate) : new Date()
     return { year: d.getFullYear(), month: d.getMonth() }
@@ -200,7 +200,7 @@ function Calendar({ selectedDate, onSelectDate, onClose }) {
 }
 
 // ─── Search Suggestions Dropdown ───
-function SearchSuggestions({ query, onSelect, onNavigate }) {
+function SearchSuggestions({ query, onSelect, onNavigate, events: allEvents }) {
   const q = query.toLowerCase().trim()
   if (!q || q.length < 2) return null
 
@@ -292,7 +292,7 @@ function SearchSuggestions({ query, onSelect, onNavigate }) {
 }
 
 // ─── Location Dropdown ───
-function LocationDropdown({ query, onSelect }) {
+function LocationDropdown({ query, onSelect, events: allEvents }) {
   const cities = [...new Set(allEvents.map(e => e.city))]
   const q = query.toLowerCase().trim()
 
@@ -394,6 +394,7 @@ function LocationDropdown({ query, onSelect }) {
 
 // ─── Main SearchBar Component ───
 function SearchBar({ compact = false, onSearch }) {
+  const { publicEvents } = useAuth()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [locationQuery, setLocationQuery] = useState('')
@@ -496,6 +497,7 @@ function SearchBar({ compact = false, onSearch }) {
           {showSearchSuggestions && (
             <SearchSuggestions
               query={searchQuery}
+              events={publicEvents}
               onSelect={(val) => {
                 setSearchQuery(val)
                 setShowSearchSuggestions(false)
@@ -539,6 +541,7 @@ function SearchBar({ compact = false, onSearch }) {
           {showLocationDropdown && (
             <LocationDropdown
               query={locationQuery}
+              events={publicEvents}
               onSelect={(city) => {
                 setLocationQuery(city)
                 setShowLocationDropdown(false)
@@ -574,6 +577,7 @@ function SearchBar({ compact = false, onSearch }) {
           {showCalendar && (
             <Calendar
               selectedDate={selectedDate}
+              events={publicEvents}
               onSelectDate={setSelectedDate}
               onClose={() => setShowCalendar(false)}
             />

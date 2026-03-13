@@ -36,9 +36,9 @@ function CheckoutPage() {
   const serviceFee = Math.round((total - voucherDiscount) * 0.05 * 100) / 100
   const grandTotal = Math.max(0, total - voucherDiscount + serviceFee)
 
-  const handleApplyVoucher = () => {
+  const handleApplyVoucher = async () => {
     if (!voucherCode.trim()) return
-    const result = validateVoucher(voucherCode, total)
+    const result = await validateVoucher(voucherCode, total)
     setVoucherResult(result)
     if (result.valid) {
       setAppliedVoucher({ code: voucherCode.toUpperCase(), discount: result.discount })
@@ -93,9 +93,9 @@ function CheckoutPage() {
 
   const processPayment = () => {
     setStep(3)
-    setTimeout(() => {
-      if (appliedVoucher) useVoucher(appliedVoucher.code)
-      const order = addOrder({
+    setTimeout(async () => {
+      if (appliedVoucher) await useVoucher(appliedVoucher.code)
+      const order = await addOrder({
         items: items.map(item => ({ ...item })),
         subtotal: total,
         voucherCode: appliedVoucher?.code || null,

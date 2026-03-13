@@ -1,14 +1,16 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { IoChevronBack, IoChevronForward, IoShirtOutline } from 'react-icons/io5'
-import { getFeaturedEvents, getDiscountedPrice } from '../data/events'
+import { getDiscountedPrice } from '../data/events'
+import { useAuth } from '../context/AuthContext'
 
-const events = getFeaturedEvents()
 const CARD_WIDTH = 250
 const GAP = 20
 
 function FeaturedEvents() {
+  const { publicEvents } = useAuth()
+  const events = useMemo(() => publicEvents.slice(0, 8), [publicEvents])
   const scrollRef = useRef(null)
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(1)

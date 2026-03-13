@@ -2,12 +2,12 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { IoGridOutline, IoListOutline, IoShirtOutline, IoClose } from 'react-icons/io5'
-import { allEvents, getDiscountedPrice } from '../data/events'
+import { getDiscountedPrice } from '../data/events'
 import SearchBar from '../components/SearchBar'
 import { useAuth } from '../context/AuthContext'
 
 function EventsPage() {
-  const { categories } = useAuth()
+  const { categories, publicEvents } = useAuth()
   const categoryFilters = ['All', ...categories.map(c => c.name)]
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeCategory, setActiveCategory] = useState('All')
@@ -27,7 +27,7 @@ function EventsPage() {
 
   // Filter events
   const filteredEvents = useMemo(() => {
-    let events = allEvents
+    let events = publicEvents
 
     // Category filter
     if (activeCategory !== 'All') {

@@ -1,21 +1,24 @@
 import { createContext, useContext, useReducer, useEffect } from 'react'
+import { useAuth } from './AuthContext'
 
 const CartContext = createContext(null)
 
-const STORAGE_KEY = 'tixflow_cart'
+const EMPTY_CART = { items: [], total: 0 }
 
-function loadCartFromStorage() {
+function loadCartFromStorage(storageKey) {
+  if (!storageKey) return EMPTY_CART
   try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? JSON.parse(stored) : { items: [], total: 0 }
+    const stored = localStorage.getItem(storageKey)
+    return stored ? JSON.parse(stored) : EMPTY_CART
   } catch {
-    return { items: [], total: 0 }
+    return EMPTY_CART
   }
 }
 
-function saveCartToStorage(state) {
+function saveCartToStorage(storageKey, state) {
+  if (!storageKey) return
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    localStorage.setItem(storageKey, JSON.stringify(state))
   } catch { /* silently fail */ }
 }
 
@@ -91,20 +94,29 @@ function cartReducer(state, action) {
       newState = { items: [], total: 0 }
       break
 
+    case 'SET_STATE':
+      newState = action.payload
+      break
+
     default:
       return state
   }
 
-  saveCartToStorage(newState)
   return newState
 }
 
 export function CartProvider({ children }) {
-  const [state, dispatch] = useReducer(cartReducer, null, loadCartFromStorage)
+  const { user, isAuthenticated } = useAuth()
+  const storageKey = isAuthenticated && user?.id ? `tixflow_cart_${user.id}` : null
+  const [state, dispatch] = useReducer(cartReducer, EMPTY_CART)
 
   useEffect(() => {
-    saveCartToStorage(state)
-  }, [state])
+    dispatch({ type: 'SET_STATE', payload: loadCartFromStorage(storageKey) })
+  }, [storageKey])
+
+  useEffect(() => {
+    saveCartToStorage(storageKey, state)
+  }, [storageKey, state])
 
   const addTicket = (ticket) => dispatch({ type: 'ADD_TICKET', payload: ticket })
   const addMerch = (merch) => dispatch({ type: 'ADD_MERCH', payload: merch })

@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from 'rea
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { IoLocationSharp, IoCalendarOutline, IoTicketOutline, IoClose, IoChevronForward, IoShirtOutline, IoMusicalNotes } from 'react-icons/io5'
-import { allEvents, getProvinces } from '../data/events'
+import { useAuth } from '../context/AuthContext'
 import WeatherWidget from '../components/WeatherWidget'
 
 // Fix default marker icon issue in react-leaflet
@@ -165,6 +165,7 @@ function EventMarkers({ events, onEventClick }) {
 }
 
 function LocationPage() {
+  const { publicEvents } = useAuth()
   const [activeProvince, setActiveProvince] = useState(null)
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [mapCenter, setMapCenter] = useState([-2.5, 118])
@@ -172,7 +173,16 @@ function LocationPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarEvents, setSidebarEvents] = useState([])
   const [weatherLocation, setWeatherLocation] = useState({ lat: -6.2, lng: 106.8, name: 'DKI Jakarta' })
-  const provinces = useMemo(() => getProvinces(), [])
+
+  const provinces = useMemo(() => {
+    const map = {}
+    publicEvents.forEach(e => {
+      if (!e.province) return
+      if (!map[e.province]) map[e.province] = { name: e.province, events: [], lat: e.lat, lng: e.lng }
+      map[e.province].events.push(e)
+    })
+    return Object.values(map)
+  }, [publicEvents])
 
   const handleProvinceClick = (province) => {
     setActiveProvince(province.name)
@@ -254,9 +264,9 @@ function LocationPage() {
             className="flex flex-wrap justify-center gap-6 mb-8"
           >
             {[
-              { label: 'Total Events', value: allEvents.length, icon: IoMusicalNotes },
+              { label: 'Total Events', value: publicEvents.length, icon: IoMusicalNotes },
               { label: 'Provinces', value: provinces.length, icon: IoLocationSharp },
-              { label: 'Cities', value: [...new Set(allEvents.map(e => e.city))].length, icon: IoCalendarOutline },
+              { label: 'Cities', value: [...new Set(publicEvents.map(e => e.city))].length, icon: IoCalendarOutline },
             ].map((stat) => (
               <div key={stat.label} className="flex items-center gap-3 px-5 py-3 rounded-xl"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
@@ -367,7 +377,7 @@ function LocationPage() {
                   activeProvince={activeProvince}
                 />
                 <EventMarkers
-                  events={allEvents}
+                  events={publicEvents}
                   onEventClick={handleEventClick}
                 />
               </MapContainer>

@@ -1,27 +1,49 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoChatbubbleEllipses, IoClose, IoSend, IoSparkles } from 'react-icons/io5'
-import { allEvents } from '../data/events'
+import { useAuth } from '../context/AuthContext'
 
-/* ── Location coordinate map from events data ────────── */
-const locationCoords = {}
-allEvents.forEach(e => {
-    // Map by city name (lowercase)
-    locationCoords[e.city.toLowerCase()] = { lat: e.lat, lng: e.lng, name: e.city, province: e.province }
-    // Map by province name (lowercase)
-    if (!locationCoords[e.province.toLowerCase()]) {
-        locationCoords[e.province.toLowerCase()] = { lat: e.lat, lng: e.lng, name: e.province, province: e.province }
-    }
-})
-// Useful aliases
+/* ── Useful aliases ── */
 const aliases = {
     'jogja': 'yogyakarta', 'yogya': 'yogyakarta', 'jogjakarta': 'yogyakarta',
     'jkt': 'jakarta', 'bdg': 'bandung', 'sby': 'surabaya', 'mlg': 'malang',
     'smg': 'semarang', 'bali': 'denpasar', 'papua': 'jayapura',
 }
-Object.entries(aliases).forEach(([alias, target]) => {
-    if (locationCoords[target]) locationCoords[alias] = locationCoords[target]
-})
+
+function buildLocationCoords(events) {
+    const coords = {}
+    events.forEach(e => {
+        coords[e.city.toLowerCase()] = { lat: e.lat, lng: e.lng, name: e.city, province: e.province }
+        if (!coords[e.province.toLowerCase()]) {
+            coords[e.province.toLowerCase()] = { lat: e.lat, lng: e.lng, name: e.province, province: e.province }
+        }
+    })
+    Object.entries(aliases).forEach(([alias, target]) => {
+        if (coords[target]) coords[alias] = coords[target]
+    })
+    return coords
+}
+
+function buildSystemPrompt(events) {
+    const eventLines = events.map(e => {
+        const minPrice = e.tickets?.length ? Math.min(...e.tickets.map(t => t.price)) : 0
+        return `- "${e.title}" | ${e.date} | ${e.venue}, ${e.city}, ${e.province} | Harga mulai $${minPrice} | Kategori: ${e.category}${e.tags?.length ? ' | Tags: ' + e.tags.join(', ') : ''}`
+    }).join('\n')
+    return `Kamu adalah MonoBot, asisten AI dari Monora — platform pembelian tiket event & konser.
+Kamu bertugas membantu pengguna mencari event, memberikan informasi tiket, menjawab pertanyaan cuaca di lokasi event, dan menjawab pertanyaan tentang Monora.
+
+Berikut data event yang tersedia:
+${eventLines}
+
+Panduan:
+- Jawab dengan ramah, ringkas, dan informatif dalam Bahasa Indonesia
+- Jika user menanyakan event, rekomendasikan event yang relevan beserta harganya
+- Jika ditanya tentang cara beli tiket, jelaskan: pilih event → pilih tiket → tambah ke cart → checkout
+- Jika user bertanya tentang cuaca, kamu akan diberikan DATA CUACA REAL-TIME. Gunakan data tersebut untuk menjawab. Sajikan info cuaca dengan format yang rapi, sertakan emoji cuaca (☀️🌤️⛅🌧️⛈️), dan hubungkan dengan rekomendasi event di lokasi tersebut jika relevan
+- Gunakan emoji sesekali untuk kesan ramah 🎶
+- Jangan pernah membuat data event atau cuaca fiktif — gunakan HANYA data yang diberikan
+- Jika ditanya hal di luar konteks Monora dan cuaca lokasi event, jawab sopan bahwa kamu hanya bisa membantu soal Monora`
+}
 
 /* ── WMO weather code labels (Indonesian) ────────────── */
 const wmoLabels = {
@@ -37,7 +59,7 @@ const wmoLabels = {
 /* ── Weather detection & fetching helpers ─────────────── */
 const WEATHER_KEYWORDS = ['cuaca', 'weather', 'hujan', 'panas', 'suhu', 'temperatur', 'prakiraan', 'ramalan cuaca', 'forecast', 'cerah', 'mendung', 'badai', 'gerimis']
 
-function detectWeatherQuery(text) {
+function detectWeatherQuery(text, locationCoords) {
     const lower = text.toLowerCase()
     const isWeather = WEATHER_KEYWORDS.some(kw => lower.includes(kw))
     if (!isWeather) return null
@@ -77,22 +99,6 @@ function formatWeatherContext(data, locationName) {
     })
     return ctx
 }
-
-/* ── System prompt with event knowledge ──────────────── */
-const SYSTEM_PROMPT = `Kamu adalah MonoBot, asisten AI dari Monora — platform pembelian tiket event & konser.
-Kamu bertugas membantu pengguna mencari event, memberikan informasi tiket, menjawab pertanyaan cuaca di lokasi event, dan menjawab pertanyaan tentang Monora.
-
-Berikut data event yang tersedia:
-${allEvents.map(e => `- "${e.title}" | ${e.date} | ${e.venue}, ${e.city}, ${e.province} | Harga mulai $${Math.min(...e.tickets.map(t => t.price))} | Kategori: ${e.category}${e.tags.length ? ' | Tags: ' + e.tags.join(', ') : ''}`).join('\n')}
-
-Panduan:
-- Jawab dengan ramah, ringkas, dan informatif dalam Bahasa Indonesia
-- Jika user menanyakan event, rekomendasikan event yang relevan beserta harganya
-- Jika ditanya tentang cara beli tiket, jelaskan: pilih event → pilih tiket → tambah ke cart → checkout
-- Jika user bertanya tentang cuaca, kamu akan diberikan DATA CUACA REAL-TIME. Gunakan data tersebut untuk menjawab. Sajikan info cuaca dengan format yang rapi, sertakan emoji cuaca (☀️🌤️⛅🌧️⛈️), dan hubungkan dengan rekomendasi event di lokasi tersebut jika relevan
-- Gunakan emoji sesekali untuk kesan ramah 🎶
-- Jangan pernah membuat data event atau cuaca fiktif — gunakan HANYA data yang diberikan
-- Jika ditanya hal di luar konteks Monora dan cuaca lokasi event, jawab sopan bahwa kamu hanya bisa membantu soal Monora`
 
 /* ── Styles ──────────────────────────────────────────── */
 const fabStyle = {
@@ -246,6 +252,9 @@ function TypingIndicator() {
 
 /* ── Main Component ──────────────────────────────────── */
 function Chatbot() {
+    const { publicEvents } = useAuth()
+    const locationCoords = useMemo(() => buildLocationCoords(publicEvents), [publicEvents])
+    const SYSTEM_PROMPT = useMemo(() => buildSystemPrompt(publicEvents), [publicEvents])
     const [open, setOpen] = useState(false)
     const [messages, setMessages] = useState([
         { role: 'assistant', content: 'Halo! 👋 Saya **MonoBot**, asisten Monora. Ada yang bisa saya bantu? Tanya soal event, tiket, atau **cuaca di lokasi event** — saya bisa bantu! 🌤️🎶' }
@@ -279,14 +288,9 @@ function Chatbot() {
         setLoading(true)
 
         try {
-            const apiKey = import.meta.env.VITE_GROQ_API_KEY
-            if (!apiKey || apiKey === 'your_api_key_here') {
-                throw new Error('API key belum dikonfigurasi')
-            }
-
             // Check if question is about weather → fetch real-time data
             let weatherContext = ''
-            const weatherLoc = detectWeatherQuery(trimmed)
+            const weatherLoc = detectWeatherQuery(trimmed, locationCoords)
             if (weatherLoc) {
                 try {
                     const weatherData = await fetchWeatherData(weatherLoc.lat, weatherLoc.lng)
@@ -299,11 +303,10 @@ function Chatbot() {
             // Build messages with optional weather context injected
             const systemContent = SYSTEM_PROMPT + weatherContext
 
-            const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            const res = await fetch('/api/ai/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`,
                 },
                 body: JSON.stringify({
                     model: 'llama-3.3-70b-versatile',
@@ -327,7 +330,7 @@ function Chatbot() {
         } catch (err) {
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: `⚠️ Terjadi error: ${err.message}. Pastikan API key sudah benar di file .env`
+                content: `⚠️ Terjadi error: ${err.message}. Coba lagi beberapa saat.`
             }])
         } finally {
             setLoading(false)

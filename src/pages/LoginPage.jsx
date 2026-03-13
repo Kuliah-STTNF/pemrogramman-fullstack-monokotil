@@ -19,14 +19,14 @@ function LoginPage() {
     return null
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     if (!form.email || !form.password) {
       setError('Please fill in all fields')
       return
     }
-    const result = login(form.email, form.password)
+    const result = await login(form.email, form.password)
     if (result.success) {
       navigate(from, { replace: true })
     } else {

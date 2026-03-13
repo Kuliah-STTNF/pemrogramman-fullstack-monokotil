@@ -29,10 +29,10 @@ function RegisterPage() {
     return Object.keys(errs).length === 0
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validate()) return
-    const result = register({ ...form, role: form.role })
+    const result = await register({ ...form, role: form.role })
     if (result.success) {
       navigate(form.role === 'event_admin' ? '/admin/dashboard' : '/')
     } else {

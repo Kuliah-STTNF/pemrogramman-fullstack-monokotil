@@ -151,7 +151,7 @@ function EventForm() {
   }
   const goBack = () => setStep(s => Math.max(s - 1, 0))
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateStep()) return
     const eventData = {
       ...form,
@@ -170,8 +170,8 @@ function EventForm() {
       })),
       hasMerch: merchandise.filter(m => m.name).length > 0,
     }
-    if (isEdit) { updateAdminEvent(Number(id), eventData) }
-    else { addAdminEvent(eventData) }
+    if (isEdit) { await updateAdminEvent(Number(id), eventData) }
+    else { await addAdminEvent(eventData) }
     navigate(backUrl)
   }
 

@@ -10,9 +10,9 @@ function MyOrdersPage() {
   const [refundReason, setRefundReason] = useState('')
   const [refundMessage, setRefundMessage] = useState(null)
 
-  const handleRequestRefund = (orderId) => {
+  const handleRequestRefund = async (orderId) => {
     if (!refundReason.trim()) return
-    const result = requestRefund(orderId, refundReason)
+    const result = await requestRefund(orderId, refundReason)
     setRefundMessage(result)
     if (result.success) {
       setTimeout(() => {

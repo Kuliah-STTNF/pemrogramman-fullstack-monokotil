@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoCalendarOutline, IoLocationSharp, IoTimeOutline, IoPersonOutline, IoBusinessOutline, IoArrowBack, IoTicketOutline, IoCartOutline, IoCheckmarkCircle, IoShirtOutline, IoChatbubbleEllipsesOutline } from 'react-icons/io5'
-import { getEventById, getDiscountedPrice } from '../data/events'
+import { getDiscountedPrice } from '../data/events'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import TicketSelection from '../components/TicketSelection'
@@ -11,11 +11,27 @@ import OrganizerChat from '../components/OrganizerChat'
 
 function EventDetailPage() {
   const { id } = useParams()
-  const event = getEventById(id)
+  const { publicEvents, adminEvents, isAuthenticated, user, loading } = useAuth()
+  const eventsForLookup = useMemo(() => {
+    if (user?.role === 'event_admin' || user?.role === 'app_admin') {
+      const map = new Map()
+      ;[...publicEvents, ...adminEvents].forEach((e) => map.set(String(e.id), e))
+      return Array.from(map.values())
+    }
+    return publicEvents
+  }, [publicEvents, adminEvents, user])
+  const event = eventsForLookup.find(e => String(e.id) === id || e.slug === id)
   const { itemCount } = useCart()
-  const { isAuthenticated } = useAuth()
   const [activeTab, setActiveTab] = useState('tickets')
   const [chatOpen, setChatOpen] = useState(false)
+
+  if (loading) {
+    return (
+      <div className="bg-[#0B0D1A] min-h-screen pt-24 flex items-center justify-center">
+        <div className="text-white/50 text-lg">Loading...</div>
+      </div>
+    )
+  }
 
   if (!event) {
     return (

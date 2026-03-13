@@ -1,306 +1,334 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { apiFetch, setToken, getToken } from '../utils/api'
 
 const AuthContext = createContext(null)
 
-const STORAGE_KEY = 'tixflow_auth'
-const USERS_KEY = 'tixflow_users'
-const ORDERS_KEY = 'tixflow_orders'
-const ADMIN_EVENTS_KEY = 'tixflow_admin_events'
-const CATEGORIES_KEY = 'tixflow_categories'
-const REFUNDS_KEY = 'tixflow_refunds'
-const CHATS_KEY = 'tixflow_chats'
-const VOUCHERS_KEY = 'tixflow_vouchers'
-
-const DEFAULT_VOUCHERS = [
-  { code: 'WELCOME20', type: 'percentage', value: 20, minPurchase: 50, maxUses: 100, usedCount: 0, description: '20% off your first order' },
-  { code: 'MONORA10', type: 'percentage', value: 10, minPurchase: 0, maxUses: 500, usedCount: 0, description: '10% off any order' },
-  { code: 'SAVE15', type: 'percentage', value: 15, minPurchase: 100, maxUses: 200, usedCount: 0, description: '15% off orders above $100' },
-  { code: 'FLAT25', type: 'flat', value: 25, minPurchase: 75, maxUses: 150, usedCount: 0, description: '$25 off orders above $75' },
-  { code: 'FEST30', type: 'percentage', value: 30, minPurchase: 150, maxUses: 50, usedCount: 0, description: '30% off orders above $150' },
-]
-
-const DEFAULT_CATEGORIES = [
-  { id: 1, name: 'Concerts', icon: 'IoMusicalNotes', gradient: 'linear-gradient(135deg, #6366f1, #4f46e5)' },
-  { id: 2, name: 'Sports', icon: 'IoFootball', gradient: 'linear-gradient(135deg, #06b6d4, #0891b2)' },
-  { id: 3, name: 'Comedy', icon: 'IoHappy', gradient: 'linear-gradient(135deg, #f97316, #ea580c)' },
-  { id: 4, name: 'Festivals', icon: 'IoSparkles', gradient: 'linear-gradient(135deg, #ec4899, #db2777)' },
-]
-
-// Roles: 'customer' | 'event_admin' | 'app_admin'
-
-function loadFromStorage(key, fallback) {
-  try {
-    const stored = localStorage.getItem(key)
-    return stored ? JSON.parse(stored) : fallback
-  } catch {
-    return fallback
-  }
-}
-
-function saveToStorage(key, data) {
-  try {
-    localStorage.setItem(key, JSON.stringify(data))
-  } catch { /* silently fail */ }
-}
-
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => loadFromStorage(STORAGE_KEY, null))
-  const [orders, setOrders] = useState(() => loadFromStorage(ORDERS_KEY, []))
-  const [adminEvents, setAdminEvents] = useState(() => loadFromStorage(ADMIN_EVENTS_KEY, []))
-  const [categories, setCategories] = useState(() => loadFromStorage(CATEGORIES_KEY, DEFAULT_CATEGORIES))
-  const [refunds, setRefunds] = useState(() => loadFromStorage(REFUNDS_KEY, []))
-  const [chats, setChats] = useState(() => loadFromStorage(CHATS_KEY, []))
-  const [vouchers, setVouchers] = useState(() => loadFromStorage(VOUCHERS_KEY, DEFAULT_VOUCHERS))
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [publicEvents, setPublicEvents] = useState([])
+  const [adminEvents, setAdminEvents] = useState([])
+  const [orders, setOrders] = useState([])
+  const [categories, setCategories] = useState([])
+  const [vouchers, setVouchers] = useState([])
+  const [refunds, setRefunds] = useState([])
+  const [chats, setChats] = useState([])
+  const [allUsers, setAllUsers] = useState([])
 
+  // ─── Initialization ───
   useEffect(() => {
-    saveToStorage(STORAGE_KEY, user)
-  }, [user])
+    const init = async () => {
+      try {
+        const [cats, events] = await Promise.all([
+          apiFetch('/categories').catch(() => []),
+          apiFetch('/events').catch(() => []),
+        ])
+        setCategories(cats)
+        setPublicEvents(events)
 
-  useEffect(() => {
-    saveToStorage(ORDERS_KEY, orders)
-  }, [orders])
-
-  useEffect(() => {
-    saveToStorage(ADMIN_EVENTS_KEY, adminEvents)
-  }, [adminEvents])
-
-  useEffect(() => {
-    saveToStorage(CATEGORIES_KEY, categories)
-  }, [categories])
-
-  useEffect(() => {
-    saveToStorage(REFUNDS_KEY, refunds)
-  }, [refunds])
-
-  useEffect(() => {
-    saveToStorage(CHATS_KEY, chats)
-  }, [chats])
-
-  useEffect(() => {
-    saveToStorage(VOUCHERS_KEY, vouchers)
-  }, [vouchers])
-
-  const register = (userData) => {
-    const users = loadFromStorage(USERS_KEY, [])
-    const exists = users.find(u => u.email === userData.email)
-    if (exists) return { success: false, message: 'Email already registered' }
-
-    const newUser = {
-      id: Date.now(),
-      name: userData.name,
-      email: userData.email,
-      password: userData.password,
-      phone: userData.phone || '',
-      role: userData.role || 'customer',
-      createdAt: new Date().toISOString(),
+        const token = getToken()
+        if (token) {
+          try {
+            const userData = await apiFetch('/auth/me')
+            setUser(userData)
+            await loadUserData(userData)
+          } catch {
+            setToken(null)
+          }
+        }
+      } catch (e) {
+        console.error('Init error:', e)
+      } finally {
+        setLoading(false)
+      }
     }
-    users.push(newUser)
-    saveToStorage(USERS_KEY, users)
+    init()
+  }, [])
 
-    const { password, ...safeUser } = newUser
-    setUser(safeUser)
-    return { success: true }
+  const loadUserData = async (u) => {
+    const isAdmin = u.role === 'event_admin' || u.role === 'app_admin'
+    const [ordersData, vouchersData, refundsData, chatsData] = await Promise.all([
+      apiFetch(isAdmin ? '/orders' : '/orders/my-orders').catch(() => []),
+      apiFetch('/vouchers').catch(() => []),
+      apiFetch('/refunds').catch(() => []),
+      apiFetch(isAdmin ? '/chats/all' : '/chats/my-chats').catch(() => []),
+    ])
+    setOrders(ordersData)
+    setVouchers(vouchersData)
+    setRefunds(refundsData)
+    setChats(chatsData)
+
+    if (isAdmin) {
+      const events = await apiFetch('/events/admin/my-events').catch(() => [])
+      setAdminEvents(events)
+    }
+    if (u.role === 'app_admin') {
+      const users = await apiFetch('/users').catch(() => [])
+      setAllUsers(users)
+    }
   }
 
-  const login = (email, password) => {
-    const users = loadFromStorage(USERS_KEY, [])
-    const found = users.find(u => u.email === email && u.password === password)
-    if (!found) return { success: false, message: 'Invalid email or password' }
+  // ─── Auth Functions ───
+  const register = async (userData) => {
+    try {
+      const data = await apiFetch('/auth/register', { method: 'POST', body: userData })
+      setToken(data.token)
+      setUser(data.user)
+      await loadUserData(data.user)
+      return { success: true }
+    } catch (err) {
+      return { success: false, message: err.message }
+    }
+  }
 
-    const { password: _, ...safeUser } = found
-    setUser(safeUser)
-    return { success: true }
+  const login = async (email, password) => {
+    try {
+      const data = await apiFetch('/auth/login', { method: 'POST', body: { email, password } })
+      setToken(data.token)
+      setUser(data.user)
+      await loadUserData(data.user)
+      return { success: true }
+    } catch (err) {
+      return { success: false, message: err.message }
+    }
   }
 
   const logout = () => {
+    setToken(null)
     setUser(null)
+    setOrders([])
+    setAdminEvents([])
+    setVouchers([])
+    setRefunds([])
+    setChats([])
+    setAllUsers([])
   }
 
-  const addOrder = (order) => {
-    const newOrder = {
-      ...order,
-      id: `ORD-${Date.now()}`,
-      userId: user?.id,
-      date: new Date().toISOString(),
-      status: 'confirmed',
-    }
-    const updated = [newOrder, ...orders]
-    setOrders(updated)
-    return newOrder
+  // ─── Order Functions ───
+  const addOrder = async (orderData) => {
+    const data = await apiFetch('/orders', { method: 'POST', body: orderData })
+    setOrders(prev => [data, ...prev])
+    return data
   }
 
   const getUserOrders = () => {
     if (!user) return []
-    return orders.filter(o => o.userId === user.id)
-  }
-
-  // ─── Event Admin Functions ───
-  const addAdminEvent = (eventData) => {
-    const newEvent = {
-      ...eventData,
-      id: Date.now(),
-      createdBy: user?.id,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      status: 'published',
-      totalSold: 0,
-      totalRevenue: 0,
-    }
-    const updated = [newEvent, ...adminEvents]
-    setAdminEvents(updated)
-    return newEvent
-  }
-
-  const updateAdminEvent = (eventId, eventData) => {
-    const updated = adminEvents.map(e =>
-      e.id === eventId ? { ...e, ...eventData, updatedAt: new Date().toISOString() } : e
-    )
-    setAdminEvents(updated)
-  }
-
-  const deleteAdminEvent = (eventId) => {
-    setAdminEvents(adminEvents.filter(e => e.id !== eventId))
-  }
-
-  const getMyEvents = () => {
-    if (!user) return []
-    if (user.role === 'app_admin') return adminEvents
-    return adminEvents.filter(e => e.createdBy === user.id)
+    return orders.filter(o => Number(o.userId) === Number(user.id))
   }
 
   const getEventOrders = (eventId) => {
-    return orders.filter(o => {
-      if (!o.items) return false
-      return o.items.some(item => item.eventId === eventId || item.eventId === String(eventId))
-    })
+    return orders.filter(o =>
+      o.items?.some(item => Number(item.eventId) === Number(eventId))
+    )
   }
 
   const getAllOrders = () => orders
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    const updated = orders.map(o =>
-      o.id === orderId ? { ...o, status: newStatus } : o
-    )
-    setOrders(updated)
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await apiFetch(`/orders/${orderId}/status`, { method: 'PUT', body: { status: newStatus } })
+      setOrders(prev => prev.map(o =>
+        (o.id === orderId || o.orderId === orderId) ? { ...o, status: newStatus } : o
+      ))
+    } catch (err) {
+      console.error('Update order status error:', err)
+    }
   }
 
-  // ─── App Admin Functions ───
-  const getAllUsers = () => {
-    return loadFromStorage(USERS_KEY, []).map(({ password, ...u }) => u)
+  // ─── Event Admin Functions ───
+  const addAdminEvent = async (eventData) => {
+    const data = await apiFetch('/events', { method: 'POST', body: eventData })
+    setAdminEvents(prev => [data, ...prev])
+    if (data.status === 'published') {
+      setPublicEvents(prev => [...prev, data])
+    }
+    return data
   }
 
-  const updateUserRole = (userId, newRole) => {
-    const users = loadFromStorage(USERS_KEY, [])
-    const updated = users.map(u => u.id === userId ? { ...u, role: newRole } : u)
-    saveToStorage(USERS_KEY, updated)
-    if (user?.id === userId) setUser(prev => ({ ...prev, role: newRole }))
+  const updateAdminEvent = async (eventId, eventData) => {
+    try {
+      const data = await apiFetch(`/events/${eventId}`, { method: 'PUT', body: eventData })
+      setAdminEvents(prev => prev.map(e => Number(e.id) === Number(eventId) ? data : e))
+      setPublicEvents(prev => {
+        const idx = prev.findIndex(e => Number(e.id) === Number(eventId))
+        if (data.status === 'published') {
+          return idx >= 0 ? prev.map(e => Number(e.id) === Number(eventId) ? data : e) : [...prev, data]
+        }
+        return idx >= 0 ? prev.filter(e => Number(e.id) !== Number(eventId)) : prev
+      })
+    } catch (err) {
+      console.error('Update event error:', err)
+    }
   }
 
-  const toggleUserStatus = (userId) => {
-    const users = loadFromStorage(USERS_KEY, [])
-    const updated = users.map(u => u.id === userId ? { ...u, isActive: u.isActive === false ? true : false } : u)
-    saveToStorage(USERS_KEY, updated)
+  const deleteAdminEvent = async (eventId) => {
+    try {
+      await apiFetch(`/events/${eventId}`, { method: 'DELETE' })
+      setAdminEvents(prev => prev.filter(e => Number(e.id) !== Number(eventId)))
+      setPublicEvents(prev => prev.filter(e => Number(e.id) !== Number(eventId)))
+    } catch (err) {
+      console.error('Delete event error:', err)
+    }
   }
 
-  const deleteUser = (userId) => {
-    const users = loadFromStorage(USERS_KEY, [])
-    saveToStorage(USERS_KEY, users.filter(u => u.id !== userId))
-  }
-
+  const getMyEvents = () => adminEvents
   const getAllAdminEvents = () => adminEvents
+
+  // ─── User Functions (app_admin) ───
+  const getAllUsers = () => allUsers
+
+  const updateUserRole = async (userId, newRole) => {
+    try {
+      await apiFetch(`/users/${userId}/role`, { method: 'PUT', body: { role: newRole } })
+      setAllUsers(prev => prev.map(u => Number(u.id) === Number(userId) ? { ...u, role: newRole } : u))
+      if (Number(user?.id) === Number(userId)) setUser(prev => ({ ...prev, role: newRole }))
+    } catch (err) {
+      console.error('Update user role error:', err)
+    }
+  }
+
+  const toggleUserStatus = async (userId) => {
+    try {
+      const result = await apiFetch(`/users/${userId}/toggle-status`, { method: 'PUT' })
+      setAllUsers(prev => prev.map(u => Number(u.id) === Number(userId) ? { ...u, isActive: result.isActive } : u))
+    } catch (err) {
+      console.error('Toggle user status error:', err)
+    }
+  }
+
+  const deleteUser = async (userId) => {
+    try {
+      await apiFetch(`/users/${userId}`, { method: 'DELETE' })
+      setAllUsers(prev => prev.filter(u => Number(u.id) !== Number(userId)))
+    } catch (err) {
+      console.error('Delete user error:', err)
+    }
+  }
 
   // ─── Category Functions ───
   const getCategories = () => categories
 
-  const addCategory = (categoryData) => {
-    const newCat = { ...categoryData, id: Date.now() }
-    setCategories(prev => [...prev, newCat])
-    return newCat
+  const addCategory = async (categoryData) => {
+    try {
+      const data = await apiFetch('/categories', { method: 'POST', body: categoryData })
+      setCategories(prev => [...prev, data])
+      return data
+    } catch (err) {
+      console.error('Add category error:', err)
+    }
   }
 
-  const updateCategory = (catId, data) => {
-    setCategories(prev => prev.map(c => c.id === catId ? { ...c, ...data } : c))
+  const updateCategory = async (catId, data) => {
+    try {
+      const result = await apiFetch(`/categories/${catId}`, { method: 'PUT', body: data })
+      setCategories(prev => prev.map(c => Number(c.id) === Number(catId) ? result : c))
+    } catch (err) {
+      console.error('Update category error:', err)
+    }
   }
 
-  const deleteCategory = (catId) => {
-    setCategories(prev => prev.filter(c => c.id !== catId))
+  const deleteCategory = async (catId) => {
+    try {
+      await apiFetch(`/categories/${catId}`, { method: 'DELETE' })
+      setCategories(prev => prev.filter(c => Number(c.id) !== Number(catId)))
+    } catch (err) {
+      console.error('Delete category error:', err)
+    }
   }
 
   // ─── Voucher Functions ───
-  const validateVoucher = (code, orderTotal) => {
-    const voucher = vouchers.find(v => v.code === code.toUpperCase())
-    if (!voucher) return { valid: false, message: 'Invalid voucher code' }
-    if (voucher.usedCount >= voucher.maxUses) return { valid: false, message: 'Voucher has been fully redeemed' }
-    if (orderTotal < voucher.minPurchase) return { valid: false, message: `Minimum purchase $${voucher.minPurchase} required` }
-    const discount = voucher.type === 'percentage'
-      ? Math.round(orderTotal * voucher.value / 100 * 100) / 100
-      : Math.min(voucher.value, orderTotal)
-    return { valid: true, voucher, discount, message: `${voucher.description} — You save $${discount.toFixed(2)}` }
-  }
-
-  const useVoucher = (code) => {
-    setVouchers(prev => prev.map(v =>
-      v.code === code.toUpperCase() ? { ...v, usedCount: v.usedCount + 1 } : v
-    ))
-  }
-
-  const addVoucher = (voucherData) => {
-    const code = voucherData.code.trim().toUpperCase()
-    if (vouchers.find(v => v.code === code)) return { success: false, message: 'Voucher code already exists' }
-    const newVoucher = {
-      code,
-      type: voucherData.type || 'percentage',
-      value: Number(voucherData.value) || 0,
-      minPurchase: Number(voucherData.minPurchase) || 0,
-      maxUses: Number(voucherData.maxUses) || 100,
-      usedCount: 0,
-      description: voucherData.description || '',
+  const validateVoucher = async (code, orderTotal) => {
+    try {
+      return await apiFetch('/vouchers/validate', { method: 'POST', body: { code, orderTotal } })
+    } catch (err) {
+      return { valid: false, message: err.message }
     }
-    setVouchers(prev => [...prev, newVoucher])
-    return { success: true }
   }
 
-  const updateVoucher = (code, updates) => {
-    setVouchers(prev => prev.map(v =>
-      v.code === code ? { ...v, ...updates } : v
-    ))
+  const useVoucher = async (code, orderId, discountAmount) => {
+    try {
+      await apiFetch('/vouchers/use', { method: 'POST', body: { code, orderId, discountAmount } })
+      setVouchers(prev => prev.map(v =>
+        v.code === code.toUpperCase() ? { ...v, usedCount: (v.usedCount || 0) + 1 } : v
+      ))
+    } catch (err) {
+      console.error('Use voucher error:', err)
+    }
   }
 
-  const deleteVoucher = (code) => {
-    setVouchers(prev => prev.filter(v => v.code !== code))
+  const addVoucher = async (voucherData) => {
+    try {
+      const data = await apiFetch('/vouchers', { method: 'POST', body: voucherData })
+      setVouchers(prev => [...prev, data])
+      return { success: true }
+    } catch (err) {
+      return { success: false, message: err.message }
+    }
   }
 
-  const setEventDiscount = (eventId, discount) => {
-    setAdminEvents(prev => prev.map(e =>
-      e.id === eventId ? { ...e, discount, updatedAt: new Date().toISOString() } : e
-    ))
+  const updateVoucher = async (code, updates) => {
+    try {
+      const v = vouchers.find(v => v.code === code)
+      if (!v) return
+      const data = await apiFetch(`/vouchers/${v.id}`, { method: 'PUT', body: updates })
+      setVouchers(prev => prev.map(v => v.code === code ? data : v))
+    } catch (err) {
+      console.error('Update voucher error:', err)
+    }
   }
 
-  const removeEventDiscount = (eventId) => {
-    setAdminEvents(prev => prev.map(e => {
-      if (e.id === eventId) {
-        const { discount, ...rest } = e
-        return { ...rest, updatedAt: new Date().toISOString() }
+  const deleteVoucher = async (code) => {
+    try {
+      const v = vouchers.find(v => v.code === code)
+      if (!v) return
+      await apiFetch(`/vouchers/${v.id}`, { method: 'DELETE' })
+      setVouchers(prev => prev.filter(v => v.code !== code))
+    } catch (err) {
+      console.error('Delete voucher error:', err)
+    }
+  }
+
+  // ─── Discount Functions ───
+  const setEventDiscount = async (eventId, discount) => {
+    try {
+      await apiFetch(`/events/${eventId}/discount`, { method: 'POST', body: discount })
+      setAdminEvents(prev => prev.map(e =>
+        Number(e.id) === Number(eventId) ? { ...e, discount } : e
+      ))
+      setPublicEvents(prev => prev.map(e =>
+        Number(e.id) === Number(eventId) ? { ...e, discount } : e
+      ))
+    } catch (err) {
+      console.error('Set discount error:', err)
+    }
+  }
+
+  const removeEventDiscount = async (eventId) => {
+    try {
+      await apiFetch(`/events/${eventId}/discount`, { method: 'DELETE' })
+      const removeDiscount = e => {
+        if (Number(e.id) === Number(eventId)) {
+          const { discount, ...rest } = e
+          return rest
+        }
+        return e
       }
-      return e
-    }))
+      setAdminEvents(prev => prev.map(removeDiscount))
+      setPublicEvents(prev => prev.map(removeDiscount))
+    } catch (err) {
+      console.error('Remove discount error:', err)
+    }
   }
 
   // ─── Refund Functions ───
-  const requestRefund = (orderId, reason) => {
-    const existing = refunds.find(r => r.orderId === orderId)
-    if (existing) return { success: false, message: 'Refund already requested for this order' }
-    const refund = {
-      id: `REF-${Date.now()}`,
-      orderId,
-      userId: user?.id,
-      reason,
-      status: 'pending',
-      requestedAt: new Date().toISOString(),
-      processedAt: null,
+  const requestRefund = async (orderId, reason) => {
+    try {
+      const result = await apiFetch('/refunds', { method: 'POST', body: { orderId, reason } })
+      if (result.refund) setRefunds(prev => [result.refund, ...prev])
+      return result
+    } catch (err) {
+      return { success: false, message: err.message }
     }
-    setRefunds(prev => [refund, ...prev])
-    return { success: true, refund }
   }
 
   const getRefundByOrderId = (orderId) => {
@@ -309,129 +337,112 @@ export function AuthProvider({ children }) {
 
   const getAllRefunds = () => refunds
 
-  const updateRefundStatus = (refundId, newStatus) => {
-    setRefunds(prev => prev.map(r =>
-      r.id === refundId ? { ...r, status: newStatus, processedAt: new Date().toISOString() } : r
-    ))
-    // If approved, update order status too
-    if (newStatus === 'approved') {
-      const refund = refunds.find(r => r.id === refundId)
-      if (refund) updateOrderStatus(refund.orderId, 'refunded')
+  const updateRefundStatus = async (refundId, newStatus) => {
+    try {
+      const data = await apiFetch(`/refunds/${refundId}/process`, { method: 'PUT', body: { status: newStatus } })
+      setRefunds(prev => prev.map(r => r.id === refundId ? data : r))
+      if (newStatus === 'approved') {
+        const refund = refunds.find(r => r.id === refundId)
+        if (refund) {
+          setOrders(prev => prev.map(o =>
+            (o.id === refund.orderId) ? { ...o, status: 'refunded' } : o
+          ))
+        }
+      }
+    } catch (err) {
+      console.error('Update refund status error:', err)
     }
   }
 
   // ─── Chat Functions ───
-  const sendMessage = (eventId, eventTitle, organizerName, messageText, sender = 'customer') => {
-    const chatKey = `${user?.id}-${eventId}`
-    const message = {
-      id: Date.now(),
-      text: messageText,
-      sender,
-      timestamp: new Date().toISOString(),
-    }
-    setChats(prev => {
-      const existing = prev.find(c => c.chatKey === chatKey)
-      if (existing) {
-        return prev.map(c => c.chatKey === chatKey
-          ? { ...c, messages: [...c.messages, message], updatedAt: new Date().toISOString() }
-          : c
-        )
-      }
-      return [...prev, {
-        chatKey,
-        userId: user?.id,
-        userName: user?.name,
-        eventId,
-        eventTitle,
-        organizerName,
-        messages: [message],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }]
-    })
-    // Simulate organizer auto-reply after a short delay
-    if (sender === 'customer') {
-      setTimeout(() => {
-        const replies = [
-          `Thanks for reaching out about ${eventTitle}! How can we help you?`,
-          'We appreciate your interest! Let us know if you have any questions.',
-          'Hello! Our team is here to help. What would you like to know?',
-          `Excited that you're interested in ${eventTitle}! Feel free to ask anything.`,
-          'Thanks for your message! We\'ll get back to you with more details shortly.',
-        ]
-        const autoReply = {
-          id: Date.now() + 1,
-          text: replies[Math.floor(Math.random() * replies.length)],
-          sender: 'organizer',
-          timestamp: new Date().toISOString(),
-        }
-        setChats(prev => prev.map(c => c.chatKey === chatKey
-          ? { ...c, messages: [...c.messages, autoReply], updatedAt: new Date().toISOString() }
-          : c
-        ))
-      }, 1500)
+  const sendMessage = async (eventId, eventTitle, organizerName, messageText) => {
+    try {
+      const data = await apiFetch('/chats/send', {
+        method: 'POST',
+        body: { eventId, eventTitle, organizerName, message: messageText },
+      })
+      setChats(prev => {
+        const idx = prev.findIndex(c => c.chatKey === data.chatKey)
+        if (idx >= 0) return prev.map((c, i) => i === idx ? data : c)
+        return [...prev, data]
+      })
+    } catch (err) {
+      console.error('Send message error:', err)
     }
   }
 
   const getChatMessages = (eventId) => {
-    const chatKey = `${user?.id}-${eventId}`
+    if (!user) return []
+    const chatKey = `${user.id}-${eventId}`
     const chat = chats.find(c => c.chatKey === chatKey)
     return chat ? chat.messages : []
   }
 
   const getUserChats = () => {
     if (!user) return []
-    return chats.filter(c => c.userId === user.id)
+    return chats.filter(c => Number(c.userId) === Number(user.id))
   }
 
-  // Admin: send reply to a specific chat (organizer → customer)
-  const sendAdminReply = (chatKey, messageText) => {
-    const message = {
-      id: Date.now(),
-      text: messageText,
-      sender: 'organizer',
-      timestamp: new Date().toISOString(),
+  const sendAdminReply = async (chatKey, messageText) => {
+    try {
+      const data = await apiFetch(`/chats/${chatKey}/reply`, {
+        method: 'POST',
+        body: { message: messageText },
+      })
+      setChats(prev => {
+        const idx = prev.findIndex(c => c.chatKey === chatKey)
+        if (idx >= 0) return prev.map((c, i) => i === idx ? data : c)
+        return [...prev, data]
+      })
+    } catch (err) {
+      console.error('Send admin reply error:', err)
     }
-    setChats(prev => prev.map(c =>
-      c.chatKey === chatKey
-        ? { ...c, messages: [...c.messages, message], updatedAt: new Date().toISOString() }
-        : c
-    ))
   }
 
-  // Event admin: get all chats related to my events
   const getEventChats = (eventId) => {
-    return chats.filter(c => c.eventId === eventId || c.eventId === Number(eventId))
+    return chats.filter(c => Number(c.eventId) === Number(eventId))
   }
 
-  // App admin: get all chats on the platform
   const getAllChats = () => chats
+
+  // ─── Loading State ───
+  if (loading) {
+    return (
+      <div className="bg-[#0B0D1A] min-h-screen flex items-center justify-center">
+        <div className="text-white/50 text-lg">Loading...</div>
+      </div>
+    )
+  }
 
   return (
     <AuthContext.Provider value={{
       user,
       isAuthenticated: !!user,
+      loading,
       register,
       login,
       logout,
-      addOrder,
-      getUserOrders,
-      orders,
-      // Event admin
+      // Events
+      publicEvents,
+      allEvents: publicEvents,
       adminEvents,
       addAdminEvent,
       updateAdminEvent,
       deleteAdminEvent,
       getMyEvents,
+      getAllAdminEvents,
+      // Orders
+      addOrder,
+      getUserOrders,
+      orders,
       getEventOrders,
       getAllOrders,
       updateOrderStatus,
-      // App admin
+      // Users
       getAllUsers,
       updateUserRole,
       toggleUserStatus,
       deleteUser,
-      getAllAdminEvents,
       // Categories
       categories,
       getCategories,

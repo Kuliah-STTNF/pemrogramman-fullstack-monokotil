@@ -123,6 +123,8 @@ model Event {
   merchandise        Merchandise[]
   order_items        OrderItem[]
   discounts          EventDiscount[]
+  vouchers           Voucher[]
+  refunds            Refund[]
   chat_conversations ChatConversation[]
 
   @@index([slug], map: "idx_events_slug")
@@ -258,6 +260,7 @@ model OrderItem {
   event       Event?       @relation(fields: [event_id], references: [id], onDelete: SetNull)
   ticket_type TicketType?  @relation(fields: [ticket_type_id], references: [id], onDelete: SetNull)
   merchandise Merchandise? @relation(fields: [merch_id], references: [id], onDelete: SetNull)
+  refunds     Refund[]
 
   @@index([order_id], map: "idx_oi_order")
   @@index([event_id], map: "idx_oi_event")
@@ -266,6 +269,7 @@ model OrderItem {
 
 model Voucher {
   id           BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  event_id     BigInt?       @db.UnsignedBigInt
   code         String        @unique @db.VarChar(50)
   type         vouchers_type @default(percentage)
   value        Decimal       @default(0) @db.Decimal(12, 2)
@@ -277,9 +281,11 @@ model Voucher {
   expires_at   DateTime?
   created_at   DateTime      @default(now())
 
+  event          Event?         @relation(fields: [event_id], references: [id], onDelete: SetNull)
   voucher_usages VoucherUsage[]
 
   @@index([code], map: "idx_voucher_code")
+  @@index([event_id], map: "idx_voucher_event")
   @@map("vouchers")
 }
 
@@ -321,16 +327,22 @@ model Refund {
   id           BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
   refund_code  String         @unique @db.VarChar(30)
   order_id     BigInt         @db.UnsignedBigInt
+  order_item_id BigInt?       @db.UnsignedBigInt
+  event_id     BigInt?        @db.UnsignedBigInt
   user_id      BigInt         @db.UnsignedBigInt
   reason       String?        @db.Text
   status       refunds_status @default(pending)
   requested_at DateTime       @default(now())
   processed_at DateTime?
 
-  order Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  order      Order      @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_item OrderItem? @relation(fields: [order_item_id], references: [id], onDelete: SetNull)
+  event      Event?     @relation(fields: [event_id], references: [id], onDelete: SetNull)
+  user       User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([order_id], map: "idx_refund_order")
+  @@index([order_item_id], map: "idx_refund_order_item")
+  @@index([event_id], map: "idx_refund_event")
   @@index([user_id], map: "idx_refund_user")
   @@index([status], map: "idx_refund_status")
   @@map("refunds")

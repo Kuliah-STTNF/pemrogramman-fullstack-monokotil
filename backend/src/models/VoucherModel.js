@@ -2,11 +2,42 @@ import { BaseModel } from './BaseModel.js'
 
 export class VoucherModel extends BaseModel {
   list() {
-    return this.prisma.voucher.findMany({ orderBy: { created_at: 'desc' } })
+    return this.prisma.voucher.findMany({
+      include: { event: { select: { id: true, title: true, created_by: true } } },
+      orderBy: { created_at: 'desc' },
+    })
+  }
+
+  listByCreator(userId) {
+    return this.prisma.voucher.findMany({
+      where: { event: { created_by: BigInt(userId) } },
+      include: { event: { select: { id: true, title: true, created_by: true } } },
+      orderBy: { created_at: 'desc' },
+    })
   }
 
   findByCode(code) {
-    return this.prisma.voucher.findUnique({ where: { code } })
+    return this.prisma.voucher.findUnique({
+      where: { code },
+      include: { event: { select: { id: true, title: true, created_by: true } } },
+    })
+  }
+
+  findById(id) {
+    return this.prisma.voucher.findUnique({
+      where: { id: BigInt(id) },
+      include: { event: { select: { id: true, title: true, created_by: true } } },
+    })
+  }
+
+  findEventById(eventId) {
+    return this.prisma.event.findUnique({ where: { id: BigInt(eventId) } })
+  }
+
+  findEventByIdAndCreator(eventId, userId) {
+    return this.prisma.event.findFirst({
+      where: { id: BigInt(eventId), created_by: BigInt(userId) },
+    })
   }
 
   create(data) {

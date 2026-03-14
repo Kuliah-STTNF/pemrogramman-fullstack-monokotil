@@ -23,7 +23,16 @@ export function AuthProvider({ children }) {
           apiFetch('/categories').catch(() => []),
           apiFetch('/events').catch(() => []),
         ])
-        setCategories(cats)
+        const fallbackCategories = Array.from(
+          new Set((events || []).map(e => e.category).filter(Boolean))
+        ).map((name, idx) => ({
+          id: `fallback-${idx}`,
+          name,
+          icon: 'IoSparkles',
+          gradient: 'linear-gradient(135deg, #f97316, #ea580c)',
+        }))
+
+        setCategories(Array.isArray(cats) && cats.length > 0 ? cats : fallbackCategories)
         setPublicEvents(events)
 
         const token = getToken()
@@ -237,9 +246,9 @@ export function AuthProvider({ children }) {
   }
 
   // ─── Voucher Functions ───
-  const validateVoucher = async (code, orderTotal) => {
+  const validateVoucher = async (code, orderTotal, eventIds = []) => {
     try {
-      return await apiFetch('/vouchers/validate', { method: 'POST', body: { code, orderTotal } })
+      return await apiFetch('/vouchers/validate', { method: 'POST', body: { code, orderTotal, eventIds } })
     } catch (err) {
       return { valid: false, message: err.message }
     }
@@ -321,9 +330,9 @@ export function AuthProvider({ children }) {
   }
 
   // ─── Refund Functions ───
-  const requestRefund = async (orderId, reason) => {
+  const requestRefund = async (orderId, reason, itemId) => {
     try {
-      const result = await apiFetch('/refunds', { method: 'POST', body: { orderId, reason } })
+      const result = await apiFetch('/refunds', { method: 'POST', body: { orderId, reason, itemId } })
       if (result.refund) setRefunds(prev => [result.refund, ...prev])
       return result
     } catch (err) {
@@ -332,7 +341,7 @@ export function AuthProvider({ children }) {
   }
 
   const getRefundByOrderId = (orderId) => {
-    return refunds.find(r => r.orderId === orderId) || null
+    return refunds.filter(r => r.orderId === orderId)
   }
 
   const getAllRefunds = () => refunds
@@ -342,11 +351,21 @@ export function AuthProvider({ children }) {
       const data = await apiFetch(`/refunds/${refundId}/process`, { method: 'PUT', body: { status: newStatus } })
       setRefunds(prev => prev.map(r => r.id === refundId ? data : r))
       if (newStatus === 'approved') {
-        const refund = refunds.find(r => r.id === refundId)
+        const refund = data || refunds.find(r => r.id === refundId)
         if (refund) {
-          setOrders(prev => prev.map(o =>
-            (o.id === refund.orderId) ? { ...o, status: 'refunded' } : o
-          ))
+          setOrders(prev => prev.map(o => {
+            if (o.id !== refund.orderId) return o
+
+            const items = (o.items || []).map(item =>
+              Number(item.id) === Number(refund.itemId) ? { ...item, refundStatus: 'approved' } : item
+            )
+            const allRefunded = items.length > 0 && items.every(item => item.refundStatus === 'approved')
+            return {
+              ...o,
+              items,
+              status: allRefunded ? 'refunded' : o.status,
+            }
+          }))
         }
       }
     } catch (err) {

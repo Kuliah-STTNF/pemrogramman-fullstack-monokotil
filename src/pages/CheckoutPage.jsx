@@ -1,14 +1,15 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useMemo, useState } from 'react'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { IoCardOutline, IoLockClosedOutline, IoShieldCheckmarkOutline, IoTicketOutline, IoShirtOutline, IoArrowBack, IoPricetagOutline } from 'react-icons/io5'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 
 function CheckoutPage() {
-  const { items, total, itemCount, clearCart } = useCart()
+  const { items, removeSelectedItems } = useCart()
   const { user, isAuthenticated, addOrder, validateVoucher, useVoucher } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [step, setStep] = useState(1) // 1: Info, 2: Payment, 3: Processing
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -30,15 +31,37 @@ function CheckoutPage() {
   const [voucherResult, setVoucherResult] = useState(null)
   const [appliedVoucher, setAppliedVoucher] = useState(null)
 
-  const tickets = items.filter(item => item.itemType === 'ticket')
-  const merch = items.filter(item => item.itemType === 'merch')
+  const selectedKeys = useMemo(() => {
+    const params = new URLSearchParams(location.search)
+    return (params.get('items') || '')
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean)
+  }, [location.search])
+
+  const selectedItems = useMemo(() => {
+    if (selectedKeys.length === 0) return items
+    const allowedKeys = new Set(selectedKeys)
+    return items.filter((item) => allowedKeys.has(item.cartKey || `${item.itemType}-${item.id}`))
+  }, [items, selectedKeys])
+
+  const tickets = selectedItems.filter(item => item.itemType === 'ticket')
+  const merch = selectedItems.filter(item => item.itemType === 'merch')
+  const total = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const itemCount = selectedItems.reduce((sum, item) => sum + item.quantity, 0)
+  const organizerName = selectedItems[0]?.organizerName || null
+  const cartEventIds = Array.from(new Set(
+    selectedItems
+      .map(item => Number(item.eventId))
+      .filter(id => Number.isInteger(id) && id > 0)
+  ))
   const voucherDiscount = appliedVoucher ? appliedVoucher.discount : 0
   const serviceFee = Math.round((total - voucherDiscount) * 0.05 * 100) / 100
   const grandTotal = Math.max(0, total - voucherDiscount + serviceFee)
 
   const handleApplyVoucher = async () => {
     if (!voucherCode.trim()) return
-    const result = await validateVoucher(voucherCode, total)
+    const result = await validateVoucher(voucherCode, total, cartEventIds)
     setVoucherResult(result)
     if (result.valid) {
       setAppliedVoucher({ code: voucherCode.toUpperCase(), discount: result.discount })
@@ -96,7 +119,7 @@ function CheckoutPage() {
     setTimeout(async () => {
       if (appliedVoucher) await useVoucher(appliedVoucher.code)
       const order = await addOrder({
-        items: items.map(item => ({ ...item })),
+        items: selectedItems.map(item => ({ ...item })),
         subtotal: total,
         voucherCode: appliedVoucher?.code || null,
         voucherDiscount,
@@ -114,7 +137,7 @@ function CheckoutPage() {
           zipCode: formData.zipCode,
         } : null,
       })
-      clearCart()
+      removeSelectedItems(selectedItems)
       navigate(`/order-confirmation/${order.id}`)
     }, 2500)
   }
@@ -187,6 +210,7 @@ function CheckoutPage() {
           >
             Checkout
           </h1>
+          {organizerName && <p className="text-white/50 mb-0">Organizer: {organizerName}</p>}
 
           {/* Step Indicators */}
           <div className="flex items-center gap-4 mt-6">
@@ -432,8 +456,8 @@ function CheckoutPage() {
                 <div className="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2"
                   style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}
                 >
-                  {items.map((item, i) => (
-                    <div key={i} className="flex items-center gap-3 text-sm">
+                  {selectedItems.map((item, i) => (
+                    <div key={item.cartKey || `${item.itemType}-${item.id}-${i}`} className="flex items-center gap-3 text-sm">
                       <div className="shrink-0">
                         {item.itemType === 'ticket' ? (
                           <IoTicketOutline className="text-orange-400" />

@@ -127,6 +127,7 @@ function AdminEvents() {
                   <div className="min-w-0">
                     <div className="text-white text-sm font-medium truncate">{event.title}</div>
                     <div className="text-white/30 text-[11px]">{event.category}</div>
+                    <div className="text-orange-400/70 text-[11px] truncate">Organizer: {event.organizer || 'Not set'}</div>
                   </div>
                 </div>
 

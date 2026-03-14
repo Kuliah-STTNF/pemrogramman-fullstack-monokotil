@@ -21,7 +21,7 @@ export class RefundController {
   }
 
   process = async (req, res) => {
-    const refund = await this.refundService.processRefund(req.params.id, req.body.status)
+    const refund = await this.refundService.processRefund(req.user, req.params.id, req.body.status)
     res.json(refund)
   }
 }

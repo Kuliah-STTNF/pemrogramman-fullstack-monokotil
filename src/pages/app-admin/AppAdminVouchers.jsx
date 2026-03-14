@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { IoAddCircleOutline, IoSearchOutline, IoPricetagOutline, IoCreateOutline, IoTrashOutline, IoCloseOutline } from 'react-icons/io5'
 import { useAuth } from '../../context/AuthContext'
 
-const EMPTY_FORM = { code: '', type: 'percentage', value: '', minPurchase: '', maxUses: '', description: '' }
+const EMPTY_FORM = { code: '', eventId: '', type: 'percentage', value: '', minPurchase: '', maxUses: '', description: '' }
 
 function AppAdminVouchers() {
-  const { vouchers, addVoucher, updateVoucher, deleteVoucher } = useAuth()
+  const { vouchers, addVoucher, updateVoucher, deleteVoucher, getAllAdminEvents } = useAuth()
+  const allEvents = getAllAdminEvents()
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingCode, setEditingCode] = useState(null)
@@ -22,15 +23,24 @@ function AppAdminVouchers() {
   const openCreate = () => { setForm(EMPTY_FORM); setEditingCode(null); setError(''); setShowModal(true) }
 
   const openEdit = (v) => {
-    setForm({ code: v.code, type: v.type, value: v.value, minPurchase: v.minPurchase, maxUses: v.maxUses, description: v.description || '' })
+    setForm({
+      code: v.code,
+      eventId: v.eventId ? String(v.eventId) : '',
+      type: v.type,
+      value: v.value,
+      minPurchase: v.minPurchase,
+      maxUses: v.maxUses,
+      description: v.description || '',
+    })
     setEditingCode(v.code); setError(''); setShowModal(true)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.code.trim() || !form.value) { setError('Code and value are required'); return }
+    if (!form.eventId) { setError('Event is required'); return }
     if (editingCode) {
-      updateVoucher(editingCode, { type: form.type, value: Number(form.value), minPurchase: Number(form.minPurchase) || 0, maxUses: Number(form.maxUses) || 100, description: form.description })
+      updateVoucher(editingCode, { eventId: Number(form.eventId), type: form.type, value: Number(form.value), minPurchase: Number(form.minPurchase) || 0, maxUses: Number(form.maxUses) || 100, description: form.description })
     } else {
       const result = await addVoucher(form)
       if (!result.success) { setError(result.message); return }
@@ -78,12 +88,13 @@ function AppAdminVouchers() {
       <div className="rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
         <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-white/30 text-[11px] font-semibold uppercase tracking-wider" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <div className="col-span-2">Code</div>
+          <div className="col-span-2">Event</div>
           <div className="col-span-1">Type</div>
           <div className="col-span-1">Value</div>
-          <div className="col-span-2">Min Purchase</div>
-          <div className="col-span-2">Usage</div>
+          <div className="col-span-1">Min Purchase</div>
+          <div className="col-span-1">Usage</div>
           <div className="col-span-2">Description</div>
-          <div className="col-span-2 text-right">Actions</div>
+          <div className="col-span-1 text-right">Actions</div>
         </div>
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
@@ -99,10 +110,11 @@ function AppAdminVouchers() {
                   <span className="text-purple-400 font-mono text-sm font-semibold">{v.code}</span>
                   {v.usedCount >= v.maxUses && <span className="ml-2 text-[9px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-400">DEPLETED</span>}
                 </div>
+                <div className="col-span-2 text-white/60 text-xs truncate">{v.eventTitle || '-'}</div>
                 <div className="col-span-1 text-white/50 text-sm capitalize">{v.type}</div>
                 <div className="col-span-1 text-white text-sm font-medium">{v.type === 'percentage' ? `${v.value}%` : `$${v.value}`}</div>
-                <div className="col-span-2 text-white/50 text-sm">${v.minPurchase}</div>
-                <div className="col-span-2">
+                <div className="col-span-1 text-white/50 text-sm">${v.minPurchase}</div>
+                <div className="col-span-1">
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
                       <div className="h-full rounded-full bg-purple-500/60" style={{ width: `${Math.min((v.usedCount / v.maxUses) * 100, 100)}%` }} />
@@ -111,7 +123,7 @@ function AppAdminVouchers() {
                   </div>
                 </div>
                 <div className="col-span-2 text-white/30 text-xs truncate">{v.description}</div>
-                <div className="col-span-2 flex items-center justify-end gap-1.5">
+                <div className="col-span-1 flex items-center justify-end gap-1.5">
                   <button onClick={() => openEdit(v)} className="w-8 h-8 rounded-lg flex items-center justify-center text-white/30 hover:text-purple-400 hover:bg-purple-500/10 transition-all border-none bg-transparent cursor-pointer"><IoCreateOutline className="text-base" /></button>
                   <button onClick={() => setConfirmDelete(v.code)} className="w-8 h-8 rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-all border-none bg-transparent cursor-pointer"><IoTrashOutline className="text-base" /></button>
                 </div>
@@ -140,6 +152,16 @@ function AppAdminVouchers() {
                   <label className="text-white/50 text-xs font-medium block mb-1.5">Voucher Code</label>
                   <input type="text" value={form.code} onChange={e => setForm({ ...form, code: e.target.value })} disabled={!!editingCode}
                     placeholder="e.g. SUMMER50" className="w-full px-4 py-2.5 rounded-xl text-white text-sm outline-none placeholder-white/30 disabled:opacity-50" style={inputStyle} />
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs font-medium block mb-1.5">Event</label>
+                  <select value={form.eventId} onChange={e => setForm({ ...form, eventId: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl text-white text-sm outline-none cursor-pointer" style={inputStyle}>
+                    <option value="" style={{ background: '#1a1a2e' }}>Select event</option>
+                    {allEvents.map(event => (
+                      <option key={event.id} value={event.id} style={{ background: '#1a1a2e' }}>{event.title}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>

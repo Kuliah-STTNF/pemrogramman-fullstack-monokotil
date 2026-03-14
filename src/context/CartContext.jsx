@@ -1,9 +1,10 @@
-import { createContext, useContext, useReducer, useEffect } from 'react'
+import { createContext, useContext, useReducer, useEffect, useState } from 'react'
 import { useAuth } from './AuthContext'
 
 const CartContext = createContext(null)
 
 const EMPTY_CART = { items: [], total: 0 }
+const GUEST_CART_KEY = 'tixflow_cart_guest'
 
 function loadCartFromStorage(storageKey) {
   if (!storageKey) return EMPTY_CART
@@ -94,6 +95,16 @@ function cartReducer(state, action) {
       newState = { items: [], total: 0 }
       break
 
+    case 'REMOVE_SELECTED_ITEMS': {
+      const selectedKeys = new Set(action.payload)
+      const items = state.items.filter((item) => {
+        const itemKey = item.cartKey || `${item.itemType}-${item.id}`
+        return !selectedKeys.has(itemKey)
+      })
+      newState = { ...state, items, total: calculateTotal(items) }
+      break
+    }
+
     case 'SET_STATE':
       newState = action.payload
       break
@@ -107,16 +118,33 @@ function cartReducer(state, action) {
 
 export function CartProvider({ children }) {
   const { user, isAuthenticated } = useAuth()
-  const storageKey = isAuthenticated && user?.id ? `tixflow_cart_${user.id}` : null
+  const storageKey = isAuthenticated && user?.id ? `tixflow_cart_${user.id}` : GUEST_CART_KEY
   const [state, dispatch] = useReducer(cartReducer, EMPTY_CART)
+  const [hydratedKey, setHydratedKey] = useState(null)
 
   useEffect(() => {
-    dispatch({ type: 'SET_STATE', payload: loadCartFromStorage(storageKey) })
+    const userCart = loadCartFromStorage(storageKey)
+
+    // When user logs in, migrate guest cart once if user cart is still empty.
+    if (storageKey !== GUEST_CART_KEY && userCart.items.length === 0) {
+      const guestCart = loadCartFromStorage(GUEST_CART_KEY)
+      if (guestCart.items.length > 0) {
+        dispatch({ type: 'SET_STATE', payload: guestCart })
+        saveCartToStorage(storageKey, guestCart)
+        localStorage.removeItem(GUEST_CART_KEY)
+        setHydratedKey(storageKey)
+        return
+      }
+    }
+
+    dispatch({ type: 'SET_STATE', payload: userCart })
+    setHydratedKey(storageKey)
   }, [storageKey])
 
   useEffect(() => {
+    if (hydratedKey !== storageKey) return
     saveCartToStorage(storageKey, state)
-  }, [storageKey, state])
+  }, [storageKey, state, hydratedKey])
 
   const addTicket = (ticket) => dispatch({ type: 'ADD_TICKET', payload: ticket })
   const addMerch = (merch) => dispatch({ type: 'ADD_MERCH', payload: merch })
@@ -125,6 +153,10 @@ export function CartProvider({ children }) {
   const removeItem = (id, itemType, cartKey) =>
     dispatch({ type: 'REMOVE_ITEM', payload: { id, itemType, cartKey } })
   const clearCart = () => dispatch({ type: 'CLEAR_CART' })
+  const removeSelectedItems = (selectedItems) => dispatch({
+    type: 'REMOVE_SELECTED_ITEMS',
+    payload: selectedItems.map((item) => item.cartKey || `${item.itemType}-${item.id}`),
+  })
 
   const itemCount = state.items.reduce((sum, item) => sum + item.quantity, 0)
 
@@ -138,6 +170,7 @@ export function CartProvider({ children }) {
       updateQuantity,
       removeItem,
       clearCart,
+      removeSelectedItems,
     }}>
       {children}
     </CartContext.Provider>

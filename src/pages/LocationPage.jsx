@@ -177,11 +177,14 @@ function LocationPage() {
   const provinces = useMemo(() => {
     const map = {}
     publicEvents.forEach(e => {
-      if (!e.province) return
+      if (!e.province || e.lat == null || e.lng == null) return
       if (!map[e.province]) map[e.province] = { name: e.province, events: [], lat: e.lat, lng: e.lng }
       map[e.province].events.push(e)
     })
-    return Object.values(map)
+    return Object.values(map).map((prov) => ({
+      ...prov,
+      count: prov.events.length,
+    }))
   }, [publicEvents])
 
   const handleProvinceClick = (province) => {

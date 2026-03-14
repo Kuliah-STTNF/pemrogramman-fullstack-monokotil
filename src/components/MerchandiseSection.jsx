@@ -26,6 +26,7 @@ function MerchandiseSection({ event }) {
       id: merch.id,
       eventId: event.id,
       eventTitle: event.title,
+      organizerName: event.organizer || 'Unknown Organizer',
       name: merch.name,
       price: merch.price,
       image: merch.image,

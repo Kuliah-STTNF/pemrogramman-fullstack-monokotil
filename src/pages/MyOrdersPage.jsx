@@ -7,17 +7,19 @@ import { useAuth } from '../context/AuthContext'
 function MyOrdersPage() {
   const { getUserOrders, isAuthenticated, requestRefund, getRefundByOrderId } = useAuth()
   const [refundModal, setRefundModal] = useState(null)
+  const [refundItemId, setRefundItemId] = useState('')
   const [refundReason, setRefundReason] = useState('')
   const [refundMessage, setRefundMessage] = useState(null)
 
   const handleRequestRefund = async (orderId) => {
-    if (!refundReason.trim()) return
-    const result = await requestRefund(orderId, refundReason)
+    if (!refundReason.trim() || !refundItemId) return
+    const result = await requestRefund(orderId, refundReason, Number(refundItemId))
     setRefundMessage(result)
     if (result.success) {
       setTimeout(() => {
         setRefundModal(null)
         setRefundReason('')
+        setRefundItemId('')
         setRefundMessage(null)
       }, 1500)
     }
@@ -73,6 +75,13 @@ function MyOrdersPage() {
             {orders.map((order, index) => {
               const tickets = order.items.filter(i => i.itemType === 'ticket')
               const merch = order.items.filter(i => i.itemType === 'merch')
+              const orderRefunds = getRefundByOrderId(order.id)
+              const pendingRefundExists = orderRefunds.some(r => r.status === 'pending')
+              const refundedItemIds = new Set(
+                orderRefunds
+                  .filter(r => r.status === 'approved')
+                  .map(r => Number(r.itemId))
+              )
 
               return (
                 <motion.div
@@ -117,8 +126,7 @@ function MyOrdersPage() {
                          order.status === 'cancelled' ? 'Cancelled' : order.status}
                       </span>
                       {(() => {
-                        const refund = getRefundByOrderId(order.id)
-                        if (refund && refund.status === 'pending') {
+                        if (pendingRefundExists) {
                           return (
                             <span className="text-xs font-semibold px-3 py-1 rounded-full text-yellow-300"
                               style={{ background: 'rgba(234,179,8,0.15)' }}
@@ -147,7 +155,12 @@ function MyOrdersPage() {
                               <p className="text-white text-sm m-0">{item.eventTitle}</p>
                               <p className="text-white/40 text-xs m-0">{item.name} x{item.quantity}</p>
                             </div>
-                            <span className="text-white/70 text-sm">${(item.price * item.quantity).toFixed(2)}</span>
+                            <div className="flex items-center gap-2">
+                              {refundedItemIds.has(Number(item.id)) && (
+                                <span className="text-[10px] px-2 py-0.5 rounded-full text-blue-300" style={{ background: 'rgba(59,130,246,0.15)' }}>Refunded</span>
+                              )}
+                              <span className="text-white/70 text-sm">${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -167,7 +180,12 @@ function MyOrdersPage() {
                                 {[item.size, item.color].filter(Boolean).join(' / ')} x{item.quantity}
                               </p>
                             </div>
-                            <span className="text-white/70 text-sm">${(item.price * item.quantity).toFixed(2)}</span>
+                            <div className="flex items-center gap-2">
+                              {refundedItemIds.has(Number(item.id)) && (
+                                <span className="text-[10px] px-2 py-0.5 rounded-full text-blue-300" style={{ background: 'rgba(59,130,246,0.15)' }}>Refunded</span>
+                              )}
+                              <span className="text-white/70 text-sm">${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -182,9 +200,14 @@ function MyOrdersPage() {
                     >
                       View Order Details →
                     </Link>
-                    {order.status === 'confirmed' && !getRefundByOrderId(order.id) && (
+                    {order.status === 'confirmed' && (
                       <button
-                        onClick={() => setRefundModal(order.id)}
+                        onClick={() => {
+                          setRefundModal(order.id)
+                          setRefundItemId('')
+                          setRefundReason('')
+                          setRefundMessage(null)
+                        }}
                         className="flex items-center gap-1.5 text-red-400 hover:text-red-300 text-sm font-medium cursor-pointer bg-transparent border-none transition-colors"
                       >
                         <IoArrowUndoOutline />
@@ -220,6 +243,27 @@ function MyOrdersPage() {
             <h3 className="text-white font-bold text-lg mb-1">Request Refund</h3>
             <p className="text-white/40 text-sm mb-4">Order: <span className="text-orange-400 font-mono">{refundModal}</span></p>
 
+            <label className="text-white/50 text-xs mb-1.5 block">Select item to refund</label>
+            <select
+              value={refundItemId}
+              onChange={(e) => setRefundItemId(e.target.value)}
+              className="w-full bg-transparent text-white text-sm py-3 px-4 rounded-xl outline-none mb-4"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+            >
+              <option value="" style={{ background: '#0f1224' }}>Choose item</option>
+              {(orders.find(o => o.id === refundModal)?.items || [])
+                .filter(item => {
+                  const refunds = getRefundByOrderId(refundModal)
+                  const approvedOrPending = refunds.some(r => Number(r.itemId) === Number(item.id) && (r.status === 'pending' || r.status === 'approved'))
+                  return !approvedOrPending
+                })
+                .map(item => (
+                  <option key={item.id} value={item.id} style={{ background: '#0f1224' }}>
+                    {item.eventTitle ? `${item.eventTitle} - ` : ''}{item.name} x{item.quantity}
+                  </option>
+                ))}
+            </select>
+
             <div className="mb-4 p-3 rounded-xl" style={{ background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.2)' }}>
               <p className="text-yellow-300 text-xs m-0">
                 Refunds are processed within 3-5 business days. Please note that service fees are non-refundable.
@@ -252,11 +296,11 @@ function MyOrdersPage() {
               </button>
               <button
                 onClick={() => handleRequestRefund(refundModal)}
-                disabled={!refundReason.trim()}
+                disabled={!refundReason.trim() || !refundItemId}
                 className="flex-1 py-3 rounded-xl text-sm font-semibold text-white cursor-pointer border-none transition-all"
                 style={{
-                  background: refundReason.trim() ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'rgba(255,255,255,0.06)',
-                  opacity: refundReason.trim() ? 1 : 0.5,
+                  background: refundReason.trim() && refundItemId ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'rgba(255,255,255,0.06)',
+                  opacity: refundReason.trim() && refundItemId ? 1 : 0.5,
                 }}
               >
                 Submit Refund Request

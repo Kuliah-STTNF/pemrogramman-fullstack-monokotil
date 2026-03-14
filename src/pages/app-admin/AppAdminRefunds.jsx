@@ -95,10 +95,11 @@ function AppAdminRefunds() {
         <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-white/30 text-[11px] font-semibold uppercase tracking-wider" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <div className="col-span-2">Refund ID</div>
           <div className="col-span-2">Order</div>
+          <div className="col-span-2">Item</div>
           <div className="col-span-2">Customer</div>
-          <div className="col-span-2">Reason</div>
+          <div className="col-span-1">Reason</div>
           <div className="col-span-1">Status</div>
-          <div className="col-span-3 text-right">Actions</div>
+          <div className="col-span-2 text-right">Actions</div>
         </div>
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
@@ -120,12 +121,16 @@ function AppAdminRefunds() {
                     <div className="text-white text-sm">{refund.orderId}</div>
                     <div className="text-white/30 text-[11px]">${(order?.total || 0).toFixed(2)}</div>
                   </div>
+                  <div className="col-span-2">
+                    <div className="text-white/70 text-xs truncate">{refund.item?.name || '-'}</div>
+                    <div className="text-white/30 text-[11px] truncate">{refund.eventTitle || '-'}</div>
+                  </div>
                   <div className="col-span-2 text-white/50 text-sm">{getUserName(refund.userId)}</div>
-                  <div className="col-span-2 text-white/30 text-xs truncate">{refund.reason || '-'}</div>
+                  <div className="col-span-1 text-white/30 text-xs truncate">{refund.reason || '-'}</div>
                   <div className="col-span-1">
                     <span className={`text-[11px] font-semibold px-2 py-1 rounded-full ${statusColors[refund.status]}`}>{refund.status}</span>
                   </div>
-                  <div className="col-span-3 flex items-center justify-end gap-1.5">
+                  <div className="col-span-2 flex items-center justify-end gap-1.5">
                     <button onClick={() => setDetailModal(refund)}
                       className="w-8 h-8 rounded-lg flex items-center justify-center text-white/30 hover:text-white hover:bg-white/5 transition-all border-none bg-transparent cursor-pointer">
                       <IoEyeOutline className="text-base" />
@@ -167,6 +172,8 @@ function AppAdminRefunds() {
                 <div className="flex justify-between"><span className="text-white/40 text-sm">Refund ID</span><span className="text-white font-mono text-sm">{detailModal.id}</span></div>
                 <div className="flex justify-between"><span className="text-white/40 text-sm">Order ID</span><span className="text-white text-sm">{detailModal.orderId}</span></div>
                 <div className="flex justify-between"><span className="text-white/40 text-sm">Customer</span><span className="text-white text-sm">{getUserName(detailModal.userId)}</span></div>
+                <div className="flex justify-between"><span className="text-white/40 text-sm">Event</span><span className="text-white text-sm text-right">{detailModal.eventTitle || '-'}</span></div>
+                <div className="flex justify-between"><span className="text-white/40 text-sm">Refund Item</span><span className="text-white text-sm text-right">{detailModal.item?.name || '-'}</span></div>
                 <div className="flex justify-between"><span className="text-white/40 text-sm">Order Total</span><span className="text-white text-sm">${(getOrder(detailModal.orderId)?.total || 0).toFixed(2)}</span></div>
                 <div className="flex justify-between">
                   <span className="text-white/40 text-sm">Status</span>

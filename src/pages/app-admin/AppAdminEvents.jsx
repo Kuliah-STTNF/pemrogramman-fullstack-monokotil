@@ -115,7 +115,7 @@ function AppAdminEvents() {
         ) : (
           <div className="divide-y divide-white/5">
             {filtered.map(event => (
-              <div key={event.id} className="grid grid-cols-[2fr_1fr_1fr_1fr_100px_60px] gap-4 px-6 py-3.5 items-center hover:bg-white/[0.02] transition-colors">
+              <div key={event.id} className="grid grid-cols-[2fr_1fr_1fr_1fr_100px_60px] gap-4 px-6 py-3.5 items-center hover:bg-white/2 transition-colors">
                 {/* Event */}
                 <div className="flex items-center gap-3 min-w-0">
                   {event.thumbnail || event.image ? (
@@ -130,7 +130,10 @@ function AppAdminEvents() {
                 </div>
 
                 {/* Organizer */}
-                <div className="text-white/50 text-sm truncate">{getUserName(event.createdBy)}</div>
+                <div className="min-w-0">
+                  <div className="text-white/70 text-sm truncate">{event.organizer || 'Not set'}</div>
+                  <div className="text-white/30 text-[11px] truncate">Owner: {getUserName(event.createdBy)}</div>
+                </div>
 
                 {/* Category */}
                 <div className="text-white/40 text-sm">{event.category}</div>
@@ -211,7 +214,7 @@ function AppAdminEvents() {
         {deleteModal && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+            className="fixed inset-0 z-100 flex items-center justify-center px-4"
             style={{ background: 'rgba(0,0,0,0.6)' }}
             onClick={() => setDeleteModal(null)}
           >

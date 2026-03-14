@@ -8,6 +8,8 @@ function OrderConfirmationPage() {
   const { orders } = useAuth()
 
   const order = orders.find(o => o.id === orderId)
+  const orderItems = Array.isArray(order?.items) ? order.items : []
+  const customer = order?.customerInfo || order?.customer || { name: '-', email: '-' }
 
   if (!order) {
     return (
@@ -23,8 +25,8 @@ function OrderConfirmationPage() {
     )
   }
 
-  const tickets = order.items.filter(item => item.itemType === 'ticket')
-  const merch = order.items.filter(item => item.itemType === 'merch')
+  const tickets = orderItems.filter(item => item.itemType === 'ticket')
+  const merch = orderItems.filter(item => item.itemType === 'merch')
 
   return (
     <div className="bg-[#0B0D1A] min-h-screen pt-24">
@@ -74,11 +76,11 @@ function OrderConfirmationPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div>
                 <p className="text-white/40 text-xs mb-1 m-0">Customer</p>
-                <p className="text-white text-sm font-medium m-0">{order.customerInfo.name}</p>
+                <p className="text-white text-sm font-medium m-0">{customer.name}</p>
               </div>
               <div>
                 <p className="text-white/40 text-xs mb-1 m-0">Email</p>
-                <p className="text-white text-sm font-medium m-0">{order.customerInfo.email}</p>
+                <p className="text-white text-sm font-medium m-0">{customer.email}</p>
               </div>
               <div>
                 <p className="text-white/40 text-xs mb-1 m-0">Date</p>
@@ -152,21 +154,21 @@ function OrderConfirmationPage() {
             <div className="border-t border-white/10 pt-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-white/50">Subtotal</span>
-                <span className="text-white">${order.subtotal.toFixed(2)}</span>
+                <span className="text-white">${Number(order.subtotal || 0).toFixed(2)}</span>
               </div>
-              {order.voucherDiscount > 0 && (
+              {Number(order.voucherDiscount || 0) > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-emerald-400">Voucher ({order.voucherCode})</span>
-                  <span className="text-emerald-400">-${order.voucherDiscount.toFixed(2)}</span>
+                  <span className="text-emerald-400">-${Number(order.voucherDiscount || 0).toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-white/50">Service Fee</span>
-                <span className="text-white">${order.serviceFee.toFixed(2)}</span>
+                <span className="text-white">${Number(order.serviceFee || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-white/10">
                 <span className="text-white font-bold text-lg">Total Paid</span>
-                <span className="text-orange-400 font-bold text-xl">${order.grandTotal.toFixed(2)}</span>
+                <span className="text-orange-400 font-bold text-xl">${Number(order.grandTotal || order.total || 0).toFixed(2)}</span>
               </div>
             </div>
           </motion.div>
@@ -183,7 +185,7 @@ function OrderConfirmationPage() {
               <IoDownloadOutline className="text-3xl text-indigo-400 mx-auto mb-3" />
               <h3 className="text-white font-bold mb-2">E-Tickets Sent!</h3>
               <p className="text-indigo-300 text-sm m-0">
-                Your e-tickets have been sent to <strong>{order.customerInfo.email}</strong>.
+                Your e-tickets have been sent to <strong>{customer.email}</strong>.
                 Please present them at the venue entrance.
               </p>
             </motion.div>

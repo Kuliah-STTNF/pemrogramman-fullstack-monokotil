@@ -26,6 +26,7 @@ function TicketSelection({ event }) {
       id: ticket.id,
       eventId: event.id,
       eventTitle: event.title,
+      organizerName: event.organizer || 'Unknown Organizer',
       eventDate: event.date,
       eventImage: event.thumbnail,
       name: ticket.type,

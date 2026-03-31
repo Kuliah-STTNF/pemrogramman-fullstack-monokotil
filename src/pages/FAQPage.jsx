@@ -3,84 +3,84 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { IoChevronDown, IoSearch } from 'react-icons/io5'
 
 const faqCategories = [
-  { id: 'general', label: 'General' },
-  { id: 'tickets', label: 'Tickets & Booking' },
-  { id: 'payment', label: 'Payment' },
-  { id: 'account', label: 'Account' },
+  { id: 'general', label: 'Umum' },
+  { id: 'tickets', label: 'Tiket & Pemesanan' },
+  { id: 'payment', label: 'Pembayaran' },
+  { id: 'account', label: 'Akun' },
 ]
 
 const faqs = [
   {
     id: 1,
     category: 'general',
-    question: 'What is Monora?',
-    answer: 'Monora is a comprehensive event ticketing platform that helps you discover, book, and manage tickets for concerts, festivals, sports events, comedy shows, and more. We connect event-goers with the best live experiences in their city and beyond.',
+    question: 'Apa itu Monora?',
+    answer: 'Monora adalah platform tiket acara komprehensif yang membantu Anda menemukan, memesan, dan mengelola tiket untuk konser, festival, acara olahraga, pertunjukan komedi, dan lainnya. Kami menghubungkan pengunjung acara dengan pengalaman live terbaik di kota mereka dan sekitarnya.',
   },
   {
     id: 2,
     category: 'general',
-    question: 'How do I find events near me?',
-    answer: 'You can use our search bar on the homepage to search by location, date, or event name. You can also browse by category — Concerts, Festivals, Sports, or Comedy — to find events that match your interests.',
+    question: 'Bagaimana cara menemukan acara di dekat saya?',
+    answer: 'Anda dapat menggunakan bilah pencarian di beranda untuk mencari berdasarkan lokasi, tanggal, atau nama acara. Anda juga dapat menjelajahi berdasarkan kategori — Konser, Festival, Olahraga, atau Komedi — untuk menemukan acara yang sesuai minat Anda.',
   },
   {
     id: 3,
     category: 'general',
-    question: 'Is Monora available in my city?',
-    answer: 'Monora is currently available in over 120 cities worldwide. We\'re constantly expanding our coverage. Check our Events page and enter your location to see what\'s happening near you.',
+    question: 'Apakah Monora tersedia di kota saya?',
+    answer: 'Monora saat ini tersedia di lebih dari 120 kota di seluruh dunia. Kami terus memperluas jangkauan kami. Cek halaman Acara dan masukkan lokasi Anda untuk melihat apa yang sedang berlangsung di dekat Anda.',
   },
   {
     id: 4,
     category: 'tickets',
-    question: 'How do I purchase tickets?',
-    answer: 'Simply find an event you\'re interested in, select the number of tickets, choose your seating preference (if applicable), and proceed to checkout. You can pay using credit/debit cards, PayPal, or other supported payment methods.',
+    question: 'Bagaimana cara membeli tiket?',
+    answer: 'Cukup temukan acara yang Anda minati, pilih jumlah tiket, pilih preferensi tempat duduk (jika berlaku), dan lanjutkan ke checkout. Anda dapat membayar menggunakan kartu kredit/debit, PayPal, atau metode pembayaran lain yang didukung.',
   },
   {
     id: 5,
     category: 'tickets',
-    question: 'Can I get a refund on my tickets?',
-    answer: 'Refund policies vary by event. Most events offer full refunds up to 48 hours before the event date. Some events may have a no-refund policy. You can check the specific refund policy on the event detail page before purchasing.',
+    question: 'Bisakah saya mendapatkan pengembalian dana untuk tiket saya?',
+    answer: 'Kebijakan pengembalian dana bervariasi tergantung acara. Sebagian besar acara menawarkan pengembalian dana penuh hingga 48 jam sebelum tanggal acara. Beberapa acara mungkin memiliki kebijakan tanpa pengembalian dana. Anda dapat memeriksa kebijakan pengembalian dana spesifik di halaman detail acara sebelum membeli.',
   },
   {
     id: 6,
     category: 'tickets',
-    question: 'How will I receive my tickets?',
-    answer: 'After purchasing, your e-tickets will be sent to your registered email and will also be available in your Monora account under "My Tickets". You can show the QR code on your phone at the venue entrance.',
+    question: 'Bagaimana saya akan menerima tiket saya?',
+    answer: 'Setelah membeli, e-tiket Anda akan dikirim ke email terdaftar dan juga tersedia di akun Monora Anda di bagian "Tiket Saya". Anda dapat menunjukkan kode QR di ponsel Anda di pintu masuk venue.',
   },
   {
     id: 7,
     category: 'tickets',
-    question: 'Can I transfer my ticket to someone else?',
-    answer: 'Yes! You can transfer tickets to another person through your account. Go to "My Tickets", select the ticket, and use the "Transfer" option. The recipient will receive the ticket via email.',
+    question: 'Bisakah saya mentransfer tiket saya ke orang lain?',
+    answer: 'Ya! Anda dapat mentransfer tiket ke orang lain melalui akun Anda. Buka "Tiket Saya", pilih tiket, dan gunakan opsi "Transfer". Penerima akan menerima tiket melalui email.',
   },
   {
     id: 8,
     category: 'payment',
-    question: 'What payment methods are accepted?',
-    answer: 'We accept Visa, Mastercard, American Express, PayPal, Apple Pay, and Google Pay. All transactions are secured with industry-standard encryption.',
+    question: 'Metode pembayaran apa yang diterima?',
+    answer: 'Kami menerima Visa, Mastercard, American Express, PayPal, Apple Pay, dan Google Pay. Semua transaksi diamankan dengan enkripsi standar industri.',
   },
   {
     id: 9,
     category: 'payment',
-    question: 'Are there any additional fees?',
-    answer: 'A small service fee is added to each ticket purchase to cover platform and processing costs. The total amount including fees is always shown before you confirm your purchase — no hidden charges.',
+    question: 'Apakah ada biaya tambahan?',
+    answer: 'Biaya layanan kecil ditambahkan pada setiap pembelian tiket untuk menutupi biaya platform dan pemrosesan. Jumlah total termasuk biaya selalu ditampilkan sebelum Anda mengonfirmasi pembelian — tanpa biaya tersembunyi.',
   },
   {
     id: 10,
     category: 'payment',
-    question: 'Is my payment information secure?',
-    answer: 'Absolutely. We use 256-bit SSL encryption and are PCI DSS compliant. We never store your full credit card information on our servers.',
+    question: 'Apakah informasi pembayaran saya aman?',
+    answer: 'Tentu saja. Kami menggunakan enkripsi SSL 256-bit dan sesuai standar PCI DSS. Kami tidak pernah menyimpan informasi kartu kredit lengkap Anda di server kami.',
   },
   {
     id: 11,
     category: 'account',
-    question: 'How do I create an account?',
-    answer: 'Click the "Login / Sign Up" button at the top of the page. You can create an account using your email address, or sign up quickly with Google or Apple.',
+    question: 'Bagaimana cara membuat akun?',
+    answer: 'Klik tombol "Masuk / Daftar" di bagian atas halaman. Anda dapat membuat akun menggunakan alamat email, atau mendaftar cepat dengan Google atau Apple.',
   },
   {
     id: 12,
     category: 'account',
-    question: 'I forgot my password. How do I reset it?',
-    answer: 'Click "Login / Sign Up", then select "Forgot Password". Enter your email address, and we\'ll send you a link to reset your password. The link expires after 24 hours.',
+    question: 'Saya lupa kata sandi. Bagaimana cara meresetnya?',
+    answer: 'Klik "Masuk / Daftar", lalu pilih "Lupa Kata Sandi". Masukkan alamat email Anda, dan kami akan mengirimkan link untuk mereset kata sandi Anda. Link tersebut kedaluwarsa setelah 24 jam.',
   },
 ]
 
@@ -158,7 +158,7 @@ function FAQPage() {
             animate={{ opacity: 1 }}
             className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-4 block"
           >
-            Help Center
+            Pusat Bantuan
           </motion.span>
           <motion.h1
             initial={{ y: 30, opacity: 0 }}
@@ -167,7 +167,7 @@ function FAQPage() {
             className="text-4xl md:text-6xl font-extrabold text-white mb-6"
             style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
           >
-            Frequently Asked Questions
+            Pertanyaan yang Sering Diajukan
           </motion.h1>
           <motion.p
             initial={{ y: 20, opacity: 0 }}
@@ -175,7 +175,7 @@ function FAQPage() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-white/50 text-lg max-w-xl mx-auto leading-relaxed mb-8"
           >
-            Find answers to common questions about Monora, tickets, payments, and your account.
+            Temukan jawaban untuk pertanyaan umum tentang Monora, tiket, pembayaran, dan akun Anda.
           </motion.p>
 
           {/* Search */}
@@ -193,7 +193,7 @@ function FAQPage() {
             <IoSearch className="text-white/50 text-lg shrink-0" />
             <input
               type="text"
-              placeholder="Search questions..."
+              placeholder="Cari pertanyaan..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-transparent border-none outline-none text-white text-sm placeholder-white/40 w-full"
@@ -211,9 +211,8 @@ function FAQPage() {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-5 py-2 rounded-full text-sm font-medium cursor-pointer transition-all border-none ${
-                  activeCategory === cat.id ? 'text-white' : 'text-white/50 hover:text-white'
-                }`}
+                className={`px-5 py-2 rounded-full text-sm font-medium cursor-pointer transition-all border-none ${activeCategory === cat.id ? 'text-white' : 'text-white/50 hover:text-white'
+                  }`}
                 style={{
                   background: activeCategory === cat.id
                     ? 'linear-gradient(135deg, #f97316, #ea580c)'
@@ -232,7 +231,7 @@ function FAQPage() {
               filteredFaqs.map((faq) => <FAQItem key={faq.id} faq={faq} />)
             ) : (
               <div className="text-center py-12">
-                <p className="text-white/30 text-lg">No questions found matching your search.</p>
+                <p className="text-white/30 text-lg">Tidak ada pertanyaan yang sesuai dengan pencarian Anda.</p>
               </div>
             )}
           </div>
@@ -245,9 +244,9 @@ function FAQPage() {
             className="mt-16 text-center p-8 rounded-2xl"
             style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
           >
-            <h3 className="text-xl font-bold text-white mb-3">Still have questions?</h3>
+            <h3 className="text-xl font-bold text-white mb-3">Masih punya pertanyaan?</h3>
             <p className="text-white/40 text-sm mb-5">
-              Can't find what you're looking for? Reach out to our support team.
+              Tidak menemukan yang Anda cari? Hubungi tim dukungan kami.
             </p>
             <motion.a
               href="/contact"
@@ -259,7 +258,7 @@ function FAQPage() {
                 boxShadow: '0 4px 15px rgba(249,115,22,0.3)',
               }}
             >
-              Contact Support
+              Hubungi Dukungan
             </motion.a>
           </motion.div>
         </div>

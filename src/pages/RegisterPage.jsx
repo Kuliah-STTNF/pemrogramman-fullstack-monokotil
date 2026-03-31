@@ -19,12 +19,12 @@ function RegisterPage() {
 
   const validate = () => {
     const errs = {}
-    if (!form.name.trim()) errs.name = 'Name is required'
-    if (!form.email.trim()) errs.email = 'Email is required'
-    if (form.email && !/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Invalid email'
-    if (!form.password) errs.password = 'Password is required'
-    if (form.password.length < 6) errs.password = 'Min 6 characters'
-    if (form.password !== form.confirmPassword) errs.confirmPassword = 'Passwords do not match'
+    if (!form.name.trim()) errs.name = 'Nama wajib diisi'
+    if (!form.email.trim()) errs.email = 'Email wajib diisi'
+    if (form.email && !/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Email tidak valid'
+    if (!form.password) errs.password = 'Kata sandi wajib diisi'
+    if (form.password.length < 6) errs.password = 'Minimal 6 karakter'
+    if (form.password !== form.confirmPassword) errs.confirmPassword = 'Kata sandi tidak cocok'
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -67,8 +67,8 @@ function RegisterPage() {
             </div>
             <span className="text-white font-extrabold text-2xl">Monora</span>
           </Link>
-          <h1 className="text-2xl font-bold text-white mb-2">Create Account</h1>
-          <p className="text-white/50 text-sm">Join Monora to start buying tickets</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Buat Akun</h1>
+          <p className="text-white/50 text-sm">Bergabung dengan Monora untuk mulai membeli tiket</p>
         </div>
 
         {/* Form */}
@@ -80,7 +80,7 @@ function RegisterPage() {
               <div className="relative">
                 <IoPersonOutline className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
                 <input
-                  type="text" name="name" placeholder="Full Name"
+                  type="text" name="name" placeholder="Nama Lengkap"
                   value={form.name} onChange={handleChange}
                   className={inputClass}
                   style={{ background: 'rgba(255,255,255,0.06)', border: errors.name ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.1)' }}
@@ -93,7 +93,7 @@ function RegisterPage() {
               <div className="relative">
                 <IoMailOutline className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
                 <input
-                  type="email" name="email" placeholder="Email address"
+                  type="email" name="email" placeholder="Alamat email"
                   value={form.email} onChange={handleChange}
                   className={inputClass}
                   style={{ background: 'rgba(255,255,255,0.06)', border: errors.email ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.1)' }}
@@ -106,7 +106,7 @@ function RegisterPage() {
               <div className="relative">
                 <IoCallOutline className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
                 <input
-                  type="tel" name="phone" placeholder="Phone number (optional)"
+                  type="tel" name="phone" placeholder="Nomor telepon (opsional)"
                   value={form.phone} onChange={handleChange}
                   className={inputClass}
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
@@ -129,13 +129,13 @@ function RegisterPage() {
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="customer" style={{ background: '#1a1a2e' }}>Customer</option>
-                  <option value="event_admin" style={{ background: '#1a1a2e' }}>Event Organizer</option>
+                  <option value="customer" style={{ background: '#1a1a2e' }}>Pelanggan</option>
+                  <option value="event_admin" style={{ background: '#1a1a2e' }}>Penyelenggara Acara</option>
                 </select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none text-xs">▼</div>
               </div>
               <p className="text-white/30 text-[11px] mt-1 ml-1">
-                {form.role === 'event_admin' ? 'You can create and manage events' : 'Browse and purchase event tickets'}
+                {form.role === 'event_admin' ? 'Anda dapat membuat dan mengelola acara' : 'Jelajahi dan beli tiket acara'}
               </p>
             </div>
 
@@ -144,7 +144,7 @@ function RegisterPage() {
                 <IoLockClosedOutline className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  name="password" placeholder="Password"
+                  name="password" placeholder="Kata sandi"
                   value={form.password} onChange={handleChange}
                   className={inputClass}
                   style={{ background: 'rgba(255,255,255,0.06)', border: errors.password ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.1)' }}
@@ -165,7 +165,7 @@ function RegisterPage() {
                 <IoLockClosedOutline className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  name="confirmPassword" placeholder="Confirm password"
+                  name="confirmPassword" placeholder="Konfirmasi kata sandi"
                   value={form.confirmPassword} onChange={handleChange}
                   className={inputClass}
                   style={{ background: 'rgba(255,255,255,0.06)', border: errors.confirmPassword ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.1)' }}
@@ -184,14 +184,14 @@ function RegisterPage() {
                 boxShadow: '0 4px 15px rgba(249,115,22,0.3)',
               }}
             >
-              Create Account
+              Buat Akun
             </motion.button>
           </form>
 
           <p className="text-center text-white/40 text-sm mt-6 mb-0">
-            Already have an account?{' '}
+            Sudah punya akun?{' '}
             <Link to="/login" className="text-orange-400 hover:text-orange-300 no-underline font-medium">
-              Sign In
+              Masuk
             </Link>
           </p>
         </div>

@@ -50,16 +50,16 @@ function CartPage() {
           transition={{ duration: 0.5 }}
         >
           <IoCartOutline className="text-6xl text-white/20 mb-4 mx-auto" />
-          <h1 className="text-3xl font-bold text-white mb-3">Your Cart is Empty</h1>
+          <h1 className="text-3xl font-bold text-white mb-3">Keranjang Anda Kosong</h1>
           <p className="text-white/50 mb-8 max-w-md">
-            Looks like you haven't added any tickets or merchandise yet. Browse our events to find something you love!
+            Sepertinya Anda belum menambahkan tiket atau merchandise. Jelajahi acara kami untuk menemukan sesuatu yang Anda sukai!
           </p>
           <Link
             to="/events"
             className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-full text-sm font-semibold no-underline"
             style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
           >
-            Browse Events
+            Jelajahi Acara
             <IoArrowForward />
           </Link>
         </motion.div>
@@ -82,9 +82,9 @@ function CartPage() {
             className="text-3xl md:text-4xl font-extrabold text-white mb-2"
             style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
           >
-            Shopping Cart
+            Keranjang Belanja
           </motion.h1>
-          <p className="text-white/50">{itemCount} item{itemCount !== 1 ? 's' : ''} in your cart, grouped by organizer</p>
+          <p className="text-white/50">{itemCount} item di keranjang Anda, dikelompokkan berdasarkan penyelenggara</p>
         </div>
       </section>
 
@@ -104,15 +104,15 @@ function CartPage() {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <IoStorefrontOutline className="text-orange-400" />
-                    <span className="text-white/40 text-xs uppercase tracking-[0.2em]">Organizer</span>
+                    <span className="text-white/40 text-xs uppercase tracking-[0.2em]">Penyelenggara</span>
                   </div>
                   <h2 className="text-white text-xl font-bold m-0">{group.organizerName}</h2>
-                  <p className="text-white/40 text-sm mt-1 mb-0">{group.quantity} item{group.quantity !== 1 ? 's' : ''} ready for checkout</p>
+                  <p className="text-white/40 text-sm mt-1 mb-0">{group.quantity} item siap untuk checkout</p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                   <div className="text-right">
-                    <div className="text-white/40 text-xs">Group total</div>
+                    <div className="text-white/40 text-xs">Total grup</div>
                     <div className="text-white font-bold text-2xl">${group.total.toFixed(2)}</div>
                   </div>
                   <Link
@@ -249,7 +249,7 @@ function CartPage() {
                 </div>
 
                 <div className="p-6 xl:border-l border-white/6" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  <h3 className="text-lg font-bold text-white mb-4">Organizer Summary</h3>
+                  <h3 className="text-lg font-bold text-white mb-4">Ringkasan Penyelenggara</h3>
                   <div className="space-y-3 mb-6">
                     {group.tickets.length > 0 && (
                       <div className="flex justify-between text-sm">
@@ -264,7 +264,7 @@ function CartPage() {
                       </div>
                     )}
                     <div className="flex justify-between text-sm">
-                      <span className="text-white/50">Service Fee</span>
+                      <span className="text-white/50">Biaya Layanan</span>
                       <span className="text-white">${group.serviceFee.toFixed(2)}</span>
                     </div>
                   </div>
@@ -274,7 +274,7 @@ function CartPage() {
                       <span className="text-white font-bold">Total</span>
                       <span className="text-white font-bold text-xl">${group.total.toFixed(2)}</span>
                     </div>
-                    <p className="text-white/30 text-xs mt-1">Including 5% service fee for this organizer only</p>
+                    <p className="text-white/30 text-xs mt-1">Termasuk biaya layanan 5% hanya untuk penyelenggara ini</p>
                   </div>
 
                   <Link
@@ -292,13 +292,13 @@ function CartPage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <Link to="/events" className="text-white/50 hover:text-white text-sm no-underline transition-colors">
-              Continue Shopping
+              Lanjut Belanja
             </Link>
             <button
               onClick={clearCart}
               className="text-red-400 hover:text-red-300 text-sm font-medium cursor-pointer bg-transparent border-none transition-colors"
             >
-              Clear entire cart
+              Kosongkan seluruh keranjang
             </button>
           </div>
         </div>

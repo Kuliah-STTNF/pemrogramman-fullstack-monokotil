@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
+import logo from '../assets/logo-monora.png'
 
 const footerLinks = [
-  { name: 'Home', path: '/' },
-  { name: 'Events', path: '/events' },
-  { name: 'About', path: '/about' },
-  { name: 'Contact', path: '/contact' },
+  { name: 'Beranda', path: '/' },
+  { name: 'Acara', path: '/events' },
+  { name: 'Tentang', path: '/about' },
+  { name: 'Kontak', path: '/contact' },
 ]
 
 function Footer() {
@@ -15,24 +16,20 @@ function Footer() {
           {/* Logo & Description */}
           <div className="flex flex-col items-start gap-4">
             <Link to="/" className="flex items-center gap-2.5 mb-4 no-underline">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #06b6d4, #3b82f6)' }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" fill="white" />
-                </svg>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center">
+                <img src={logo} alt="Logo Monora" className='w-full h-full object-cover' />
               </div>
-              <span className="text-white font-extrabold text-xl tracking-tight">Monora</span>
+              <span style={{fontFamily: "'Playfair Display', serif", fontStyle: 'italic'}} className="text-white font-extrabold text-xl tracking-tight">Monora</span>
             </Link>
             <p className="text-white/40 text-xl max-w-xs leading-relaxed">
-              Your one-stop destination for discovering and booking the best events, concerts, and festivals.
+              Destinasi terbaik Anda untuk menemukan dan memesan acara, konser, dan festival terbaik.
             </p>
           </div>
 
           {/* Links */}
           <div className="flex">
             <div>
-              <h4 className="text-white font-semibold text-xl mb-4">Quick Links</h4>
+              <h4 className="text-white font-semibold text-xl mb-4">Tautan Cepat</h4>
               <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
                 {footerLinks.map((link) => (
                   <li key={link.name}>
@@ -79,7 +76,7 @@ function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-white/5 mt-8 pt-6 text-center">
           <p className="text-white/30 text-xs">
-            © 2026 Monora. All rights reserved.
+            © 2026 Monora. Hak cipta dilindungi.
           </p>
         </div>
       </div>

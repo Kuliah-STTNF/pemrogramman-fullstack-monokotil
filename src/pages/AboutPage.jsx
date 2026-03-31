@@ -2,35 +2,35 @@ import { motion } from 'framer-motion'
 import { IoMusicalNotes, IoPeople, IoGlobe, IoShield } from 'react-icons/io5'
 
 const stats = [
-  { label: 'Events Hosted', value: '5,000+' },
-  { label: 'Happy Customers', value: '1.2M+' },
-  { label: 'Cities Covered', value: '120+' },
-  { label: 'Partner Venues', value: '800+' },
+  { label: 'Acara Diselenggarakan', value: '5.000+' },
+  { label: 'Pelanggan Puas', value: '1,2Jt+' },
+  { label: 'Kota Terjangkau', value: '120+' },
+  { label: 'Venue Partner', value: '800+' },
 ]
 
 const values = [
   {
     icon: IoMusicalNotes,
-    title: 'Curated Experiences',
-    description: 'We handpick the best events to ensure you always have an unforgettable experience.',
+    title: 'Pengalaman Terkurasi',
+    description: 'Kami memilih acara terbaik untuk memastikan Anda selalu mendapatkan pengalaman tak terlupakan.',
     gradient: 'linear-gradient(135deg, #6366f1, #4f46e5)',
   },
   {
     icon: IoPeople,
-    title: 'Community First',
-    description: 'Building connections through shared experiences is at the heart of everything we do.',
+    title: 'Komunitas Utama',
+    description: 'Membangun koneksi melalui pengalaman bersama adalah inti dari semua yang kami lakukan.',
     gradient: 'linear-gradient(135deg, #06b6d4, #0891b2)',
   },
   {
     icon: IoGlobe,
-    title: 'Global Reach',
-    description: 'From local gigs to international festivals, we bring events from around the world.',
+    title: 'Jangkauan Global',
+    description: 'Dari pertunjukan lokal hingga festival internasional, kami menghadirkan acara dari seluruh dunia.',
     gradient: 'linear-gradient(135deg, #f97316, #ea580c)',
   },
   {
     icon: IoShield,
-    title: 'Secure & Trusted',
-    description: 'Your transactions and data are protected with industry-leading security measures.',
+    title: 'Aman & Terpercaya',
+    description: 'Transaksi dan data Anda dilindungi dengan langkah keamanan terdepan.',
     gradient: 'linear-gradient(135deg, #ec4899, #db2777)',
   },
 ]
@@ -38,22 +38,22 @@ const values = [
 const team = [
   {
     name: 'Sarah Johnson',
-    role: 'CEO & Founder',
+    role: 'CEO & Pendiri',
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop&crop=face',
   },
   {
     name: 'Michael Chen',
-    role: 'CTO',
+    role: 'Direktur Teknologi',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face',
   },
   {
     name: 'Emily Davis',
-    role: 'Head of Events',
+    role: 'Kepala Acara',
     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face',
   },
   {
     name: 'David Kim',
-    role: 'Lead Designer',
+    role: 'Desainer Utama',
     image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face',
   },
 ]
@@ -78,7 +78,7 @@ function AboutPage() {
             animate={{ opacity: 1 }}
             className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-4 block"
           >
-            About Us
+            Tentang Kami
           </motion.span>
           <motion.h1
             initial={{ y: 30, opacity: 0 }}
@@ -87,7 +87,7 @@ function AboutPage() {
             className="text-4xl md:text-6xl font-extrabold text-white mb-6"
             style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
           >
-            Connecting People Through Unforgettable Moments
+            Menghubungkan Orang Melalui Momen Tak Terlupakan
           </motion.h1>
           <motion.p
             initial={{ y: 20, opacity: 0 }}
@@ -95,7 +95,7 @@ function AboutPage() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-white/50 text-lg max-w-2xl mx-auto leading-relaxed"
           >
-            Monora was born from a simple idea: everyone deserves easy access to the best live experiences. We make discovering, booking, and enjoying events seamless.
+            Monora lahir dari ide sederhana: semua orang berhak mendapatkan akses mudah ke pengalaman live terbaik. Kami membuat penemuan, pemesanan, dan menikmati acara menjadi mudah.
           </motion.p>
         </div>
       </section>
@@ -147,15 +147,15 @@ function AboutPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <span className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-3 block">Our Story</span>
+            <span className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-3 block">Kisah Kami</span>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-5">
-              From a Small Idea to a Platform Millions Trust
+              Dari Ide Kecil Menjadi Platform yang Dipercaya Jutaan Orang
             </h2>
             <p className="text-white/50 leading-relaxed mb-4">
-              Founded in 2020, Monora started as a passion project by a group of event enthusiasts who were tired of fragmented ticketing experiences. We believed there had to be a better way.
+              Didirikan pada tahun 2020, Monora dimulai sebagai proyek passion oleh sekelompok penggemar acara yang lelah dengan pengalaman tiket yang terpecah-pecah. Kami percaya pasti ada cara yang lebih baik.
             </p>
             <p className="text-white/50 leading-relaxed mb-6">
-              Today, we serve millions of customers across 120+ cities, partnering with the best venues and artists to bring you curated experiences that matter.
+              Saat ini, kami melayani jutaan pelanggan di 120+ kota, bermitra dengan venue dan artis terbaik untuk menghadirkan pengalaman terkurasi yang berarti.
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -166,7 +166,7 @@ function AboutPage() {
                 boxShadow: '0 4px 15px rgba(249,115,22,0.3)',
               }}
             >
-              Learn More
+              Pelajari Lebih Lanjut
             </motion.button>
           </motion.div>
         </div>
@@ -181,8 +181,8 @@ function AboutPage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-3 block">Our Values</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-white">What Drives Us Forward</h2>
+            <span className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-3 block">Nilai-Nilai Kami</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white">Apa yang Mendorong Kami Maju</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -223,8 +223,8 @@ function AboutPage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-3 block">Our Team</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-white">Meet the People Behind Monora</h2>
+            <span className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-3 block">Tim Kami</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white">Kenali Orang-Orang di Balik Monora</h2>
           </motion.div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">

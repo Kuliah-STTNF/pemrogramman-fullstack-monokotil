@@ -78,8 +78,8 @@ function HeroSection() {
           className="text-2xl md:text-5xl font-extrabold text-white leading-[1.1] mb-2"
           style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
         >
-          Discover Your Next<br />
-          Unforgettable Experience
+          Temukan Pengalaman<br />
+          Tak Terlupakan Berikutnya
         </motion.h1>
 
         <motion.p
@@ -88,7 +88,7 @@ function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-white/60 text-base md:text-lg mb-8 max-w-xl leading-relaxed"
         >
-          Find tickets to the hottest concerts, festivals, and live events near you.
+          Temukan tiket untuk konser, festival, dan acara live terpopuler di dekat Anda.
         </motion.p>
 
         {/* Search Bar */}

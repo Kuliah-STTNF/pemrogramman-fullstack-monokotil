@@ -166,10 +166,9 @@ function AppAdminLayout({ children }) {
               end={link.to === "/app-admin/dashboard"}
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium no-underline transition-all ${
-                  isActive
-                    ? "text-purple-400 bg-purple-500/10"
-                    : "text-white/40 hover:text-white/80 hover:bg-white/5"
+                `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium no-underline transition-all ${isActive
+                  ? "text-purple-400 bg-purple-500/10"
+                  : "text-white/40 hover:text-white/80 hover:bg-white/5"
                 }`
               }
             >

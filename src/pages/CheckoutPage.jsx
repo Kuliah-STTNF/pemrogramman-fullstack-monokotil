@@ -82,14 +82,14 @@ function CheckoutPage() {
 
   const validateStep1 = () => {
     const newErrors = {}
-    if (!formData.name.trim()) newErrors.name = 'Name is required'
-    if (!formData.email.trim()) newErrors.email = 'Email is required'
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email'
-    if (!formData.phone.trim()) newErrors.phone = 'Phone is required'
+    if (!formData.name.trim()) newErrors.name = 'Nama wajib diisi'
+    if (!formData.email.trim()) newErrors.email = 'Email wajib diisi'
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email tidak valid'
+    if (!formData.phone.trim()) newErrors.phone = 'Telepon wajib diisi'
     if (merch.length > 0 && formData.deliveryMethod === 'delivery') {
-      if (!formData.address.trim()) newErrors.address = 'Address is required'
-      if (!formData.city.trim()) newErrors.city = 'City is required'
-      if (!formData.zipCode.trim()) newErrors.zipCode = 'Zip code is required'
+      if (!formData.address.trim()) newErrors.address = 'Alamat wajib diisi'
+      if (!formData.city.trim()) newErrors.city = 'Kota wajib diisi'
+      if (!formData.zipCode.trim()) newErrors.zipCode = 'Kode pos wajib diisi'
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -97,11 +97,11 @@ function CheckoutPage() {
 
   const validateStep2 = () => {
     const newErrors = {}
-    if (!formData.cardNumber.trim()) newErrors.cardNumber = 'Card number is required'
-    if (formData.cardNumber.replace(/\s/g, '').length < 16) newErrors.cardNumber = 'Invalid card number'
-    if (!formData.cardExpiry.trim()) newErrors.cardExpiry = 'Expiry is required'
-    if (!formData.cardCVC.trim()) newErrors.cardCVC = 'CVC is required'
-    if (!formData.cardName.trim()) newErrors.cardName = 'Cardholder name is required'
+    if (!formData.cardNumber.trim()) newErrors.cardNumber = 'Nomor kartu wajib diisi'
+    if (formData.cardNumber.replace(/\s/g, '').length < 16) newErrors.cardNumber = 'Nomor kartu tidak valid'
+    if (!formData.cardExpiry.trim()) newErrors.cardExpiry = 'Masa berlaku wajib diisi'
+    if (!formData.cardCVC.trim()) newErrors.cardCVC = 'CVC wajib diisi'
+    if (!formData.cardName.trim()) newErrors.cardName = 'Nama pemegang kartu wajib diisi'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -160,12 +160,12 @@ function CheckoutPage() {
   if (itemCount === 0 && step !== 3) {
     return (
       <div className="bg-[#0B0D1A] min-h-screen pt-24 flex flex-col items-center justify-center text-center px-6">
-        <h1 className="text-3xl font-bold text-white mb-3">Nothing to Checkout</h1>
-        <p className="text-white/50 mb-8">Add items to your cart before checking out.</p>
+        <h1 className="text-3xl font-bold text-white mb-3">Tidak Ada yang Bisa Dicheckout</h1>
+        <p className="text-white/50 mb-8">Tambahkan item ke keranjang sebelum checkout.</p>
         <Link to="/events" className="text-white px-6 py-3 rounded-full text-sm font-semibold no-underline"
           style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
         >
-          Browse Events
+          Jelajahi Acara
         </Link>
       </div>
     )
@@ -187,8 +187,8 @@ function CheckoutPage() {
             />
             <IoLockClosedOutline className="absolute inset-0 m-auto text-orange-400 text-2xl" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Processing Payment...</h2>
-          <p className="text-white/50">Please wait while we secure your tickets.</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Memproses Pembayaran...</h2>
+          <p className="text-white/50">Mohon tunggu sementara kami mengamankan tiket Anda.</p>
         </motion.div>
       </div>
     )
@@ -203,25 +203,24 @@ function CheckoutPage() {
         <div className="max-w-5xl mx-auto">
           <Link to="/cart" className="flex items-center gap-2 text-white/60 hover:text-white text-sm no-underline mb-4 transition-colors">
             <IoArrowBack />
-            Back to Cart
+            Kembali ke Keranjang
           </Link>
           <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2"
             style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
           >
             Checkout
           </h1>
-          {organizerName && <p className="text-white/50 mb-0">Organizer: {organizerName}</p>}
+          {organizerName && <p className="text-white/50 mb-0">Penyelenggara: {organizerName}</p>}
 
           {/* Step Indicators */}
           <div className="flex items-center gap-4 mt-6">
             {[
-              { num: 1, label: 'Your Info' },
-              { num: 2, label: 'Payment' },
+              { num: 1, label: 'Info Anda' },
+              { num: 2, label: 'Pembayaran' },
             ].map((s) => (
               <div key={s.num} className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                  step >= s.num ? 'text-white' : 'text-white/30'
-                }`}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= s.num ? 'text-white' : 'text-white/30'
+                  }`}
                   style={{
                     background: step >= s.num ? 'linear-gradient(135deg, #f97316, #ea580c)' : 'rgba(255,255,255,0.06)',
                   }}
@@ -252,10 +251,10 @@ function CheckoutPage() {
                   <div className="rounded-2xl p-6"
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
                   >
-                    <h3 className="text-white font-bold text-lg mb-4">Personal Information</h3>
+                    <h3 className="text-white font-bold text-lg mb-4">Informasi Pribadi</h3>
                     <div className="space-y-4">
                       <div>
-                        <label className="text-white/50 text-xs mb-1.5 block">Full Name</label>
+                        <label className="text-white/50 text-xs mb-1.5 block">Nama Lengkap</label>
                         <input
                           type="text" name="name" value={formData.name} onChange={handleChange}
                           placeholder="John Doe" className={inputClass}
@@ -274,7 +273,7 @@ function CheckoutPage() {
                           {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
                         </div>
                         <div>
-                          <label className="text-white/50 text-xs mb-1.5 block">Phone</label>
+                          <label className="text-white/50 text-xs mb-1.5 block">Telepon</label>
                           <input
                             type="tel" name="phone" value={formData.phone} onChange={handleChange}
                             placeholder="+1 (555) 000-0000" className={inputClass}
@@ -291,18 +290,17 @@ function CheckoutPage() {
                     <div className="rounded-2xl p-6"
                       style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
                     >
-                      <h3 className="text-white font-bold text-lg mb-4">Merchandise Delivery</h3>
+                      <h3 className="text-white font-bold text-lg mb-4">Pengiriman Merchandise</h3>
                       <div className="flex gap-3 mb-4">
                         {[
-                          { value: 'pickup', label: 'Pickup at Event', desc: 'Free' },
-                          { value: 'delivery', label: 'Ship to Address', desc: '+$10.00' },
+                          { value: 'pickup', label: 'Ambil di Acara', desc: 'Gratis' },
+                          { value: 'delivery', label: 'Kirim ke Alamat', desc: '+Rp150.000' },
                         ].map(opt => (
                           <button
                             key={opt.value}
                             onClick={() => setFormData(prev => ({ ...prev, deliveryMethod: opt.value }))}
-                            className={`flex-1 p-4 rounded-xl cursor-pointer transition-all border-none text-left ${
-                              formData.deliveryMethod === opt.value ? 'text-white' : 'text-white/50'
-                            }`}
+                            className={`flex-1 p-4 rounded-xl cursor-pointer transition-all border-none text-left ${formData.deliveryMethod === opt.value ? 'text-white' : 'text-white/50'
+                              }`}
                             style={{
                               background: formData.deliveryMethod === opt.value
                                 ? 'rgba(249,115,22,0.15)'
@@ -321,7 +319,7 @@ function CheckoutPage() {
                       {formData.deliveryMethod === 'delivery' && (
                         <div className="space-y-4 mt-4">
                           <div>
-                            <label className="text-white/50 text-xs mb-1.5 block">Address</label>
+                            <label className="text-white/50 text-xs mb-1.5 block">Alamat</label>
                             <input
                               type="text" name="address" value={formData.address} onChange={handleChange}
                               placeholder="123 Main St" className={inputClass}
@@ -331,7 +329,7 @@ function CheckoutPage() {
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="text-white/50 text-xs mb-1.5 block">City</label>
+                              <label className="text-white/50 text-xs mb-1.5 block">Kota</label>
                               <input
                                 type="text" name="city" value={formData.city} onChange={handleChange}
                                 placeholder="New York" className={inputClass}
@@ -340,7 +338,7 @@ function CheckoutPage() {
                               {errors.city && <p className="text-red-400 text-xs mt-1">{errors.city}</p>}
                             </div>
                             <div>
-                              <label className="text-white/50 text-xs mb-1.5 block">Zip Code</label>
+                              <label className="text-white/50 text-xs mb-1.5 block">Kode Pos</label>
                               <input
                                 type="text" name="zipCode" value={formData.zipCode} onChange={handleChange}
                                 placeholder="10001" className={inputClass}
@@ -362,12 +360,12 @@ function CheckoutPage() {
                 >
                   <div className="flex items-center gap-2 mb-6">
                     <IoCardOutline className="text-orange-400 text-xl" />
-                    <h3 className="text-white font-bold text-lg m-0">Payment Details</h3>
+                    <h3 className="text-white font-bold text-lg m-0">Detail Pembayaran</h3>
                   </div>
 
                   <div className="space-y-4">
                     <div>
-                      <label className="text-white/50 text-xs mb-1.5 block">Card Number</label>
+                      <label className="text-white/50 text-xs mb-1.5 block">Nomor Kartu</label>
                       <input
                         type="text" name="cardNumber"
                         value={formData.cardNumber}
@@ -378,7 +376,7 @@ function CheckoutPage() {
                       {errors.cardNumber && <p className="text-red-400 text-xs mt-1">{errors.cardNumber}</p>}
                     </div>
                     <div>
-                      <label className="text-white/50 text-xs mb-1.5 block">Cardholder Name</label>
+                      <label className="text-white/50 text-xs mb-1.5 block">Nama Pemegang Kartu</label>
                       <input
                         type="text" name="cardName" value={formData.cardName} onChange={handleChange}
                         placeholder="JOHN DOE" className={inputClass}
@@ -388,7 +386,7 @@ function CheckoutPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-white/50 text-xs mb-1.5 block">Expiry Date</label>
+                        <label className="text-white/50 text-xs mb-1.5 block">Tanggal Kedaluwarsa</label>
                         <input
                           type="text" name="cardExpiry"
                           value={formData.cardExpiry}
@@ -414,7 +412,7 @@ function CheckoutPage() {
 
                   <div className="flex items-center gap-2 mt-6 text-emerald-400 text-xs">
                     <IoShieldCheckmarkOutline className="text-lg" />
-                    <span>Your payment information is encrypted and secure</span>
+                    <span>Informasi pembayaran Anda dienkripsi dan aman</span>
                   </div>
                 </div>
               )}
@@ -427,7 +425,7 @@ function CheckoutPage() {
                   onClick={() => setStep(step - 1)}
                   className="text-white/60 hover:text-white text-sm font-medium cursor-pointer bg-transparent border-none transition-colors"
                 >
-                  Back
+                  Kembali
                 </button>
               ) : <div />}
               <motion.button
@@ -440,7 +438,7 @@ function CheckoutPage() {
                   boxShadow: '0 4px 15px rgba(249,115,22,0.3)',
                 }}
               >
-                {step === 2 ? `Pay $${grandTotal.toFixed(2)}` : 'Continue to Payment'}
+                {step === 2 ? `Bayar $${grandTotal.toFixed(2)}` : 'Lanjut ke Pembayaran'}
               </motion.button>
             </div>
           </div>
@@ -451,7 +449,7 @@ function CheckoutPage() {
               <div className="rounded-2xl p-6"
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
               >
-                <h3 className="text-lg font-bold text-white mb-4">Order Summary</h3>
+                <h3 className="text-lg font-bold text-white mb-4">Ringkasan Pesanan</h3>
 
                 <div className="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2"
                   style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}
@@ -481,7 +479,7 @@ function CheckoutPage() {
                 <div className="border-t border-white/10 pt-4 space-y-2">
                   {/* Voucher Code Input */}
                   <div className="mb-3">
-                    <label className="text-white/50 text-xs mb-1.5 block">Voucher Code</label>
+                    <label className="text-white/50 text-xs mb-1.5 block">Kode Voucher</label>
                     {appliedVoucher ? (
                       <div className="flex items-center justify-between p-3 rounded-xl"
                         style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}
@@ -493,7 +491,7 @@ function CheckoutPage() {
                         <button onClick={handleRemoveVoucher}
                           className="text-red-400 text-xs cursor-pointer bg-transparent border-none hover:text-red-300 transition-colors"
                         >
-                          Remove
+                          Hapus
                         </button>
                       </div>
                     ) : (
@@ -501,7 +499,7 @@ function CheckoutPage() {
                         <input
                           type="text" value={voucherCode}
                           onChange={(e) => { setVoucherCode(e.target.value); setVoucherResult(null) }}
-                          placeholder="Enter code"
+                          placeholder="Masukkan kode"
                           className="flex-1 bg-transparent text-white text-sm py-2.5 px-3 rounded-lg outline-none placeholder-white/30"
                           style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
                         />
@@ -509,7 +507,7 @@ function CheckoutPage() {
                           className="text-white text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer border-none transition-all hover:opacity-90"
                           style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
                         >
-                          Apply
+                          Terapkan
                         </button>
                       </div>
                     )}
@@ -527,17 +525,17 @@ function CheckoutPage() {
                   </div>
                   {appliedVoucher && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-emerald-400">Voucher Discount</span>
+                      <span className="text-emerald-400">Diskon Voucher</span>
                       <span className="text-emerald-400">-${voucherDiscount.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
-                    <span className="text-white/50">Service Fee (5%)</span>
+                    <span className="text-white/50">Biaya Layanan (5%)</span>
                     <span className="text-white">${serviceFee.toFixed(2)}</span>
                   </div>
                   {merch.length > 0 && formData.deliveryMethod === 'delivery' && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-white/50">Shipping</span>
+                      <span className="text-white/50">Pengiriman</span>
                       <span className="text-white">$10.00</span>
                     </div>
                   )}

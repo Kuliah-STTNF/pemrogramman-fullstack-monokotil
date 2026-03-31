@@ -86,7 +86,7 @@ function FeaturedEvents() {
           transition={{ duration: 0.6 }}
           className="flex items-center justify-between mb-8"
         >
-          <h2 className="text-2xl md:text-3xl font-bold text-white m-0">Featured Events</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white m-0">Acara Unggulan</h2>
           <div className="flex items-center gap-3">
             <button
               onClick={() => scroll('left')}
@@ -155,10 +155,10 @@ function FeaturedEvents() {
                     {event.discount ? (
                       <>
                         <span className="text-white/40 line-through mr-1">${Math.min(...event.tickets.map(tk => tk.price))}</span>
-                        Tickets from <span className="text-orange-400">${getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount)}</span>
+                        Tiket dari <span className="text-orange-400">${getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount)}</span>
                       </>
                     ) : (
-                      <>Tickets from <span className="text-orange-400">${Math.min(...event.tickets.map(tk => tk.price))}</span></>
+                      <>Tiket dari <span className="text-orange-400">${Math.min(...event.tickets.map(tk => tk.price))}</span></>
                     )}
                   </p>
                   {/* Tags */}

@@ -29,12 +29,12 @@ function MyOrdersPage() {
     return (
       <div className="bg-[#0B0D1A] min-h-screen pt-24 flex flex-col items-center justify-center text-center px-6">
         <IoReceiptOutline className="text-6xl text-white/20 mb-4" />
-        <h1 className="text-3xl font-bold text-white mb-3">Sign In Required</h1>
-        <p className="text-white/50 mb-8">Please sign in to view your orders.</p>
+        <h1 className="text-3xl font-bold text-white mb-3">Harus Masuk Terlebih Dahulu</h1>
+        <p className="text-white/50 mb-8">Silakan masuk untuk melihat pesanan Anda.</p>
         <Link to="/login" className="text-white px-6 py-3 rounded-full text-sm font-semibold no-underline"
           style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
         >
-          Sign In
+          Masuk
         </Link>
       </div>
     )
@@ -46,12 +46,12 @@ function MyOrdersPage() {
     return (
       <div className="bg-[#0B0D1A] min-h-screen pt-24 flex flex-col items-center justify-center text-center px-6">
         <IoReceiptOutline className="text-6xl text-white/20 mb-4" />
-        <h1 className="text-3xl font-bold text-white mb-3">No Orders Yet</h1>
-        <p className="text-white/50 mb-8">You haven't placed any orders yet. Start exploring events!</p>
+        <h1 className="text-3xl font-bold text-white mb-3">Belum Ada Pesanan</h1>
+        <p className="text-white/50 mb-8">Anda belum memiliki pesanan. Mulai jelajahi acara!</p>
         <Link to="/events" className="text-white px-6 py-3 rounded-full text-sm font-semibold no-underline"
           style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
         >
-          Browse Events
+          Jelajahi Acara
         </Link>
       </div>
     )
@@ -67,9 +67,9 @@ function MyOrdersPage() {
             className="text-3xl md:text-4xl font-extrabold text-white mb-2"
             style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
           >
-            My Orders
+            Pesanan Saya
           </motion.h1>
-          <p className="text-white/50 mb-8">{orders.length} order{orders.length !== 1 ? 's' : ''}</p>
+          <p className="text-white/50 mb-8">{orders.length} pesanan</p>
 
           <div className="space-y-6">
             {orders.map((order, index) => {
@@ -98,32 +98,31 @@ function MyOrdersPage() {
                   >
                     <div className="flex items-center gap-4">
                       <div>
-                        <p className="text-white/40 text-xs m-0">Order ID</p>
+                        <p className="text-white/40 text-xs m-0">ID Pesanan</p>
                         <p className="text-orange-400 font-mono font-bold text-sm m-0">{order.id}</p>
                       </div>
                       <div className="w-px h-8 bg-white/10" />
                       <div className="flex items-center gap-2">
                         <IoCalendarOutline className="text-white/40 text-sm" />
                         <span className="text-white/60 text-sm">
-                          {new Date(order.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {new Date(order.date).toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                        order.status === 'confirmed' ? 'text-emerald-300' :
-                        order.status === 'refunded' ? 'text-blue-300' :
-                        order.status === 'cancelled' ? 'text-red-300' : 'text-yellow-300'
-                      }`}
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${order.status === 'confirmed' ? 'text-emerald-300' :
+                          order.status === 'refunded' ? 'text-blue-300' :
+                            order.status === 'cancelled' ? 'text-red-300' : 'text-yellow-300'
+                        }`}
                         style={{
                           background: order.status === 'confirmed' ? 'rgba(16,185,129,0.15)' :
                             order.status === 'refunded' ? 'rgba(59,130,246,0.15)' :
-                            order.status === 'cancelled' ? 'rgba(239,68,68,0.15)' : 'rgba(234,179,8,0.15)'
+                              order.status === 'cancelled' ? 'rgba(239,68,68,0.15)' : 'rgba(234,179,8,0.15)'
                         }}
                       >
-                        {order.status === 'confirmed' ? 'Confirmed' :
-                         order.status === 'refunded' ? 'Refunded' :
-                         order.status === 'cancelled' ? 'Cancelled' : order.status}
+                        {order.status === 'confirmed' ? 'Dikonfirmasi' :
+                          order.status === 'refunded' ? 'Dikembalikan' :
+                            order.status === 'cancelled' ? 'Dibatalkan' : order.status}
                       </span>
                       {(() => {
                         if (pendingRefundExists) {
@@ -131,7 +130,7 @@ function MyOrdersPage() {
                             <span className="text-xs font-semibold px-3 py-1 rounded-full text-yellow-300"
                               style={{ background: 'rgba(234,179,8,0.15)' }}
                             >
-                              Refund Pending
+                              Pengembalian Tertunda
                             </span>
                           )
                         }
@@ -147,7 +146,7 @@ function MyOrdersPage() {
                       <div className="mb-4">
                         <div className="flex items-center gap-2 mb-2">
                           <IoTicketOutline className="text-orange-400 text-sm" />
-                          <span className="text-white/50 text-xs font-semibold">TICKETS</span>
+                          <span className="text-white/50 text-xs font-semibold">TIKET</span>
                         </div>
                         {tickets.map((item, i) => (
                           <div key={i} className="flex items-center justify-between py-1.5">
@@ -157,7 +156,7 @@ function MyOrdersPage() {
                             </div>
                             <div className="flex items-center gap-2">
                               {refundedItemIds.has(Number(item.id)) && (
-                                <span className="text-[10px] px-2 py-0.5 rounded-full text-blue-300" style={{ background: 'rgba(59,130,246,0.15)' }}>Refunded</span>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full text-blue-300" style={{ background: 'rgba(59,130,246,0.15)' }}>Dikembalikan</span>
                               )}
                               <span className="text-white/70 text-sm">${(item.price * item.quantity).toFixed(2)}</span>
                             </div>
@@ -182,7 +181,7 @@ function MyOrdersPage() {
                             </div>
                             <div className="flex items-center gap-2">
                               {refundedItemIds.has(Number(item.id)) && (
-                                <span className="text-[10px] px-2 py-0.5 rounded-full text-blue-300" style={{ background: 'rgba(59,130,246,0.15)' }}>Refunded</span>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full text-blue-300" style={{ background: 'rgba(59,130,246,0.15)' }}>Dikembalikan</span>
                               )}
                               <span className="text-white/70 text-sm">${(item.price * item.quantity).toFixed(2)}</span>
                             </div>
@@ -198,7 +197,7 @@ function MyOrdersPage() {
                       to={`/order-confirmation/${order.id}`}
                       className="text-orange-400 hover:text-orange-300 text-sm font-medium no-underline transition-colors"
                     >
-                      View Order Details →
+                      Lihat Detail Pesanan →
                     </Link>
                     {order.status === 'confirmed' && (
                       <button
@@ -211,7 +210,7 @@ function MyOrdersPage() {
                         className="flex items-center gap-1.5 text-red-400 hover:text-red-300 text-sm font-medium cursor-pointer bg-transparent border-none transition-colors"
                       >
                         <IoArrowUndoOutline />
-                        Request Refund
+                        Minta Pengembalian Dana
                       </button>
                     )}
                   </div>
@@ -240,17 +239,17 @@ function MyOrdersPage() {
               boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
             }}
           >
-            <h3 className="text-white font-bold text-lg mb-1">Request Refund</h3>
-            <p className="text-white/40 text-sm mb-4">Order: <span className="text-orange-400 font-mono">{refundModal}</span></p>
+            <h3 className="text-white font-bold text-lg mb-1">Minta Pengembalian Dana</h3>
+            <p className="text-white/40 text-sm mb-4">Pesanan: <span className="text-orange-400 font-mono">{refundModal}</span></p>
 
-            <label className="text-white/50 text-xs mb-1.5 block">Select item to refund</label>
+            <label className="text-white/50 text-xs mb-1.5 block">Pilih item untuk dikembalikan</label>
             <select
               value={refundItemId}
               onChange={(e) => setRefundItemId(e.target.value)}
               className="w-full bg-transparent text-white text-sm py-3 px-4 rounded-xl outline-none mb-4"
               style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
             >
-              <option value="" style={{ background: '#0f1224' }}>Choose item</option>
+              <option value="" style={{ background: '#0f1224' }}>Pilih item</option>
               {(orders.find(o => o.id === refundModal)?.items || [])
                 .filter(item => {
                   const refunds = getRefundByOrderId(refundModal)
@@ -266,15 +265,15 @@ function MyOrdersPage() {
 
             <div className="mb-4 p-3 rounded-xl" style={{ background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.2)' }}>
               <p className="text-yellow-300 text-xs m-0">
-                Refunds are processed within 3-5 business days. Please note that service fees are non-refundable.
+                Pengembalian dana diproses dalam 3-5 hari kerja. Harap dicatat bahwa biaya layanan tidak dapat dikembalikan.
               </p>
             </div>
 
-            <label className="text-white/50 text-xs mb-1.5 block">Reason for refund</label>
+            <label className="text-white/50 text-xs mb-1.5 block">Alasan pengembalian dana</label>
             <textarea
               value={refundReason}
               onChange={(e) => setRefundReason(e.target.value)}
-              placeholder="Please explain why you'd like a refund..."
+              placeholder="Jelaskan mengapa Anda ingin pengembalian dana..."
               rows={3}
               className="w-full bg-transparent text-white text-sm py-3 px-4 rounded-xl outline-none placeholder-white/30 resize-none"
               style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
@@ -282,7 +281,7 @@ function MyOrdersPage() {
 
             {refundMessage && (
               <p className={`text-xs mt-2 ${refundMessage.success ? 'text-emerald-400' : 'text-red-400'}`}>
-                {refundMessage.success ? 'Refund request submitted successfully!' : refundMessage.message}
+                {refundMessage.success ? 'Permintaan pengembalian dana berhasil diajukan!' : refundMessage.message}
               </p>
             )}
 
@@ -292,7 +291,7 @@ function MyOrdersPage() {
                 className="flex-1 py-3 rounded-xl text-sm font-medium text-white/60 cursor-pointer bg-transparent transition-colors hover:text-white"
                 style={{ border: '1px solid rgba(255,255,255,0.1)' }}
               >
-                Cancel
+                Batal
               </button>
               <button
                 onClick={() => handleRequestRefund(refundModal)}
@@ -303,7 +302,7 @@ function MyOrdersPage() {
                   opacity: refundReason.trim() && refundItemId ? 1 : 0.5,
                 }}
               >
-                Submit Refund Request
+                Ajukan Pengembalian Dana
               </button>
             </div>
           </motion.div>

@@ -11,6 +11,7 @@ import vouchersRoutes from './routes/vouchers.js'
 import refundsRoutes from './routes/refunds.js'
 import chatsRoutes from './routes/chats.js'
 import aiRoutes from './routes/ai.js'
+import contactRoutes from './routes/contact.js'
 
 // BigInt JSON serialization
 BigInt.prototype.toJSON = function () {
@@ -33,6 +34,7 @@ app.use('/api/vouchers', vouchersRoutes)
 app.use('/api/refunds', refundsRoutes)
 app.use('/api/chats', chatsRoutes)
 app.use('/api/ai', aiRoutes)
+app.use('/api/contact', contactRoutes)
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' })

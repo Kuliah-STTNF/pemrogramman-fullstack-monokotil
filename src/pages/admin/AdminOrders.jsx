@@ -122,11 +122,10 @@ function AdminOrders() {
                   <select
                     value={order.status}
                     onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                    className={`text-[11px] font-semibold px-2 py-1 rounded-full border-none cursor-pointer outline-none ${
-                      order.status === 'confirmed' ? 'bg-green-500/10 text-green-400' :
-                      order.status === 'pending' ? 'bg-yellow-500/10 text-yellow-400' :
-                      'bg-red-500/10 text-red-400'
-                    }`}
+                    className={`text-[11px] font-semibold px-2 py-1 rounded-full border-none cursor-pointer outline-none ${order.status === 'confirmed' ? 'bg-green-500/10 text-green-400' :
+                        order.status === 'pending' ? 'bg-yellow-500/10 text-yellow-400' :
+                          'bg-red-500/10 text-red-400'
+                      }`}
                     style={{ background: order.status === 'confirmed' ? 'rgba(34,197,94,0.1)' : order.status === 'pending' ? 'rgba(234,179,8,0.1)' : 'rgba(239,68,68,0.1)' }}
                   >
                     <option value="confirmed" style={{ background: '#1a1a2e' }}>confirmed</option>

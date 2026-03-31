@@ -19,7 +19,7 @@ function CTASection() {
           transition={{ duration: 0.6 }}
           className="text-3xl md:text-4xl font-bold text-white mb-4"
         >
-          Ready to Experience Something Amazing?
+          Siap Merasakan Sesuatu yang Luar Biasa?
         </motion.h2>
         <motion.p
           initial={{ y: 20, opacity: 0 }}
@@ -28,7 +28,7 @@ function CTASection() {
           transition={{ duration: 0.6, delay: 0.15 }}
           className="text-white/50 text-base md:text-lg mb-8 max-w-2xl mx-auto"
         >
-          Join thousands of event-goers and never miss out on the best experiences in your city.
+          Bergabunglah dengan ribuan pengunjung acara dan jangan lewatkan pengalaman terbaik di kota Anda.
         </motion.p>
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -46,7 +46,7 @@ function CTASection() {
                 boxShadow: '0 6px 20px rgba(249,115,22,0.35)',
               }}
             >
-              Browse Events
+              Jelajahi Acara
             </Link>
           </motion.div>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -57,7 +57,7 @@ function CTASection() {
                 border: '1px solid rgba(255,255,255,0.2)',
               }}
             >
-              Create an Account
+              Buat Akun
             </Link>
           </motion.div>
         </motion.div>

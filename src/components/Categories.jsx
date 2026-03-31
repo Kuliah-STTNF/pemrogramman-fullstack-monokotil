@@ -26,9 +26,9 @@ function Categories() {
           transition={{ duration: 0.6 }}
           className="mb-4"
         >
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Categories</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Kategori</h2>
           <p className="text-white/50 text-sm md:text-base">
-            Find all types events, electronic, festivals and live and more exciting events near your city.
+            Temukan semua jenis acara, elektronik, festival, live dan acara seru lainnya di dekat kota Anda.
           </p>
         </motion.div>
 

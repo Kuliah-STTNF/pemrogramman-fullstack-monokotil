@@ -8,9 +8,9 @@ import { useAuth } from '../context/AuthContext'
 
 function EventsPage() {
   const { categories, publicEvents } = useAuth()
-  const categoryFilters = ['All', ...categories.map(c => c.name)]
+  const categoryFilters = ['Semua', ...categories.map(c => c.name)]
   const [searchParams, setSearchParams] = useSearchParams()
-  const [activeCategory, setActiveCategory] = useState('All')
+  const [activeCategory, setActiveCategory] = useState('Semua')
   const [viewMode, setViewMode] = useState('grid')
 
   // Read search params
@@ -30,7 +30,7 @@ function EventsPage() {
     let events = publicEvents
 
     // Category filter
-    if (activeCategory !== 'All') {
+    if (activeCategory !== 'Semua') {
       events = events.filter(e => e.category === activeCategory)
     }
 
@@ -89,14 +89,14 @@ function EventsPage() {
     setSearchQuery('')
     setCityFilter('')
     setDateFilter('')
-    setActiveCategory('All')
+    setActiveCategory('Semua')
     setSearchParams({})
   }
 
   const formatDisplayDate = (dateStr) => {
     if (!dateStr) return ''
     const d = new Date(dateStr + 'T00:00:00')
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    return d.toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' })
   }
 
   return (
@@ -118,7 +118,7 @@ function EventsPage() {
             animate={{ opacity: 1 }}
             className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-4 block"
           >
-            Explore
+            Jelajahi
           </motion.span>
           <motion.h1
             initial={{ y: 30, opacity: 0 }}
@@ -127,7 +127,7 @@ function EventsPage() {
             className="text-4xl md:text-6xl font-extrabold text-white mb-6"
             style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
           >
-            All Events
+            Semua Acara
           </motion.h1>
           <motion.p
             initial={{ y: 20, opacity: 0 }}
@@ -135,7 +135,7 @@ function EventsPage() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-white/50 text-lg max-w-xl leading-relaxed mb-8"
           >
-            Browse through our curated selection of the hottest events, concerts, and festivals happening near you.
+            Jelajahi pilihan acara, konser, dan festival terpopuler yang terkurasi di dekat Anda.
           </motion.p>
 
           {/* Search Bar */}
@@ -159,11 +159,10 @@ function EventsPage() {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-5 py-2 rounded-full text-sm font-medium cursor-pointer transition-all border-none ${
-                    activeCategory === cat
+                  className={`px-5 py-2 rounded-full text-sm font-medium cursor-pointer transition-all border-none ${activeCategory === cat
                       ? 'text-white'
                       : 'text-white/50 hover:text-white'
-                  }`}
+                    }`}
                   style={{
                     background: activeCategory === cat
                       ? 'linear-gradient(135deg, #f97316, #ea580c)'
@@ -179,17 +178,15 @@ function EventsPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer border-none transition-all ${
-                  viewMode === 'grid' ? 'bg-white/15 text-white' : 'bg-transparent text-white/40'
-                }`}
+                className={`w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer border-none transition-all ${viewMode === 'grid' ? 'bg-white/15 text-white' : 'bg-transparent text-white/40'
+                  }`}
               >
                 <IoGridOutline />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer border-none transition-all ${
-                  viewMode === 'list' ? 'bg-white/15 text-white' : 'bg-transparent text-white/40'
-                }`}
+                className={`w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer border-none transition-all ${viewMode === 'list' ? 'bg-white/15 text-white' : 'bg-transparent text-white/40'
+                  }`}
               >
                 <IoListOutline />
               </button>
@@ -198,7 +195,7 @@ function EventsPage() {
 
           {/* Results count + active filters */}
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            <p className="text-white/40 text-sm m-0">{filteredEvents.length} events found</p>
+            <p className="text-white/40 text-sm m-0">{filteredEvents.length} acara ditemukan</p>
             {hasActiveFilters && (
               <>
                 {searchQuery && (
@@ -223,7 +220,7 @@ function EventsPage() {
                   onClick={clearAllFilters}
                   className="text-white/30 text-xs font-medium cursor-pointer bg-transparent border-none hover:text-white/60 transition-colors"
                 >
-                  Clear all
+                  Hapus semua
                 </button>
               </>
             )}
@@ -237,16 +234,16 @@ function EventsPage() {
               className="text-center py-20"
             >
               <div className="text-5xl mb-4">🔍</div>
-              <h3 className="text-white font-bold text-xl mb-2">No events found</h3>
+              <h3 className="text-white font-bold text-xl mb-2">Tidak ada acara ditemukan</h3>
               <p className="text-white/40 text-sm max-w-sm mx-auto mb-6">
-                Try adjusting your search filters or browse all events.
+                Coba sesuaikan filter pencarian Anda atau jelajahi semua acara.
               </p>
               <button
                 onClick={clearAllFilters}
                 className="text-white px-6 py-2.5 rounded-full text-sm font-semibold border-none cursor-pointer"
                 style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
               >
-                Show All Events
+                Tampilkan Semua Acara
               </button>
             </motion.div>
           ) : (
@@ -256,89 +253,87 @@ function EventsPage() {
                 : 'flex flex-col gap-4'
             }>
               {filteredEvents.map((event, index) => (
-              <Link to={`/event/${event.id}`} key={event.id} className="no-underline">
-                <motion.div
-                  initial={{ y: 30, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  whileHover={{ y: -4 }}
-                  className={`rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 ${
-                    viewMode === 'list' ? 'flex flex-row' : ''
-                  }`}
-                  style={{
-                    background: 'linear-gradient(180deg, rgba(30,30,60,0.8) 0%, rgba(15,15,35,0.95) 100%)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                  }}
-                >
-                  {/* Image */}
-                  <div className={`relative overflow-hidden ${
-                    viewMode === 'list' ? 'w-48 h-auto shrink-0' : 'h-[200px]'
-                  }`}>
-                    <img
-                      src={event.thumbnail}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D1A] via-transparent to-transparent opacity-50" />
-                    {event.hasMerch && (
-                      <div className="absolute top-3 right-3 bg-indigo-500/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                        <IoShirtOutline className="text-xs" />
-                        Merch
-                      </div>
-                    )}
-                    {event.discount && (
-                      <div className="absolute top-3 left-3 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full"
-                        style={{ background: 'rgba(16,185,129,0.85)' }}
-                      >
-                        -{event.discount.percentage}% {event.discount.label}
-                      </div>
-                    )}
-                  </div>
+                <Link to={`/event/${event.id}`} key={event.id} className="no-underline">
+                  <motion.div
+                    initial={{ y: 30, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                    whileHover={{ y: -4 }}
+                    className={`rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 ${viewMode === 'list' ? 'flex flex-row' : ''
+                      }`}
+                    style={{
+                      background: 'linear-gradient(180deg, rgba(30,30,60,0.8) 0%, rgba(15,15,35,0.95) 100%)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    {/* Image */}
+                    <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-48 h-auto shrink-0' : 'h-[200px]'
+                      }`}>
+                      <img
+                        src={event.thumbnail}
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D1A] via-transparent to-transparent opacity-50" />
+                      {event.hasMerch && (
+                        <div className="absolute top-3 right-3 bg-indigo-500/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                          <IoShirtOutline className="text-xs" />
+                          Merch
+                        </div>
+                      )}
+                      {event.discount && (
+                        <div className="absolute top-3 left-3 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full"
+                          style={{ background: 'rgba(16,185,129,0.85)' }}
+                        >
+                          -{event.discount.percentage}% {event.discount.label}
+                        </div>
+                      )}
+                    </div>
 
-                  {/* Body */}
-                  <div className="p-5 flex-1">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="text-white font-bold text-base tracking-wide">{event.title}</h3>
-                      <span className="text-xs text-white/30 px-2.5 py-1 rounded-full shrink-0"
-                        style={{ background: 'rgba(255,255,255,0.06)' }}
-                      >
-                        {event.category}
-                      </span>
-                    </div>
-                    <p className="text-white/50 text-sm mb-1">{event.date}</p>
-                    <p className="text-white/40 text-sm mb-3">{event.venue}, {event.city}</p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-white text-sm font-semibold">
-                        {event.discount ? (
-                          <>
-                            <span className="text-white/40 line-through mr-1">${Math.min(...event.tickets.map(tk => tk.price))}</span>
-                            From <span className="text-orange-400">${getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount)}</span>
-                          </>
-                        ) : (
-                          <>From <span className="text-orange-400">${Math.min(...event.tickets.map(tk => tk.price))}</span></>
-                        )}
-                      </p>
-                      <div className="flex gap-1.5">
-                        {event.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="text-[10px] font-semibold px-2.5 py-1 rounded-full text-white"
-                            style={{
-                              background: tag === 'Selling Fast'
-                                ? 'linear-gradient(135deg, #ef4444, #dc2626)'
-                                : 'linear-gradient(135deg, #6366f1, #4f46e5)',
-                            }}
-                          >
-                            {tag}
-                          </span>
-                        ))}
+                    {/* Body */}
+                    <div className="p-5 flex-1">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="text-white font-bold text-base tracking-wide">{event.title}</h3>
+                        <span className="text-xs text-white/30 px-2.5 py-1 rounded-full shrink-0"
+                          style={{ background: 'rgba(255,255,255,0.06)' }}
+                        >
+                          {event.category}
+                        </span>
+                      </div>
+                      <p className="text-white/50 text-sm mb-1">{event.date}</p>
+                      <p className="text-white/40 text-sm mb-3">{event.venue}, {event.city}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-white text-sm font-semibold">
+                          {event.discount ? (
+                            <>
+                              <span className="text-white/40 line-through mr-1">${Math.min(...event.tickets.map(tk => tk.price))}</span>
+                              Dari <span className="text-orange-400">${getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount)}</span>
+                            </>
+                          ) : (
+                            <>Mulai dari <span className="text-orange-400">${Math.min(...event.tickets.map(tk => tk.price))}</span></>
+                          )}
+                        </p>
+                        <div className="flex gap-1.5">
+                          {event.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-[10px] font-semibold px-2.5 py-1 rounded-full text-white"
+                              style={{
+                                background: tag === 'Selling Fast'
+                                  ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+                                  : 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                              }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
+                  </motion.div>
+                </Link>
+              ))}
             </div>
           )}
 
@@ -351,7 +346,7 @@ function EventsPage() {
                 className="text-white font-semibold text-sm px-8 py-3.5 rounded-full cursor-pointer bg-transparent"
                 style={{ border: '1px solid rgba(255,255,255,0.2)' }}
               >
-                Load More Events
+                Muat Lebih Banyak Acara
               </motion.button>
             </div>
           )}

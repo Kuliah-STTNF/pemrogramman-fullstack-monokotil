@@ -96,11 +96,10 @@ function AdminDashboard() {
                   <div className="text-white text-sm font-medium truncate">{event.title}</div>
                   <div className="text-white/30 text-[11px]">{event.city} · {event.date}</div>
                 </div>
-                <span className={`text-[11px] font-semibold px-2 py-1 rounded-full ${
-                  event.status === 'published' ? 'bg-green-500/10 text-green-400' :
-                  event.status === 'draft' ? 'bg-yellow-500/10 text-yellow-400' :
-                  'bg-red-500/10 text-red-400'
-                }`}>
+                <span className={`text-[11px] font-semibold px-2 py-1 rounded-full ${event.status === 'published' ? 'bg-green-500/10 text-green-400' :
+                    event.status === 'draft' ? 'bg-yellow-500/10 text-yellow-400' :
+                      'bg-red-500/10 text-red-400'
+                  }`}>
                   {event.status}
                 </span>
                 <Link to={`/admin/events`} className="text-white/30 hover:text-white transition-colors no-underline">

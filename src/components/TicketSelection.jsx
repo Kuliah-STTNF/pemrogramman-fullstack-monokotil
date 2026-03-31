@@ -91,14 +91,14 @@ function TicketSelection({ event }) {
                   )}
                   <span className="text-white/30 text-xs">
                     {ticket.available > 0
-                      ? `${ticket.available} remaining`
-                      : 'Sold Out'
+                      ? `${ticket.available} tersisa`
+                      : 'Habis Terjual'
                     }
                   </span>
                   {inCart > 0 && (
                     <span className="text-emerald-400 text-xs flex items-center gap-1">
                       <IoCheckmarkCircle />
-                      {inCart} in cart
+                      {inCart} di keranjang
                     </span>
                   )}
                 </div>
@@ -135,7 +135,7 @@ function TicketSelection({ event }) {
                           className="flex items-center gap-1 text-emerald-400 text-sm font-semibold"
                         >
                           <IoCheckmarkCircle className="text-lg" />
-                          Added!
+                          Ditambahkan!
                         </motion.div>
                       ) : (
                         <motion.button
@@ -143,18 +143,17 @@ function TicketSelection({ event }) {
                           whileTap={{ scale: 0.95 }}
                           onClick={() => handleAddToCart(ticket)}
                           disabled={qty === 0}
-                          className={`px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer border-none transition-all ${
-                            qty > 0
+                          className={`px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer border-none transition-all ${qty > 0
                               ? 'text-white'
                               : 'text-white/30 cursor-not-allowed'
-                          }`}
+                            }`}
                           style={{
                             background: qty > 0
                               ? 'linear-gradient(135deg, #f97316, #ea580c)'
                               : 'rgba(255,255,255,0.06)',
                           }}
                         >
-                          Add to Cart
+                          Tambah ke Keranjang
                         </motion.button>
                       )}
                     </AnimatePresence>
@@ -163,7 +162,7 @@ function TicketSelection({ event }) {
                   <span className="text-red-400 font-semibold text-sm px-5 py-2.5 rounded-lg"
                     style={{ background: 'rgba(239,68,68,0.1)' }}
                   >
-                    Sold Out
+                    Habis Terjual
                   </span>
                 )}
               </div>
@@ -177,8 +176,8 @@ function TicketSelection({ event }) {
         style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}
       >
         <p className="text-indigo-300 text-sm m-0">
-          <strong>Note:</strong> Tickets are non-refundable. You can purchase up to 10 tickets per type.
-          E-tickets will be sent to your email after checkout.
+          <strong>Catatan:</strong> Tiket tidak dapat dikembalikan. Anda dapat membeli hingga 10 tiket per jenis.
+          E-tiket akan dikirim ke email Anda setelah checkout.
         </p>
       </div>
     </div>

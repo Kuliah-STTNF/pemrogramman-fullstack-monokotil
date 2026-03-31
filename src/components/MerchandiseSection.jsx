@@ -54,7 +54,7 @@ function MerchandiseSection({ event }) {
   if (!event.hasMerch || event.merchandise.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-white/40 text-lg">No merchandise available for this event.</p>
+        <p className="text-white/40 text-lg">Tidak ada merchandise tersedia untuk acara ini.</p>
       </div>
     )
   }
@@ -96,7 +96,7 @@ function MerchandiseSection({ event }) {
                 {inCart > 0 && (
                   <div className="absolute top-3 right-3 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
                     <IoCartOutline />
-                    {inCart} in cart
+                    {inCart} di keranjang
                   </div>
                 )}
               </div>
@@ -106,17 +106,16 @@ function MerchandiseSection({ event }) {
                 {/* Size Selector */}
                 {needsSize && (
                   <div>
-                    <p className="text-white/40 text-xs mb-2 m-0">Size</p>
+                    <p className="text-white/40 text-xs mb-2 m-0">Ukuran</p>
                     <div className="flex flex-wrap gap-2">
                       {merch.sizes.map(size => (
                         <button
                           key={size}
                           onClick={() => updateSelection(merch.id, 'size', size)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all border-none ${
-                            sel.size === size
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all border-none ${sel.size === size
                               ? 'text-white'
                               : 'text-white/50 hover:text-white'
-                          }`}
+                            }`}
                           style={{
                             background: sel.size === size
                               ? 'linear-gradient(135deg, #f97316, #ea580c)'
@@ -133,17 +132,16 @@ function MerchandiseSection({ event }) {
                 {/* Color Selector */}
                 {needsColor && (
                   <div>
-                    <p className="text-white/40 text-xs mb-2 m-0">Color</p>
+                    <p className="text-white/40 text-xs mb-2 m-0">Warna</p>
                     <div className="flex flex-wrap gap-2">
                       {merch.colors.map(color => (
                         <button
                           key={color}
                           onClick={() => updateSelection(merch.id, 'color', color)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all border-none ${
-                            sel.color === color
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all border-none ${sel.color === color
                               ? 'text-white'
                               : 'text-white/50 hover:text-white'
-                          }`}
+                            }`}
                           style={{
                             background: sel.color === color
                               ? 'linear-gradient(135deg, #f97316, #ea580c)'
@@ -187,7 +185,7 @@ function MerchandiseSection({ event }) {
                         className="flex items-center gap-1 text-emerald-400 text-sm font-semibold"
                       >
                         <IoCheckmarkCircle />
-                        Added!
+                        Ditambahkan!
                       </motion.div>
                     ) : (
                       <motion.button
@@ -196,9 +194,8 @@ function MerchandiseSection({ event }) {
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleAddToCart(merch)}
                         disabled={!canAdd}
-                        className={`px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer border-none transition-all flex items-center gap-1.5 ${
-                          canAdd ? 'text-white' : 'text-white/30 cursor-not-allowed'
-                        }`}
+                        className={`px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer border-none transition-all flex items-center gap-1.5 ${canAdd ? 'text-white' : 'text-white/30 cursor-not-allowed'
+                          }`}
                         style={{
                           background: canAdd
                             ? 'linear-gradient(135deg, #f97316, #ea580c)'
@@ -206,7 +203,7 @@ function MerchandiseSection({ event }) {
                         }}
                       >
                         <IoCartOutline />
-                        Add to Cart
+                        Tambah ke Keranjang
                       </motion.button>
                     )}
                   </AnimatePresence>
@@ -214,7 +211,7 @@ function MerchandiseSection({ event }) {
 
                 {/* Stock Info */}
                 <p className="text-white/20 text-xs m-0 text-right">
-                  {merch.stock > 0 ? `${merch.stock} in stock` : 'Out of stock'}
+                  {merch.stock > 0 ? `${merch.stock} tersedia` : 'Stok habis'}
                 </p>
               </div>
             </motion.div>
@@ -227,8 +224,8 @@ function MerchandiseSection({ event }) {
         style={{ background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.2)' }}
       >
         <p className="text-orange-300 text-sm m-0">
-          <strong>Info:</strong> Merchandise will be available for pickup at the event venue.
-          You can also choose delivery during checkout.
+          <strong>Info:</strong> Merchandise akan tersedia untuk diambil di lokasi acara.
+          Anda juga dapat memilih pengiriman saat checkout.
         </p>
       </div>
     </div>

@@ -15,7 +15,7 @@ function EventDetailPage() {
   const eventsForLookup = useMemo(() => {
     if (user?.role === 'event_admin' || user?.role === 'app_admin') {
       const map = new Map()
-      ;[...publicEvents, ...adminEvents].forEach((e) => map.set(String(e.id), e))
+        ;[...publicEvents, ...adminEvents].forEach((e) => map.set(String(e.id), e))
       return Array.from(map.values())
     }
     return publicEvents
@@ -28,7 +28,7 @@ function EventDetailPage() {
   if (loading) {
     return (
       <div className="bg-[#0B0D1A] min-h-screen pt-24 flex items-center justify-center">
-        <div className="text-white/50 text-lg">Loading...</div>
+        <div className="text-white/50 text-lg">Memuat...</div>
       </div>
     )
   }
@@ -36,14 +36,14 @@ function EventDetailPage() {
   if (!event) {
     return (
       <div className="bg-[#0B0D1A] min-h-screen pt-24 flex flex-col items-center justify-center text-center px-6">
-        <h1 className="text-4xl font-bold text-white mb-4">Event Not Found</h1>
-        <p className="text-white/50 mb-8">The event you're looking for doesn't exist or has been removed.</p>
+        <h1 className="text-4xl font-bold text-white mb-4">Acara Tidak Ditemukan</h1>
+        <p className="text-white/50 mb-8">Acara yang Anda cari tidak ada atau telah dihapus.</p>
         <Link
           to="/events"
           className="text-white px-6 py-3 rounded-full text-sm font-semibold no-underline"
           style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
         >
-          Back to Events
+          Kembali ke Acara
         </Link>
       </div>
     )
@@ -72,7 +72,7 @@ function EventDetailPage() {
             className="flex items-center gap-2 text-white/80 hover:text-white text-sm no-underline transition-colors"
           >
             <IoArrowBack className="text-lg" />
-            Back to Events
+            Kembali ke Acara
           </Link>
         </div>
 
@@ -108,7 +108,7 @@ function EventDetailPage() {
                 {event.title}
               </h1>
               <p className="text-white/60 text-lg">
-                Tickets from {event.discount && (
+                Tiket dari {event.discount && (
                   <span className="text-white/40 line-through mr-2">${lowestPrice}</span>
                 )}
                 <span className="text-orange-400 font-bold">${discountedLowestPrice}</span>
@@ -138,10 +138,10 @@ function EventDetailPage() {
               className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
             >
               {[
-                { icon: <IoCalendarOutline />, label: 'Date', value: event.date.split('|')[0].trim() },
-                { icon: <IoTimeOutline />, label: 'Time', value: event.time },
+                { icon: <IoCalendarOutline />, label: 'Tanggal', value: event.date.split('|')[0].trim() },
+                { icon: <IoTimeOutline />, label: 'Waktu', value: event.time },
                 { icon: <IoLocationSharp />, label: 'Venue', value: event.venue },
-                { icon: <IoPersonOutline />, label: 'Artist', value: event.artist },
+                { icon: <IoPersonOutline />, label: 'Artis', value: event.artist },
               ].map((info, i) => (
                 <div key={i} className="rounded-xl p-4"
                   style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
@@ -160,11 +160,11 @@ function EventDetailPage() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="mb-8"
             >
-              <h2 className="text-xl font-bold text-white mb-4">About This Event</h2>
+              <h2 className="text-xl font-bold text-white mb-4">Tentang Acara Ini</h2>
               <p className="text-white/60 leading-relaxed">{event.description}</p>
               <div className="mt-4 flex items-center gap-2 text-white/40 text-sm">
                 <IoBusinessOutline className="text-lg" />
-                <span>Organized by <span className="text-white/70">{event.organizer}</span></span>
+                <span>Diselenggarakan oleh <span className="text-white/70">{event.organizer}</span></span>
               </div>
               {isAuthenticated && (
                 <motion.button
@@ -174,7 +174,7 @@ function EventDetailPage() {
                   className="mt-3 flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm font-medium cursor-pointer bg-transparent border-none transition-colors"
                 >
                   <IoChatbubbleEllipsesOutline className="text-lg" />
-                  Chat with Organizer
+                  Chat dengan Penyelenggara
                 </motion.button>
               )}
             </motion.div>
@@ -211,20 +211,18 @@ function EventDetailPage() {
               >
                 <button
                   onClick={() => setActiveTab('tickets')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold cursor-pointer transition-all border-none ${
-                    activeTab === 'tickets' ? 'text-white' : 'text-white/40 hover:text-white/70 bg-transparent'
-                  }`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold cursor-pointer transition-all border-none ${activeTab === 'tickets' ? 'text-white' : 'text-white/40 hover:text-white/70 bg-transparent'
+                    }`}
                   style={activeTab === 'tickets' ? { background: 'linear-gradient(135deg, #f97316, #ea580c)' } : {}}
                 >
                   <IoTicketOutline className="text-lg" />
-                  Tickets
+                  Tiket
                 </button>
                 {event.hasMerch && (
                   <button
                     onClick={() => setActiveTab('merch')}
-                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold cursor-pointer transition-all border-none ${
-                      activeTab === 'merch' ? 'text-white' : 'text-white/40 hover:text-white/70 bg-transparent'
-                    }`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold cursor-pointer transition-all border-none ${activeTab === 'merch' ? 'text-white' : 'text-white/40 hover:text-white/70 bg-transparent'
+                      }`}
                     style={activeTab === 'merch' ? { background: 'linear-gradient(135deg, #f97316, #ea580c)' } : {}}
                   >
                     <IoShirtOutline className="text-lg" />
@@ -269,7 +267,7 @@ function EventDetailPage() {
                 className="rounded-2xl p-6"
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
               >
-                <h3 className="text-lg font-bold text-white mb-4">Event Summary</h3>
+                <h3 className="text-lg font-bold text-white mb-4">Ringkasan Acara</h3>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center gap-3 text-sm">
@@ -287,24 +285,24 @@ function EventDetailPage() {
                 </div>
 
                 <div className="border-t border-white/10 pt-4 mb-4">
-                  <p className="text-white/40 text-xs mb-1">Starting from</p>
+                  <p className="text-white/40 text-xs mb-1">Mulai dari</p>
                   {event.discount ? (
                     <div>
                       <span className="text-white/40 line-through text-lg mr-2">${lowestPrice}</span>
                       <span className="text-3xl font-bold text-white">${discountedLowestPrice}</span>
-                      <span className="text-sm text-white/40 font-normal ml-1">/ ticket</span>
+                      <span className="text-sm text-white/40 font-normal ml-1">/ tiket</span>
                       <div className="mt-2">
                         <span className="text-xs font-semibold px-2.5 py-1 rounded-full text-emerald-300"
                           style={{ background: 'rgba(16,185,129,0.15)' }}
                         >
-                          {event.discount.label} — Save {event.discount.percentage}%
+                          {event.discount.label} — Hemat {event.discount.percentage}%
                         </span>
                       </div>
                     </div>
                   ) : (
                     <p className="text-3xl font-bold text-white">
                       ${lowestPrice}
-                      <span className="text-sm text-white/40 font-normal ml-1">/ ticket</span>
+                      <span className="text-sm text-white/40 font-normal ml-1">/ tiket</span>
                     </p>
                   )}
                 </div>
@@ -318,19 +316,19 @@ function EventDetailPage() {
                   }}
                 >
                   <IoCartOutline className="text-lg" />
-                  View Cart {itemCount > 0 && `(${itemCount})`}
+                  Lihat Keranjang {itemCount > 0 && `(${itemCount})`}
                 </Link>
 
                 {event.hasMerch && (
                   <div className="mt-4 flex items-center gap-2 text-sm text-emerald-400">
                     <IoCheckmarkCircle />
-                    <span>Merchandise available</span>
+                    <span>Merchandise tersedia</span>
                   </div>
                 )}
 
                 {!event.hasMerch && (
                   <p className="mt-4 text-xs text-white/30 text-center">
-                    No merchandise available for this event
+                    Tidak ada merchandise tersedia untuk acara ini
                   </p>
                 )}
               </motion.div>

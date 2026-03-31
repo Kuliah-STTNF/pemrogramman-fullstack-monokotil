@@ -1,27 +1,27 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { IoMailOutline, IoCallOutline, IoLocationOutline, IoLogoTwitter, IoLogoInstagram, IoLogoFacebook } from 'react-icons/io5'
+import { motion, AnimatePresence } from 'framer-motion'
+import { IoMailOutline, IoCallOutline, IoLocationOutline, IoLogoTwitter, IoLogoInstagram, IoLogoFacebook, IoCheckmarkCircleOutline, IoCloseCircleOutline } from 'react-icons/io5'
 
 const contactInfo = [
   {
     icon: IoMailOutline,
-    title: 'Email Us',
+    title: 'Email Kami',
     detail: 'support@monora.com',
-    subDetail: 'We reply within 24 hours',
+    subDetail: 'Kami membalas dalam 24 jam',
     gradient: 'linear-gradient(135deg, #6366f1, #4f46e5)',
   },
   {
     icon: IoCallOutline,
-    title: 'Call Us',
-    detail: '+1 (555) 123-4567',
-    subDetail: 'Mon-Fri, 9 AM - 6 PM EST',
+    title: 'Hubungi Kami',
+    detail: '+62 (812) 3456-7890',
+    subDetail: 'Sen-Jum, 09.00 - 18.00 WIB',
     gradient: 'linear-gradient(135deg, #06b6d4, #0891b2)',
   },
   {
     icon: IoLocationOutline,
-    title: 'Visit Us',
-    detail: '123 Event Street, Suite 100',
-    subDetail: 'New York, NY 10001',
+    title: 'Kunjungi Kami',
+    detail: 'Jl. Event No. 123, Suite 100',
+    subDetail: 'Jakarta Pusat, 10110',
     gradient: 'linear-gradient(135deg, #f97316, #ea580c)',
   },
 ]
@@ -33,15 +33,40 @@ function ContactPage() {
     subject: '',
     message: '',
   })
+  const [sending, setSending] = useState(false)
+  const [status, setStatus] = useState(null) // { type: 'success' | 'error', message: string }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    alert('Message sent! We\'ll get back to you soon.')
-    setFormData({ name: '', email: '', subject: '', message: '' })
+    setSending(true)
+    setStatus(null)
+
+    try {
+      const res = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        setStatus({ type: 'success', message: data.message || 'Pesan berhasil dikirim!' })
+        setFormData({ name: '', email: '', subject: '', message: '' })
+      } else {
+        setStatus({ type: 'error', message: data.message || 'Gagal mengirim pesan.' })
+      }
+    } catch (error) {
+      setStatus({ type: 'error', message: 'Tidak dapat terhubung ke server. Pastikan server berjalan.' })
+    } finally {
+      setSending(false)
+      // Auto-hide status after 6 seconds
+      setTimeout(() => setStatus(null), 6000)
+    }
   }
 
   return (
@@ -63,7 +88,7 @@ function ContactPage() {
             animate={{ opacity: 1 }}
             className="text-orange-400 text-sm font-semibold tracking-widest uppercase mb-4 block"
           >
-            Get In Touch
+            Hubungi Kami
           </motion.span>
           <motion.h1
             initial={{ y: 30, opacity: 0 }}
@@ -72,7 +97,7 @@ function ContactPage() {
             className="text-4xl md:text-6xl font-extrabold text-white mb-6"
             style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
           >
-            Contact Us
+            Kontak Kami
           </motion.h1>
           <motion.p
             initial={{ y: 20, opacity: 0 }}
@@ -80,7 +105,7 @@ function ContactPage() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-white/50 text-lg max-w-xl mx-auto leading-relaxed"
           >
-            Have a question, feedback, or need support? We'd love to hear from you. Our team is here to help.
+            Punya pertanyaan, masukan, atau butuh bantuan? Kami senang mendengar dari Anda. Tim kami siap membantu.
           </motion.p>
         </div>
       </section>
@@ -126,13 +151,13 @@ function ContactPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-2xl font-bold text-white mb-2">Send Us a Message</h2>
-            <p className="text-white/40 text-sm mb-6">Fill out the form below and we'll get back to you as soon as possible.</p>
+            <h2 className="text-2xl font-bold text-white mb-2">Kirim Pesan</h2>
+            <p className="text-white/40 text-sm mb-6">Isi formulir di bawah ini dan kami akan segera menghubungi Anda.</p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-white/50 text-xs font-medium mb-1.5 block">Full Name</label>
+                  <label className="text-white/50 text-xs font-medium mb-1.5 block">Nama Lengkap</label>
                   <input
                     type="text"
                     name="name"
@@ -148,7 +173,7 @@ function ContactPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-white/50 text-xs font-medium mb-1.5 block">Email Address</label>
+                  <label className="text-white/50 text-xs font-medium mb-1.5 block">Alamat Email</label>
                   <input
                     type="email"
                     name="email"
@@ -166,13 +191,13 @@ function ContactPage() {
               </div>
 
               <div>
-                <label className="text-white/50 text-xs font-medium mb-1.5 block">Subject</label>
+                <label className="text-white/50 text-xs font-medium mb-1.5 block">Subjek</label>
                 <input
                   type="text"
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  placeholder="How can we help?"
+                  placeholder="Apa yang bisa kami bantu?"
                   required
                   className="w-full px-4 py-3 rounded-xl text-white text-sm placeholder-white/30 outline-none"
                   style={{
@@ -183,12 +208,12 @@ function ContactPage() {
               </div>
 
               <div>
-                <label className="text-white/50 text-xs font-medium mb-1.5 block">Message</label>
+                <label className="text-white/50 text-xs font-medium mb-1.5 block">Pesan</label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  placeholder="Tell us more about your question..."
+                  placeholder="Ceritakan lebih lanjut tentang pertanyaan Anda..."
                   required
                   rows={5}
                   className="w-full px-4 py-3 rounded-xl text-white text-sm placeholder-white/30 outline-none resize-none"
@@ -201,16 +226,49 @@ function ContactPage() {
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="text-white font-semibold text-sm px-8 py-3.5 rounded-full cursor-pointer border-none w-full sm:w-auto"
+                disabled={sending}
+                whileHover={!sending ? { scale: 1.02 } : {}}
+                whileTap={!sending ? { scale: 0.98 } : {}}
+                className="text-white font-semibold text-sm px-8 py-3.5 rounded-full cursor-pointer border-none w-full sm:w-auto flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{
                   background: 'linear-gradient(135deg, #f97316, #ea580c)',
                   boxShadow: '0 6px 20px rgba(249,115,22,0.35)',
                 }}
               >
-                Send Message
+                {sending ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" />
+                    </svg>
+                    Mengirim...
+                  </>
+                ) : (
+                  'Kirim Pesan'
+                )}
               </motion.button>
+
+              {/* Status Message */}
+              <AnimatePresence>
+                {status && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium"
+                    style={{
+                      background: status.type === 'success' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                      border: `1px solid ${status.type === 'success' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                      color: status.type === 'success' ? '#22c55e' : '#ef4444',
+                    }}
+                  >
+                    {status.type === 'success'
+                      ? <IoCheckmarkCircleOutline className="text-lg shrink-0" />
+                      : <IoCloseCircleOutline className="text-lg shrink-0" />
+                    }
+                    {status.message}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </form>
           </motion.div>
 
@@ -241,8 +299,8 @@ function ContactPage() {
               className="p-6 rounded-2xl"
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
             >
-              <h3 className="text-white font-bold text-base mb-3">Follow Us on Social Media</h3>
-              <p className="text-white/40 text-sm mb-4">Stay up to date with the latest events and announcements.</p>
+              <h3 className="text-white font-bold text-base mb-3">Ikuti Kami di Media Sosial</h3>
+              <p className="text-white/40 text-sm mb-4">Tetap update dengan acara dan pengumuman terbaru.</p>
               <div className="flex gap-3">
                 {[
                   { icon: IoLogoTwitter, label: 'Twitter', color: '#1DA1F2' },
@@ -271,12 +329,12 @@ function ContactPage() {
               className="p-6 rounded-2xl"
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
             >
-              <h3 className="text-white font-bold text-base mb-3">Operating Hours</h3>
+              <h3 className="text-white font-bold text-base mb-3">Jam Operasional</h3>
               <div className="flex flex-col gap-2">
                 {[
-                  { day: 'Monday - Friday', hours: '9:00 AM - 6:00 PM EST' },
-                  { day: 'Saturday', hours: '10:00 AM - 4:00 PM EST' },
-                  { day: 'Sunday', hours: 'Closed' },
+                  { day: 'Senin - Jumat', hours: '09.00 - 18.00 WIB' },
+                  { day: 'Sabtu', hours: '10.00 - 16.00 WIB' },
+                  { day: 'Minggu', hours: 'Tutup' },
                 ].map((row) => (
                   <div key={row.day} className="flex items-center justify-between">
                     <span className="text-white/50 text-sm">{row.day}</span>

@@ -64,11 +64,10 @@ function AdminEvents() {
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-semibold capitalize border-none cursor-pointer transition-all ${
-                statusFilter === status
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold capitalize border-none cursor-pointer transition-all ${statusFilter === status
                   ? 'bg-orange-500/15 text-orange-400'
                   : 'bg-white/5 text-white/40 hover:text-white/60'
-              }`}
+                }`}
             >
               {status}
             </button>
@@ -142,11 +141,10 @@ function AdminEvents() {
 
                 {/* Status */}
                 <div className="col-span-1">
-                  <span className={`text-[11px] font-semibold px-2 py-1 rounded-full ${
-                    event.status === 'published' ? 'bg-green-500/10 text-green-400' :
-                    event.status === 'draft' ? 'bg-yellow-500/10 text-yellow-400' :
-                    'bg-red-500/10 text-red-400'
-                  }`}>
+                  <span className={`text-[11px] font-semibold px-2 py-1 rounded-full ${event.status === 'published' ? 'bg-green-500/10 text-green-400' :
+                      event.status === 'draft' ? 'bg-yellow-500/10 text-yellow-400' :
+                        'bg-red-500/10 text-red-400'
+                    }`}>
                     {event.status}
                   </span>
                 </div>

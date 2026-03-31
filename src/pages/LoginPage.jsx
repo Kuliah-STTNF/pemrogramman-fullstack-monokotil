@@ -23,7 +23,7 @@ function LoginPage() {
     e.preventDefault()
     setError('')
     if (!form.email || !form.password) {
-      setError('Please fill in all fields')
+      setError('Mohon isi semua kolom')
       return
     }
     const result = await login(form.email, form.password)
@@ -56,8 +56,8 @@ function LoginPage() {
             </div>
             <span className="text-white font-extrabold text-2xl">Monora</span>
           </Link>
-          <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-white/50 text-sm">Sign in to your account to continue</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Selamat Datang Kembali</h1>
+          <p className="text-white/50 text-sm">Masuk ke akun Anda untuk melanjutkan</p>
         </div>
 
         {/* Form */}
@@ -80,7 +80,7 @@ function LoginPage() {
               <IoMailOutline className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
               <input
                 type="email"
-                placeholder="Email address"
+                placeholder="Alamat email"
                 value={form.email}
                 onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
                 className={inputClass}
@@ -92,7 +92,7 @@ function LoginPage() {
               <IoLockClosedOutline className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
+                placeholder="Kata sandi"
                 value={form.password}
                 onChange={(e) => setForm(prev => ({ ...prev, password: e.target.value }))}
                 className={inputClass}
@@ -117,14 +117,14 @@ function LoginPage() {
                 boxShadow: '0 4px 15px rgba(249,115,22,0.3)',
               }}
             >
-              Sign In
+              Masuk
             </motion.button>
           </form>
 
           <p className="text-center text-white/40 text-sm mt-6 mb-0">
-            Don't have an account?{' '}
+            Belum punya akun?{' '}
             <Link to="/register" className="text-orange-400 hover:text-orange-300 no-underline font-medium">
-              Sign Up
+              Daftar
             </Link>
           </p>
         </div>

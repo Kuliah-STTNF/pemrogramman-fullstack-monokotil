@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
@@ -8,6 +9,7 @@ import Chatbot from './components/Chatbot'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminLayout from './components/AdminLayout'
 import AppAdminLayout from './components/AppAdminLayout'
+import LoadingScreen from './components/LoadingScreen'
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
 import EventsPage from './pages/EventsPage'
@@ -42,79 +44,83 @@ import AppAdminRefunds from './pages/app-admin/AppAdminRefunds'
 import AppAdminChats from './pages/app-admin/AppAdminChats'
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true)
+  const handleLoadingFinish = useCallback(() => setIsLoading(false), [])
+
   return (
     <Router>
       <AuthProvider>
-          <CartProvider>
-            <ScrollToTop />
-            <Routes>
-              {/* Event Admin Routes */}
-              <Route path="/admin/*" element={
-                <ProtectedRoute roles={['event_admin', 'app_admin']}>
-                  <AdminLayout>
-                    <Routes>
-                      <Route path="dashboard" element={<AdminDashboard />} />
-                      <Route path="events" element={<AdminEvents />} />
-                      <Route path="events/create" element={<EventForm />} />
-                      <Route path="events/edit/:id" element={<EventForm />} />
-                      <Route path="orders" element={<AdminOrders />} />
-                      <Route path="vouchers" element={<AdminVouchers />} />
-                      <Route path="promos" element={<AdminPromos />} />
-                      <Route path="refunds" element={<AdminRefunds />} />
-                      <Route path="chats" element={<AdminChats />} />
-                      <Route path="analytics" element={<AdminAnalytics />} />
-                    </Routes>
-                  </AdminLayout>
-                </ProtectedRoute>
-              } />
-
-              {/* App Admin Routes */}
-              <Route path="/app-admin/*" element={
-                <ProtectedRoute roles={['app_admin']}>
-                  <AppAdminLayout>
-                    <Routes>
-                      <Route path="dashboard" element={<AppAdminDashboard />} />
-                      <Route path="users" element={<AppAdminUsers />} />
-                      <Route path="categories" element={<AppAdminCategories />} />
-                      <Route path="events" element={<AppAdminEvents />} />
-                      <Route path="events/edit/:id" element={<EventForm />} />
-                      <Route path="orders" element={<AppAdminOrders />} />
-                      <Route path="vouchers" element={<AppAdminVouchers />} />
-                      <Route path="promos" element={<AppAdminPromos />} />
-                      <Route path="refunds" element={<AppAdminRefunds />} />
-                      <Route path="chats" element={<AppAdminChats />} />
-                      <Route path="analytics" element={<AppAdminAnalytics />} />
-                    </Routes>
-                  </AppAdminLayout>
-                </ProtectedRoute>
-              } />
-
-              {/* Public Routes */}
-              <Route path="*" element={
-                <div className="min-h-screen bg-[#0B0D1A]">
-                  <Navbar />
+        <CartProvider>
+          {isLoading && <LoadingScreen onFinish={handleLoadingFinish} />}
+          <ScrollToTop />
+          <Routes>
+            {/* Event Admin Routes */}
+            <Route path="/admin/*" element={
+              <ProtectedRoute roles={['event_admin', 'app_admin']}>
+                <AdminLayout>
                   <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="/events" element={<EventsPage />} />
-                    <Route path="/event/:id" element={<EventDetailPage />} />
-                    <Route path="/faq" element={<FAQPage />} />
-                    <Route path="/contact" element={<ContactPage />} />
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="/checkout" element={<CheckoutPage />} />
-                    <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/my-orders" element={<MyOrdersPage />} />
-                    <Route path="/location" element={<LocationPage />} />
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    <Route path="events" element={<AdminEvents />} />
+                    <Route path="events/create" element={<EventForm />} />
+                    <Route path="events/edit/:id" element={<EventForm />} />
+                    <Route path="orders" element={<AdminOrders />} />
+                    <Route path="vouchers" element={<AdminVouchers />} />
+                    <Route path="promos" element={<AdminPromos />} />
+                    <Route path="refunds" element={<AdminRefunds />} />
+                    <Route path="chats" element={<AdminChats />} />
+                    <Route path="analytics" element={<AdminAnalytics />} />
                   </Routes>
-                  <Footer />
-                  <Chatbot />
-                </div>
-              } />
-            </Routes>
-          </CartProvider>
-        </AuthProvider>
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+
+            {/* App Admin Routes */}
+            <Route path="/app-admin/*" element={
+              <ProtectedRoute roles={['app_admin']}>
+                <AppAdminLayout>
+                  <Routes>
+                    <Route path="dashboard" element={<AppAdminDashboard />} />
+                    <Route path="users" element={<AppAdminUsers />} />
+                    <Route path="categories" element={<AppAdminCategories />} />
+                    <Route path="events" element={<AppAdminEvents />} />
+                    <Route path="events/edit/:id" element={<EventForm />} />
+                    <Route path="orders" element={<AppAdminOrders />} />
+                    <Route path="vouchers" element={<AppAdminVouchers />} />
+                    <Route path="promos" element={<AppAdminPromos />} />
+                    <Route path="refunds" element={<AppAdminRefunds />} />
+                    <Route path="chats" element={<AppAdminChats />} />
+                    <Route path="analytics" element={<AppAdminAnalytics />} />
+                  </Routes>
+                </AppAdminLayout>
+              </ProtectedRoute>
+            } />
+
+            {/* Public Routes */}
+            <Route path="*" element={
+              <div className="min-h-screen bg-[#0B0D1A]">
+                <Navbar />
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/events" element={<EventsPage />} />
+                  <Route path="/event/:id" element={<EventDetailPage />} />
+                  <Route path="/faq" element={<FAQPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/my-orders" element={<MyOrdersPage />} />
+                  <Route path="/location" element={<LocationPage />} />
+                </Routes>
+                <Footer />
+                <Chatbot />
+              </div>
+            } />
+          </Routes>
+        </CartProvider>
+      </AuthProvider>
     </Router>
   )
 }

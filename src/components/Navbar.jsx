@@ -7,12 +7,12 @@ import { useAuth } from '../context/AuthContext'
 import logo from '../assets/logo-monora.png'
 
 const navLinks = [
-  { name: 'Home', path: '/' },
-  { name: 'About', path: '/about' },
-  { name: 'Events', path: '/events' },
-  { name: 'Location', path: '/location' },
+  { name: 'Beranda', path: '/' },
+  { name: 'Tentang', path: '/about' },
+  { name: 'Acara', path: '/events' },
+  { name: 'Lokasi', path: '/location' },
   { name: 'FAQ', path: '/faq' },
-  { name: 'Contact', path: '/contact' },
+  { name: 'Kontak', path: '/contact' },
 ]
 
 /* ── inline style objects ────────────────────────────── */
@@ -296,7 +296,7 @@ function Navbar() {
                       }}
                     >
                       <IoReceiptOutline />
-                      My Orders
+                      Pesanan Saya
                     </Link>
                     {(user?.role === 'event_admin' || user?.role === 'app_admin') && (
                       <Link
@@ -322,7 +322,7 @@ function Navbar() {
                         }}
                       >
                         <IoGridOutline />
-                        Event Panel
+                        Panel Acara
                       </Link>
                     )}
                     {user?.role === 'app_admin' && (
@@ -377,7 +377,7 @@ function Navbar() {
                       }}
                     >
                       <IoLogOutOutline />
-                      Sign Out
+                      Keluar
                     </button>
                   </motion.div>
                 )}
@@ -400,7 +400,7 @@ function Navbar() {
                   transition: 'box-shadow 0.3s ease',
                 }}
               >
-                Login / Sign Up
+                Masuk / Daftar
               </motion.button>
             </Link>
           )}
@@ -507,7 +507,7 @@ function Navbar() {
                       transition: 'all 0.2s ease',
                     }}
                   >
-                    My Orders
+                    Pesanan Saya
                   </Link>
                   {(user?.role === 'event_admin' || user?.role === 'app_admin') && (
                     <Link
@@ -522,7 +522,7 @@ function Navbar() {
                         transition: 'all 0.2s ease',
                       }}
                     >
-                      Event Panel
+                      Panel Acara
                     </Link>
                   )}
                   {user?.role === 'app_admin' && (
@@ -557,7 +557,7 @@ function Navbar() {
                       transition: 'all 0.2s ease',
                     }}
                   >
-                    Sign Out
+                    Keluar
                   </button>
                 </>
               ) : (
@@ -576,7 +576,7 @@ function Navbar() {
                       ...loginBtnStyle,
                     }}
                   >
-                    Login / Sign Up
+                    Masuk / Daftar
                   </button>
                 </Link>
               )}

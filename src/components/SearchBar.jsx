@@ -54,8 +54,8 @@ function Calendar({ selectedDate, onSelectDate, onClose, events: allEvents }) {
 
   const daysInMonth = new Date(viewDate.year, viewDate.month + 1, 0).getDate()
   const firstDay = new Date(viewDate.year, viewDate.month, 1).getDay()
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-  const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+  const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+  const dayNames = ['Mi', 'Se', 'Sl', 'Ra', 'Ka', 'Ju', 'Sa']
 
   const eventDates = new Set(
     allEvents
@@ -167,7 +167,7 @@ function Calendar({ selectedDate, onSelectDate, onClose, events: allEvents }) {
       {/* Events on selected date */}
       {eventsOnDate.length > 0 && (
         <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-          <div className="text-white/30 text-[10px] font-semibold uppercase tracking-wider mb-2">Events on this date</div>
+          <div className="text-white/30 text-[10px] font-semibold uppercase tracking-wider mb-2">Acara pada tanggal ini</div>
           {eventsOnDate.map(event => (
             <div key={event.id} className="flex items-center gap-2.5 py-1.5">
               <img src={event.thumbnail} alt="" className="w-7 h-7 rounded object-cover shrink-0" />
@@ -186,13 +186,13 @@ function Calendar({ selectedDate, onSelectDate, onClose, events: allEvents }) {
           onClick={() => { onSelectDate(''); onClose() }}
           className="text-white/40 text-xs font-medium cursor-pointer bg-transparent border-none hover:text-white transition-colors"
         >
-          Clear
+          Hapus
         </button>
         <button
           onClick={onClose}
           className="text-orange-400 text-xs font-semibold cursor-pointer bg-transparent border-none hover:text-orange-300 transition-colors"
         >
-          Done
+          Selesai
         </button>
       </div>
     </motion.div>
@@ -235,7 +235,7 @@ function SearchSuggestions({ query, onSelect, onNavigate, events: allEvents }) {
       {/* Event Results */}
       {eventMatches.length > 0 && (
         <div className="p-2">
-          <div className="text-white/30 text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5">Events</div>
+          <div className="text-white/30 text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5">Acara</div>
           {eventMatches.map(event => (
             <button
               key={event.id}
@@ -258,7 +258,7 @@ function SearchSuggestions({ query, onSelect, onNavigate, events: allEvents }) {
       {/* Category suggestions */}
       {categoryMatches.length > 0 && (
         <div className="p-2" style={eventMatches.length > 0 ? { borderTop: '1px solid rgba(255,255,255,0.06)' } : {}}>
-          <div className="text-white/30 text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5">Categories</div>
+          <div className="text-white/30 text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5">Kategori</div>
           {categoryMatches.map(cat => (
             <button
               key={cat}
@@ -270,7 +270,7 @@ function SearchSuggestions({ query, onSelect, onNavigate, events: allEvents }) {
               </div>
               <div className="text-white text-sm font-medium group-hover:text-orange-400 transition-colors">{cat}</div>
               <span className="text-white/20 text-[11px] ml-auto shrink-0">
-                {allEvents.filter(e => e.category === cat).length} events
+                {allEvents.filter(e => e.category === cat).length} acara
               </span>
             </button>
           ))}
@@ -284,7 +284,7 @@ function SearchSuggestions({ query, onSelect, onNavigate, events: allEvents }) {
           className="flex items-center gap-2 text-white/30 text-xs cursor-pointer bg-transparent border-none hover:text-white/50 transition-colors w-full text-left"
         >
           <IoSearch className="text-sm" />
-          <span>Search for "<span className="text-orange-400/70">{query}</span>"</span>
+          <span>Cari "<span className="text-orange-400/70">{query}</span>"</span>
         </button>
       </div>
     </motion.div>
@@ -298,20 +298,20 @@ function LocationDropdown({ query, onSelect, events: allEvents }) {
 
   const matches = q
     ? cities.filter(c => c.toLowerCase().includes(q)).map(city => {
-        const events = allEvents.filter(e => e.city === city)
-        return { city, province: events[0].province, count: events.length }
-      })
+      const events = allEvents.filter(e => e.city === city)
+      return { city, province: events[0].province, count: events.length }
+    })
     : cities.slice(0, 8).map(city => {
-        const events = allEvents.filter(e => e.city === city)
-        return { city, province: events[0].province, count: events.length }
-      })
+      const events = allEvents.filter(e => e.city === city)
+      return { city, province: events[0].province, count: events.length }
+    })
 
   const eventMatches = q
     ? allEvents.filter(e =>
-        e.title.toLowerCase().includes(q) ||
-        e.venue.toLowerCase().includes(q) ||
-        e.province.toLowerCase().includes(q)
-      ).slice(0, 4)
+      e.title.toLowerCase().includes(q) ||
+      e.venue.toLowerCase().includes(q) ||
+      e.province.toLowerCase().includes(q)
+    ).slice(0, 4)
     : []
 
   if (matches.length === 0 && eventMatches.length === 0) {
@@ -328,7 +328,7 @@ function LocationDropdown({ query, onSelect, events: allEvents }) {
           boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
         }}
       >
-        <p className="text-white/40 text-xs text-center py-2 m-0">No locations found for "{query}"</p>
+        <p className="text-white/40 text-xs text-center py-2 m-0">Tidak ada lokasi ditemukan untuk "{query}"</p>
       </motion.div>
     )
   }
@@ -350,7 +350,7 @@ function LocationDropdown({ query, onSelect, events: allEvents }) {
     >
       {matches.length > 0 && (
         <div className="p-2">
-          <div className="text-white/30 text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5">Cities</div>
+          <div className="text-white/30 text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5">Kota</div>
           {matches.map(m => (
             <button
               key={m.city}
@@ -364,7 +364,7 @@ function LocationDropdown({ query, onSelect, events: allEvents }) {
                 <div className="text-white text-sm font-medium group-hover:text-orange-400 transition-colors">{m.city}</div>
                 <div className="text-white/30 text-[11px]">{m.province}</div>
               </div>
-              <span className="text-white/20 text-[11px] shrink-0">{m.count} event{m.count > 1 ? 's' : ''}</span>
+              <span className="text-white/20 text-[11px] shrink-0">{m.count} acara</span>
             </button>
           ))}
         </div>
@@ -372,7 +372,7 @@ function LocationDropdown({ query, onSelect, events: allEvents }) {
 
       {eventMatches.length > 0 && (
         <div className="p-2" style={matches.length > 0 ? { borderTop: '1px solid rgba(255,255,255,0.06)' } : {}}>
-          <div className="text-white/30 text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5">Events</div>
+          <div className="text-white/30 text-[10px] font-semibold uppercase tracking-wider px-2 py-1.5">Acara</div>
           {eventMatches.map(event => (
             <button
               key={event.id}
@@ -431,7 +431,7 @@ function SearchBar({ compact = false, onSearch }) {
   const formatDisplayDate = (dateStr) => {
     if (!dateStr) return ''
     const d = new Date(dateStr + 'T00:00:00')
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    return d.toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' })
   }
 
   const handleSearch = useCallback(() => {
@@ -481,7 +481,7 @@ function SearchBar({ compact = false, onSearch }) {
           }}
           onFocus={() => searchQuery.length >= 2 && setShowSearchSuggestions(true)}
           onKeyDown={handleKeyDown}
-          placeholder="Search events, artists, or venues"
+          placeholder="Cari acara, artis, atau venue"
           className="bg-transparent border-none outline-none text-white text-sm placeholder-white/40 w-full"
         />
         {searchQuery && (
@@ -525,7 +525,7 @@ function SearchBar({ compact = false, onSearch }) {
           }}
           onFocus={() => setShowLocationDropdown(true)}
           onKeyDown={handleKeyDown}
-          placeholder="Location"
+          placeholder="Lokasi"
           className="bg-transparent border-none outline-none text-white text-sm placeholder-white/40 w-full md:w-28"
         />
         {locationQuery && (
@@ -561,7 +561,7 @@ function SearchBar({ compact = false, onSearch }) {
           value={formatDisplayDate(selectedDate)}
           readOnly
           onClick={() => setShowCalendar(!showCalendar)}
-          placeholder="Date"
+          placeholder="Tanggal"
           className="bg-transparent border-none outline-none text-white text-sm placeholder-white/40 w-full md:w-24 cursor-pointer"
         />
         {selectedDate && (
@@ -596,7 +596,7 @@ function SearchBar({ compact = false, onSearch }) {
           boxShadow: '0 4px 15px rgba(249,115,22,0.35)',
         }}
       >
-        {compact ? 'Search' : 'Search Tickets'}
+        {compact ? 'Cari' : 'Cari Tiket'}
       </motion.button>
     </div>
   )

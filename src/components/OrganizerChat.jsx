@@ -29,7 +29,7 @@ function OrganizerChat({ isOpen, onClose, event }) {
 
   const formatTime = (ts) => {
     const d = new Date(ts)
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
   }
 
   return (
@@ -87,8 +87,8 @@ function OrganizerChat({ isOpen, onClose, event }) {
               {messages.length === 0 && (
                 <div className="text-center py-10">
                   <IoChatbubbleEllipses className="text-4xl text-white/15 mx-auto mb-3" />
-                  <p className="text-white/40 text-sm">Start a conversation with the organizer</p>
-                  <p className="text-white/25 text-xs mt-1">Ask about the event, tickets, or anything else</p>
+                  <p className="text-white/40 text-sm">Mulai percakapan dengan penyelenggara</p>
+                  <p className="text-white/25 text-xs mt-1">Tanyakan tentang acara, tiket, atau hal lainnya</p>
                 </div>
               )}
               {messages.map((msg) => (
@@ -124,7 +124,7 @@ function OrganizerChat({ isOpen, onClose, event }) {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Type a message..."
+                  placeholder="Ketik pesan..."
                   className="flex-1 bg-transparent text-white text-sm py-3 px-4 rounded-xl outline-none placeholder-white/30"
                   style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
                 />

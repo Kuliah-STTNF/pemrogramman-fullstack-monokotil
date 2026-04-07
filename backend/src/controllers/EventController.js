@@ -1,52 +1,62 @@
-import { EventService } from '../services/EventService.js'
+import { EventService } from '../services/EventService.js';
 
 export class EventController {
+  #eventService;
+
   constructor(eventService = new EventService()) {
-    this.eventService = eventService
+    this.#eventService = eventService;
   }
 
-  listPublic = async (_req, res) => {
-    const events = await this.eventService.listPublished()
-    return res.json(events)
-  }
+  // Menggunakan standar arrow function properti untuk mempertahankan konteks 'this'
+  listPublic = async (request, response) => {
+    const publishedEvents = await this.#eventService.listPublished();
+    return response.json(publishedEvents);
+  };
 
-  listMyEvents = async ({ user }, res) => {
-    const events = await this.eventService.listMyEvents(user)
-    return res.json(events)
-  }
+  listMyEvents = async (request, response) => {
+    const { user } = request;
+    const userEvents = await this.#eventService.listMyEvents(user);
+    return response.json(userEvents);
+  };
 
-  listAllAdmin = async (_req, res) => {
-    const events = await this.eventService.listAllAdmin()
-    return res.json(events)
-  }
+  listAllAdmin = async (request, response) => {
+    const allEvents = await this.#eventService.listAllAdmin();
+    return response.json(allEvents);
+  };
 
-  getByIdOrSlug = async ({ params }, res) => {
-    const event = await this.eventService.getEventByIdOrSlug(params.idOrSlug)
-    return res.json(event)
-  }
+  getByIdOrSlug = async (request, response) => {
+    const { idOrSlug } = request.params;
+    const eventDetails = await this.#eventService.getEventByIdOrSlug(idOrSlug);
+    return response.json(eventDetails);
+  };
 
-  create = async ({ user, body }, res) => {
-    const event = await this.eventService.createEvent(user, body)
-    return res.status(201).json(event)
-  }
+  create = async (request, response) => {
+    const { user, body } = request;
+    const newEvent = await this.#eventService.createEvent(user, body);
+    return response.status(201).json(newEvent);
+  };
 
-  update = async ({ user, params, body }, res) => {
-    const event = await this.eventService.updateEvent(user, params.id, body)
-    return res.json(event)
-  }
+  update = async (request, response) => {
+    const { user, params, body } = request;
+    const updatedEvent = await this.#eventService.updateEvent(user, params.id, body);
+    return response.json(updatedEvent);
+  };
 
-  remove = async ({ user, params }, res) => {
-    const result = await this.eventService.deleteEvent(user, params.id)
-    return res.json(result)
-  }
+  remove = async (request, response) => {
+    const { user, params } = request;
+    const deletionResult = await this.#eventService.deleteEvent(user, params.id);
+    return response.json(deletionResult);
+  };
 
-  addDiscount = async ({ params, body }, res) => {
-    const discount = await this.eventService.addDiscount(params.id, body)
-    return res.status(201).json(discount)
-  }
+  addDiscount = async (request, response) => {
+    const { params, body } = request;
+    const newDiscount = await this.#eventService.addDiscount(params.id, body);
+    return response.status(201).json(newDiscount);
+  };
 
-  removeDiscount = async ({ params }, res) => {
-    const result = await this.eventService.removeDiscount(params.id)
-    return res.json(result)
-  }
+  removeDiscount = async (request, response) => {
+    const { id } = request.params;
+    const removalResult = await this.#eventService.removeDiscount(id);
+    return response.json(removalResult);
+  };
 }

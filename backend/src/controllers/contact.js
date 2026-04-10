@@ -1,25 +1,39 @@
 import { sendContactEmail } from '../services/contact.js'
 
-export async function handleContact(req, res) {
+export const handleContact = async (request, response) => {
     try {
-        const { name, email, subject, message } = req.body
+        const { name, email, subject, message } = request.body
 
-        // Validate
-        if (!name?.trim() || !email?.trim() || !subject?.trim() || !message?.trim()) {
-            return res.status(400).json({ message: 'Semua field harus diisi' })
+        // Validasi kelengkapan data menggunakan Array method (.some)
+        const requiredFields = [name, email, subject, message]
+        const hasEmptyFields = requiredFields.some(field => !field?.trim())
+
+        if (hasEmptyFields) {
+            return response.status(400).json({ message: 'Semua field harus diisi' })
         }
 
-        // Simple email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({ message: 'Format email tidak valid' })
+        // Pengecekan format surel/email
+        const mailFormatValidator = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!mailFormatValidator.test(email)) {
+            return response.status(400).json({ message: 'Format email tidak valid' })
         }
 
-        await sendContactEmail({ name, email, subject, message })
+        // Eksekusi pengiriman via service
+        await sendContactEmail({ 
+            name: name.trim(), 
+            email: email.trim(), 
+            subject: subject.trim(), 
+            message: message.trim() 
+        })
 
-        res.json({ message: 'Pesan berhasil dikirim! Kami akan segera menghubungi Anda.' })
-    } catch (error) {
-        console.error('Contact email error:', error)
-        res.status(500).json({ message: 'Gagal mengirim pesan. Silakan coba lagi nanti.' })
+        return response.json({ 
+            message: 'Pesan berhasil dikirim! Kami akan segera menghubungi Anda.' 
+        })
+
+    } catch (err) {
+        console.error('Contact form transmission failure:', err)
+        return response.status(500).json({ 
+            message: 'Gagal mengirim pesan. Silakan coba lagi nanti.' 
+        })
     }
 }

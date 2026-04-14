@@ -1,52 +1,52 @@
 import { EventService } from '../services/EventService.js'
 
 export class EventController {
-  constructor() {
-    this.eventService = new EventService()
+  constructor(eventService = new EventService()) {
+    this.eventService = eventService
   }
 
   listPublic = async (_req, res) => {
     const events = await this.eventService.listPublished()
-    res.json(events)
+    return res.json(events)
   }
 
-  listMyEvents = async (req, res) => {
-    const events = await this.eventService.listMyEvents(req.user)
-    res.json(events)
+  listMyEvents = async ({ user }, res) => {
+    const events = await this.eventService.listMyEvents(user)
+    return res.json(events)
   }
 
   listAllAdmin = async (_req, res) => {
     const events = await this.eventService.listAllAdmin()
-    res.json(events)
+    return res.json(events)
   }
 
-  getByIdOrSlug = async (req, res) => {
-    const event = await this.eventService.getEventByIdOrSlug(req.params.idOrSlug)
-    res.json(event)
+  getByIdOrSlug = async ({ params }, res) => {
+    const event = await this.eventService.getEventByIdOrSlug(params.idOrSlug)
+    return res.json(event)
   }
 
-  create = async (req, res) => {
-    const event = await this.eventService.createEvent(req.user, req.body)
-    res.status(201).json(event)
+  create = async ({ user, body }, res) => {
+    const event = await this.eventService.createEvent(user, body)
+    return res.status(201).json(event)
   }
 
-  update = async (req, res) => {
-    const event = await this.eventService.updateEvent(req.user, req.params.id, req.body)
-    res.json(event)
+  update = async ({ user, params, body }, res) => {
+    const event = await this.eventService.updateEvent(user, params.id, body)
+    return res.json(event)
   }
 
-  remove = async (req, res) => {
-    const result = await this.eventService.deleteEvent(req.user, req.params.id)
-    res.json(result)
+  remove = async ({ user, params }, res) => {
+    const result = await this.eventService.deleteEvent(user, params.id)
+    return res.json(result)
   }
 
-  addDiscount = async (req, res) => {
-    const discount = await this.eventService.addDiscount(req.params.id, req.body)
-    res.status(201).json(discount)
+  addDiscount = async ({ params, body }, res) => {
+    const discount = await this.eventService.addDiscount(params.id, body)
+    return res.status(201).json(discount)
   }
 
-  removeDiscount = async (req, res) => {
-    const result = await this.eventService.removeDiscount(req.params.id)
-    res.json(result)
+  removeDiscount = async ({ params }, res) => {
+    const result = await this.eventService.removeDiscount(params.id)
+    return res.json(result)
   }
 }

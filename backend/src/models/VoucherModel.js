@@ -1,69 +1,101 @@
 import { BaseModel } from './BaseModel.js'
 
 export class VoucherModel extends BaseModel {
+  // Enkapsulasi kriteria relasi data event ke dalam private field
+  #eventRelationConfig = {
+    event: {
+      select: { id: true, title: true, created_by: true }
+    }
+  }
+
   list() {
     return this.prisma.voucher.findMany({
-      include: { event: { select: { id: true, title: true, created_by: true } } },
+      include: this.#eventRelationConfig,
       orderBy: { created_at: 'desc' },
     })
   }
 
-  listByCreator(userId) {
+  listByCreator(adminUserId) {
+    const formattedAdminId = BigInt(adminUserId)
+    
     return this.prisma.voucher.findMany({
-      where: { event: { created_by: BigInt(userId) } },
-      include: { event: { select: { id: true, title: true, created_by: true } } },
+      where: { 
+        event: { created_by: formattedAdminId } 
+      },
+      include: this.#eventRelationConfig,
       orderBy: { created_at: 'desc' },
     })
   }
 
-  findByCode(code) {
+  findByCode(voucherCode) {
     return this.prisma.voucher.findUnique({
-      where: { code },
-      include: { event: { select: { id: true, title: true, created_by: true } } },
+      where: { code: voucherCode },
+      include: this.#eventRelationConfig,
     })
   }
 
-  findById(id) {
+  findById(voucherId) {
     return this.prisma.voucher.findUnique({
-      where: { id: BigInt(id) },
-      include: { event: { select: { id: true, title: true, created_by: true } } },
+      where: { id: BigInt(voucherId) },
+      include: this.#eventRelationConfig,
     })
   }
 
-  findEventById(eventId) {
-    return this.prisma.event.findUnique({ where: { id: BigInt(eventId) } })
+  findEventById(targetEventId) {
+    const numericEventId = BigInt(targetEventId)
+    return this.prisma.event.findUnique({ 
+      where: { id: numericEventId } 
+    })
   }
 
-  findEventByIdAndCreator(eventId, userId) {
+  findEventByIdAndCreator(targetEventId, adminUserId) {
     return this.prisma.event.findFirst({
-      where: { id: BigInt(eventId), created_by: BigInt(userId) },
+      where: { 
+        id: BigInt(targetEventId), 
+        created_by: BigInt(adminUserId) 
+      },
     })
   }
 
-  create(data) {
-    return this.prisma.voucher.create({ data })
+  create(payloadData) {
+    return this.prisma.voucher.create({ 
+      data: payloadData 
+    })
   }
 
-  update(id, data) {
-    return this.prisma.voucher.update({ where: { id: BigInt(id) }, data })
+  update(voucherId, payloadData) {
+    return this.prisma.voucher.update({ 
+      where: { id: BigInt(voucherId) }, 
+      data: payloadData 
+    })
   }
 
-  delete(id) {
-    return this.prisma.voucher.delete({ where: { id: BigInt(id) } })
+  delete(voucherId) {
+    return this.prisma.voucher.delete({ 
+      where: { id: BigInt(voucherId) } 
+    })
   }
 
-  incrementUsage(id) {
+  incrementUsage(voucherId) {
+    const numericVoucherId = BigInt(voucherId)
+    
     return this.prisma.voucher.update({
-      where: { id: BigInt(id) },
-      data: { used_count: { increment: 1 } },
+      where: { id: numericVoucherId },
+      data: { 
+        used_count: { increment: 1 } 
+      },
     })
   }
 
-  findOrderByCode(orderCode) {
-    return this.prisma.order.findFirst({ where: { order_code: orderCode } })
+  findOrderByCode(targetOrderCode) {
+    return this.prisma.order.findFirst({ 
+      where: { order_code: targetOrderCode } 
+    })
   }
 
-  createVoucherUsage(data) {
-    return this.prisma.voucherUsage.create({ data })
+  createVoucherUsage(usagePayload) {
+    return this.prisma.voucherUsage.create({ 
+      data: usagePayload 
+    })
   }
 }

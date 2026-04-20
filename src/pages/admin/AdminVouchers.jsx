@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoAddCircleOutline, IoSearch, IoPricetagOutline, IoCreateOutline, IoTrashOutline, IoCloseOutline } from 'react-icons/io5'
 import { useAuth } from '../../context/AuthContext'
+import { formatRupiah } from '../../utils/currency'
 
 const EMPTY_FORM = { code: '', eventId: '', type: 'percentage', value: '', minPurchase: '', maxUses: '', description: '' }
 
@@ -132,9 +133,9 @@ function AdminVouchers() {
                 <div className="col-span-2 text-white/60 text-xs truncate">{v.eventTitle || '-'}</div>
                 <div className="col-span-1 text-white/50 text-sm capitalize">{v.type}</div>
                 <div className="col-span-1 text-white text-sm font-medium">
-                  {v.type === 'percentage' ? `${v.value}%` : `$${v.value}`}
+                  {v.type === 'percentage' ? `${v.value}%` : formatRupiah(v.value)}
                 </div>
-                <div className="col-span-1 text-white/50 text-sm">${v.minPurchase}</div>
+                <div className="col-span-1 text-white/50 text-sm">{formatRupiah(v.minPurchase)}</div>
                 <div className="col-span-1">
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
@@ -194,7 +195,7 @@ function AdminVouchers() {
                     <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}
                       className="w-full px-4 py-2.5 rounded-xl text-white text-sm outline-none cursor-pointer" style={inputStyle}>
                       <option value="percentage" style={{ background: '#1a1a2e' }}>Percentage (%)</option>
-                      <option value="flat" style={{ background: '#1a1a2e' }}>Flat ($)</option>
+                      <option value="flat" style={{ background: '#1a1a2e' }}>Flat (Rp)</option>
                     </select>
                   </div>
                   <div>
@@ -205,7 +206,7 @@ function AdminVouchers() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-white/50 text-xs font-medium block mb-1.5">Min Purchase ($)</label>
+                    <label className="text-white/50 text-xs font-medium block mb-1.5">Min Purchase (Rp)</label>
                     <input type="number" value={form.minPurchase} onChange={e => setForm({ ...form, minPurchase: e.target.value })}
                       placeholder="0" className="w-full px-4 py-2.5 rounded-xl text-white text-sm outline-none placeholder-white/30" style={inputStyle} />
                   </div>

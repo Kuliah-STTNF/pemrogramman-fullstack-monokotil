@@ -277,9 +277,9 @@ CREATE TABLE vouchers (
 INSERT INTO vouchers (code, type, value, min_purchase, max_uses, description) VALUES
   ('WELCOME20', 'percentage', 20, 50,  100, '20% off your first order'),
   ('MONORA10',  'percentage', 10, 0,   500, '10% off any order'),
-  ('SAVE15',    'percentage', 15, 100, 200, '15% off orders above $100'),
-  ('FLAT25',    'flat',       25, 75,  150, '$25 off orders above $75'),
-  ('FEST30',    'percentage', 30, 150, 50,  '30% off orders above $150');
+  ('SAVE15',    'percentage', 15, 100, 200, '15% off orders above Rp100'),
+  ('FLAT25',    'flat',       25, 75,  150, 'Rp25 off orders above Rp75'),
+  ('FEST30',    'percentage', 30, 150, 50,  '30% off orders above Rp150');
 
 
 -- ─────────────────────────────────────────────────────

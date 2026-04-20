@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { IoCardOutline, IoLockClosedOutline, IoShieldCheckmarkOutline, IoTicketOutline, IoShirtOutline, IoArrowBack, IoPricetagOutline } from 'react-icons/io5'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
+import { formatRupiah } from '../utils/currency'
 
 function CheckoutPage() {
   const { items, removeSelectedItems } = useCart()
@@ -56,8 +57,10 @@ function CheckoutPage() {
       .filter(id => Number.isInteger(id) && id > 0)
   ))
   const voucherDiscount = appliedVoucher ? appliedVoucher.discount : 0
-  const serviceFee = Math.round((total - voucherDiscount) * 0.05 * 100) / 100
-  const grandTotal = Math.max(0, total - voucherDiscount + serviceFee)
+  const taxableTotal = Math.max(0, total - voucherDiscount)
+  const serviceFee = Math.round(taxableTotal * 0.05)
+  const deliveryFee = merch.length > 0 && formData.deliveryMethod === 'delivery' ? 150000 : 0
+  const grandTotal = taxableTotal + serviceFee + deliveryFee
 
   const handleApplyVoucher = async () => {
     if (!voucherCode.trim()) return
@@ -294,7 +297,7 @@ function CheckoutPage() {
                       <div className="flex gap-3 mb-4">
                         {[
                           { value: 'pickup', label: 'Ambil di Acara', desc: 'Gratis' },
-                          { value: 'delivery', label: 'Kirim ke Alamat', desc: '+Rp150.000' },
+                          { value: 'delivery', label: 'Kirim ke Alamat', desc: `+${formatRupiah(150000)}` },
                         ].map(opt => (
                           <button
                             key={opt.value}
@@ -438,7 +441,7 @@ function CheckoutPage() {
                   boxShadow: '0 4px 15px rgba(249,115,22,0.3)',
                 }}
               >
-                {step === 2 ? `Bayar $${grandTotal.toFixed(2)}` : 'Lanjut ke Pembayaran'}
+                {step === 2 ? `Bayar ${formatRupiah(grandTotal)}` : 'Lanjut ke Pembayaran'}
               </motion.button>
             </div>
           </div>
@@ -470,7 +473,7 @@ function CheckoutPage() {
                         <p className="text-white/30 text-xs m-0">x{item.quantity}</p>
                       </div>
                       <span className="text-white text-xs font-semibold shrink-0">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatRupiah(item.price * item.quantity)}
                       </span>
                     </div>
                   ))}
@@ -521,28 +524,28 @@ function CheckoutPage() {
 
                   <div className="flex justify-between text-sm">
                     <span className="text-white/50">Subtotal</span>
-                    <span className="text-white">${total.toFixed(2)}</span>
+                    <span className="text-white">{formatRupiah(total)}</span>
                   </div>
                   {appliedVoucher && (
                     <div className="flex justify-between text-sm">
                       <span className="text-emerald-400">Diskon Voucher</span>
-                      <span className="text-emerald-400">-${voucherDiscount.toFixed(2)}</span>
+                      <span className="text-emerald-400">-{formatRupiah(voucherDiscount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
                     <span className="text-white/50">Biaya Layanan (5%)</span>
-                    <span className="text-white">${serviceFee.toFixed(2)}</span>
+                    <span className="text-white">{formatRupiah(serviceFee)}</span>
                   </div>
                   {merch.length > 0 && formData.deliveryMethod === 'delivery' && (
                     <div className="flex justify-between text-sm">
                       <span className="text-white/50">Pengiriman</span>
-                      <span className="text-white">$10.00</span>
+                      <span className="text-white">{formatRupiah(deliveryFee)}</span>
                     </div>
                   )}
                   <div className="flex justify-between pt-2 border-t border-white/10">
                     <span className="text-white font-bold">Total</span>
                     <span className="text-white font-bold text-xl">
-                      ${(grandTotal + (merch.length > 0 && formData.deliveryMethod === 'delivery' ? 10 : 0)).toFixed(2)}
+                      {formatRupiah(grandTotal)}
                     </span>
                   </div>
                 </div>

@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css'
 import { IoLocationSharp, IoCalendarOutline, IoTicketOutline, IoClose, IoChevronForward, IoShirtOutline, IoMusicalNotes } from 'react-icons/io5'
 import { useAuth } from '../context/AuthContext'
 import WeatherWidget from '../components/WeatherWidget'
+import { formatRupiah } from '../utils/currency'
 
 // Fix default marker icon issue in react-leaflet
 delete L.Icon.Default.prototype._getIconUrl
@@ -156,7 +157,7 @@ function EventMarkers({ events, onEventClick }) {
           <span style={{ color: '#888', fontSize: '11px' }}>{event.date}</span>
           <br />
           <span style={{ color: '#f97316', fontSize: '12px', fontWeight: '600' }}>
-            From ${Math.min(...event.tickets.map(t => t.price))}
+            Mulai dari {formatRupiah(Math.min(...event.tickets.map(t => t.price)))}
           </span>
         </div>
       </Popup>
@@ -482,9 +483,9 @@ function LocationPage() {
                               <div className="flex items-center gap-1.5">
                                 <IoTicketOutline className="text-orange-400" />
                                 <span className="text-white font-semibold text-sm">
-                                  ${Math.min(...event.tickets.map(t => t.price))}
+                                  {formatRupiah(Math.min(...event.tickets.map(t => t.price)))}
                                 </span>
-                                <span className="text-white/30 text-xs">starting</span>
+                                <span className="text-white/30 text-xs">mulai</span>
                               </div>
                               <div className="flex items-center gap-1 text-orange-400 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                                 Details <IoChevronForward className="text-[10px]" />

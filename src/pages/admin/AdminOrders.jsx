@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { IoSearch, IoReceiptOutline, IoFilterOutline, IoChevronDownOutline } from 'react-icons/io5'
 import { useAuth } from '../../context/AuthContext'
+import { formatRupiah } from '../../utils/currency'
 
 function AdminOrders() {
   const { getMyEvents, orders, updateOrderStatus } = useAuth()
@@ -40,7 +41,7 @@ function AdminOrders() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white m-0">Orders</h1>
-        <p className="text-white/40 text-sm mt-1 m-0">{eventOrders.length} order{eventOrders.length !== 1 ? 's' : ''} · ${totalRevenue.toLocaleString()} total revenue</p>
+        <p className="text-white/40 text-sm mt-1 m-0">{eventOrders.length} order{eventOrders.length !== 1 ? 's' : ''} · {formatRupiah(totalRevenue)} total revenue</p>
       </div>
 
       {/* Filters */}
@@ -134,7 +135,7 @@ function AdminOrders() {
                   </select>
                 </div>
                 <div className="col-span-2 text-right">
-                  <div className="text-white font-semibold text-sm">${(order.total || 0).toLocaleString()}</div>
+                  <div className="text-white font-semibold text-sm">{formatRupiah(order.total || 0)}</div>
                 </div>
               </motion.div>
             ))}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { IoTicketOutline, IoShirtOutline, IoCalendarOutline, IoTimeOutline, IoReceiptOutline, IoArrowUndoOutline } from 'react-icons/io5'
 import { useAuth } from '../context/AuthContext'
+import { formatRupiah } from '../utils/currency'
 
 function MyOrdersPage() {
   const { getUserOrders, isAuthenticated, requestRefund, getRefundByOrderId } = useAuth()
@@ -136,7 +137,7 @@ function MyOrdersPage() {
                         }
                         return null
                       })()}
-                      <span className="text-white font-bold">${order.grandTotal.toFixed(2)}</span>
+                      <span className="text-white font-bold">{formatRupiah(order.grandTotal || order.total || 0)}</span>
                     </div>
                   </div>
 
@@ -158,7 +159,7 @@ function MyOrdersPage() {
                               {refundedItemIds.has(Number(item.id)) && (
                                 <span className="text-[10px] px-2 py-0.5 rounded-full text-blue-300" style={{ background: 'rgba(59,130,246,0.15)' }}>Dikembalikan</span>
                               )}
-                              <span className="text-white/70 text-sm">${(item.price * item.quantity).toFixed(2)}</span>
+                              <span className="text-white/70 text-sm">{formatRupiah(item.price * item.quantity)}</span>
                             </div>
                           </div>
                         ))}
@@ -183,7 +184,7 @@ function MyOrdersPage() {
                               {refundedItemIds.has(Number(item.id)) && (
                                 <span className="text-[10px] px-2 py-0.5 rounded-full text-blue-300" style={{ background: 'rgba(59,130,246,0.15)' }}>Dikembalikan</span>
                               )}
-                              <span className="text-white/70 text-sm">${(item.price * item.quantity).toFixed(2)}</span>
+                              <span className="text-white/70 text-sm">{formatRupiah(item.price * item.quantity)}</span>
                             </div>
                           </div>
                         ))}

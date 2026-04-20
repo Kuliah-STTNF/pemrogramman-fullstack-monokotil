@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoSearchOutline, IoFlashOutline, IoCloseOutline, IoAddCircleOutline, IoTrashOutline } from 'react-icons/io5'
 import { useAuth } from '../../context/AuthContext'
+import { formatRupiah } from '../../utils/currency'
 
 function AppAdminPromos() {
   const { getAllAdminEvents, getAllUsers, setEventDiscount, removeEventDiscount } = useAuth()
@@ -119,7 +120,7 @@ function AppAdminPromos() {
                   </div>
                   <div className="col-span-2 text-white/40 text-xs truncate">{getUserName(event.createdBy)}</div>
                   <div className="col-span-1 text-white/50 text-xs">{event.category}</div>
-                  <div className="col-span-2 text-white/50 text-sm">${lowestPrice}+</div>
+                  <div className="col-span-2 text-white/50 text-sm">{formatRupiah(lowestPrice)}+</div>
                   <div className="col-span-2">
                     {event.discount ? (
                       <div className="flex items-center gap-2">

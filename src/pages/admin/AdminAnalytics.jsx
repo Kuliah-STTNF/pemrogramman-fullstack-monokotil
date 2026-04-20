@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { IoBarChartOutline, IoTrendingUpOutline, IoCalendarOutline, IoTicketOutline, IoCashOutline, IoPeopleOutline } from 'react-icons/io5'
 import { useAuth } from '../../context/AuthContext'
+import { formatRupiah } from '../../utils/currency'
 
 function AdminAnalytics() {
   const { getMyEvents, orders } = useAuth()
@@ -80,11 +81,11 @@ function AdminAnalytics() {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         {[
-          { label: 'Revenue', value: `$${analytics.totalRevenue.toLocaleString()}`, icon: IoCashOutline, color: '#10b981' },
+          { label: 'Revenue', value: formatRupiah(analytics.totalRevenue), icon: IoCashOutline, color: '#10b981' },
           { label: 'Tickets Sold', value: analytics.totalTickets, icon: IoTicketOutline, color: '#f97316' },
           { label: 'Merch Sold', value: analytics.totalMerch, icon: IoTrendingUpOutline, color: '#8b5cf6' },
           { label: 'Orders', value: analytics.totalOrders, icon: IoPeopleOutline, color: '#3b82f6' },
-          { label: 'Avg Order', value: `$${analytics.avgOrderValue.toFixed(0)}`, icon: IoBarChartOutline, color: '#ec4899' },
+          { label: 'Avg Order', value: formatRupiah(analytics.avgOrderValue), icon: IoBarChartOutline, color: '#ec4899' },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -119,7 +120,7 @@ function AdminAnalytics() {
                   <div key={event.id}>
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-white text-sm font-medium truncate flex-1 mr-3">{event.title}</span>
-                      <span className="text-white/60 text-sm font-semibold shrink-0">${event.revenue.toLocaleString()}</span>
+                      <span className="text-white/60 text-sm font-semibold shrink-0">{formatRupiah(event.revenue)}</span>
                     </div>
                     <div className="h-2 rounded-full bg-white/5 overflow-hidden">
                       <motion.div
@@ -161,7 +162,7 @@ function AdminAnalytics() {
                         <div className="text-white text-sm font-medium">{cat.name}</div>
                         <div className="text-white/30 text-[11px]">{cat.events} event{cat.events !== 1 ? 's' : ''}</div>
                       </div>
-                      <div className="text-white font-semibold text-sm">${cat.revenue.toLocaleString()}</div>
+                        <div className="text-white font-semibold text-sm">{formatRupiah(cat.revenue)}</div>
                     </div>
                   )
                 })}
@@ -183,7 +184,7 @@ function AdminAnalytics() {
                   const height = (month.revenue / maxMonthRevenue) * 100
                   return (
                     <div key={month.month} className="flex-1 flex flex-col items-center gap-2">
-                      <div className="text-white/50 text-[11px] font-semibold">${month.revenue.toLocaleString()}</div>
+                      <div className="text-white/50 text-[11px] font-semibold">{formatRupiah(month.revenue)}</div>
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${height}%` }}

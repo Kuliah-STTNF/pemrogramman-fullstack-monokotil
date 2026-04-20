@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoSearch, IoLocationSharp, IoCalendarOutline, IoCloseCircle, IoChevronBack, IoChevronForward, IoMusicalNotes } from 'react-icons/io5'
 import { useAuth } from '../context/AuthContext'
+import { formatRupiah } from '../utils/currency'
 
 // ─── Portal Dropdown (renders at body level to avoid overflow clipping) ───
 function PortalDropdown({ anchorRef, children, visible, align = 'left', dropdownRef }) {
@@ -248,7 +249,7 @@ function SearchSuggestions({ query, onSelect, onNavigate, events: allEvents }) {
                 <div className="text-white/30 text-[11px]">{event.venue}, {event.city} · {event.date}</div>
               </div>
               <span className="text-white/15 text-[11px] shrink-0">
-                ${Math.min(...event.tickets.map(t => t.price))}
+                {formatRupiah(Math.min(...event.tickets.map(t => t.price)))}
               </span>
             </button>
           ))}

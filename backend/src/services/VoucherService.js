@@ -1,6 +1,8 @@
 import { ApiError } from '../utils/ApiError.js'
 import { VoucherModel } from '../models/VoucherModel.js'
 
+const formatRupiah = (amount) => `Rp${Math.round(Number(amount) || 0).toLocaleString('id-ID')}`
+
 export class VoucherService {
   constructor() {
     this.voucherModel = new VoucherModel()
@@ -128,7 +130,7 @@ export class VoucherService {
       return { valid: false, message: 'Voucher has been fully redeemed' }
     }
     if (Number(orderTotal) < Number(voucher.min_purchase)) {
-      return { valid: false, message: `Minimum purchase $${Number(voucher.min_purchase)} required` }
+      return { valid: false, message: `Minimum purchase ${formatRupiah(voucher.min_purchase)} required` }
     }
 
     const discount = voucher.type === 'percentage'
@@ -139,7 +141,7 @@ export class VoucherService {
       valid: true,
       voucher: this.formatVoucher(voucher),
       discount,
-      message: `${voucher.description} — You save $${discount.toFixed(2)}`,
+      message: `${voucher.description} — You save ${formatRupiah(discount)}`,
     }
   }
 

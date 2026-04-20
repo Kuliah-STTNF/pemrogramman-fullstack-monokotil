@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { IoChevronBack, IoChevronForward, IoShirtOutline } from 'react-icons/io5'
 import { getDiscountedPrice } from '../data/events'
 import { useAuth } from '../context/AuthContext'
+import { formatRupiah } from '../utils/currency'
 
 const CARD_WIDTH = 250
 const GAP = 20
@@ -154,11 +155,11 @@ function FeaturedEvents() {
                   <p className="text-white text-sm font-semibold mb-3">
                     {event.discount ? (
                       <>
-                        <span className="text-white/40 line-through mr-1">${Math.min(...event.tickets.map(tk => tk.price))}</span>
-                        Tiket dari <span className="text-orange-400">${getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount)}</span>
+                        <span className="text-white/40 line-through mr-1">{formatRupiah(Math.min(...event.tickets.map(tk => tk.price)))}</span>
+                        Tiket dari <span className="text-orange-400">{formatRupiah(getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount))}</span>
                       </>
                     ) : (
-                      <>Tiket dari <span className="text-orange-400">${Math.min(...event.tickets.map(tk => tk.price))}</span></>
+                      <>Tiket dari <span className="text-orange-400">{formatRupiah(Math.min(...event.tickets.map(tk => tk.price)))}</span></>
                     )}
                   </p>
                   {/* Tags */}

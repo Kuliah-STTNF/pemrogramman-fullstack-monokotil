@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoChatbubbleEllipses, IoClose, IoSend, IoSparkles } from 'react-icons/io5'
 import { useAuth } from '../context/AuthContext'
+import { formatRupiah } from '../utils/currency'
 
 /* ── Useful aliases ── */
 const aliases = {
@@ -27,7 +28,7 @@ function buildLocationCoords(events) {
 function buildSystemPrompt(events) {
     const eventLines = events.map(e => {
         const minPrice = e.tickets?.length ? Math.min(...e.tickets.map(t => t.price)) : 0
-        return `- "${e.title}" | ${e.date} | ${e.venue}, ${e.city}, ${e.province} | Harga mulai $${minPrice} | Kategori: ${e.category}${e.tags?.length ? ' | Tags: ' + e.tags.join(', ') : ''}`
+        return `- "${e.title}" | ${e.date} | ${e.venue}, ${e.city}, ${e.province} | Harga mulai ${formatRupiah(minPrice)} | Kategori: ${e.category}${e.tags?.length ? ' | Tags: ' + e.tags.join(', ') : ''}`
     }).join('\n')
     return `Kamu adalah MonoBot, asisten AI dari Monora — platform pembelian tiket event & konser.
 Kamu bertugas membantu pengguna mencari event, memberikan informasi tiket, menjawab pertanyaan cuaca di lokasi event, dan menjawab pertanyaan tentang Monora.

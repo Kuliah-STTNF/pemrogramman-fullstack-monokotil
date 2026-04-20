@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoSearchOutline, IoArrowUndoOutline, IoCheckmarkCircleOutline, IoCloseCircleOutline, IoEyeOutline, IoCloseOutline } from 'react-icons/io5'
 import { useAuth } from '../../context/AuthContext'
+import { formatRupiah } from '../../utils/currency'
 
 function AppAdminRefunds() {
   const { orders, getAllRefunds, updateRefundStatus, getAllUsers } = useAuth()
@@ -63,7 +64,7 @@ function AppAdminRefunds() {
           { label: 'Pending', value: stats.pending, color: '#eab308' },
           { label: 'Approved', value: stats.approved, color: '#22c55e' },
           { label: 'Rejected', value: stats.rejected, color: '#ef4444' },
-          { label: 'Total Refunded', value: `$${stats.totalRefunded.toLocaleString()}`, color: '#3b82f6' },
+          { label: 'Total Refunded', value: formatRupiah(stats.totalRefunded), color: '#3b82f6' },
         ].map(s => (
           <div key={s.label} className="rounded-xl px-4 py-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <div className="text-lg font-bold" style={{ color: s.color }}>{s.value}</div>
@@ -119,7 +120,7 @@ function AppAdminRefunds() {
                   </div>
                   <div className="col-span-2">
                     <div className="text-white text-sm">{refund.orderId}</div>
-                    <div className="text-white/30 text-[11px]">${(order?.total || 0).toFixed(2)}</div>
+                    <div className="text-white/30 text-[11px]">{formatRupiah(order?.total || 0)}</div>
                   </div>
                   <div className="col-span-2">
                     <div className="text-white/70 text-xs truncate">{refund.item?.name || '-'}</div>
@@ -174,7 +175,7 @@ function AppAdminRefunds() {
                 <div className="flex justify-between"><span className="text-white/40 text-sm">Customer</span><span className="text-white text-sm">{getUserName(detailModal.userId)}</span></div>
                 <div className="flex justify-between"><span className="text-white/40 text-sm">Event</span><span className="text-white text-sm text-right">{detailModal.eventTitle || '-'}</span></div>
                 <div className="flex justify-between"><span className="text-white/40 text-sm">Refund Item</span><span className="text-white text-sm text-right">{detailModal.item?.name || '-'}</span></div>
-                <div className="flex justify-between"><span className="text-white/40 text-sm">Order Total</span><span className="text-white text-sm">${(getOrder(detailModal.orderId)?.total || 0).toFixed(2)}</span></div>
+                <div className="flex justify-between"><span className="text-white/40 text-sm">Order Total</span><span className="text-white text-sm">{formatRupiah(getOrder(detailModal.orderId)?.total || 0)}</span></div>
                 <div className="flex justify-between">
                   <span className="text-white/40 text-sm">Status</span>
                   <span className={`text-xs font-semibold px-2 py-1 rounded-full ${statusColors[detailModal.status]}`}>{detailModal.status}</span>
@@ -193,7 +194,7 @@ function AppAdminRefunds() {
                     {getOrder(detailModal.orderId).items.map((item, i) => (
                       <div key={i} className="flex justify-between text-sm py-1">
                         <span className="text-white/60">{item.quantity}x {item.name || item.title}</span>
-                        <span className="text-white/40">${((item.price || 0) * item.quantity).toFixed(2)}</span>
+                        <span className="text-white/40">{formatRupiah((item.price || 0) * item.quantity)}</span>
                       </div>
                     ))}
                   </div>

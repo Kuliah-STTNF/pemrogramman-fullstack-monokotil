@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { IoTrashOutline, IoAdd, IoRemove, IoCartOutline, IoArrowForward, IoTicketOutline, IoShirtOutline, IoStorefrontOutline } from 'react-icons/io5'
 import { useCart } from '../context/CartContext'
+import { formatRupiah } from '../utils/currency'
 
 function getItemKey(item) {
   return item.cartKey || `${item.itemType}-${item.id}`
@@ -26,7 +27,7 @@ function CartPage() {
     const tickets = group.items.filter((item) => item.itemType === 'ticket')
     const merch = group.items.filter((item) => item.itemType === 'merch')
     const subtotal = group.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const serviceFee = subtotal * 0.05
+    const serviceFee = Math.round(subtotal * 0.05)
     const total = subtotal + serviceFee
 
     return {
@@ -113,7 +114,7 @@ function CartPage() {
                 <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                   <div className="text-right">
                     <div className="text-white/40 text-xs">Total grup</div>
-                    <div className="text-white font-bold text-2xl">${group.total.toFixed(2)}</div>
+                    <div className="text-white font-bold text-2xl">{formatRupiah(group.total)}</div>
                   </div>
                   <Link
                     to={`/checkout?items=${encodeURIComponent(group.checkoutKeys.join(','))}`}
@@ -172,7 +173,7 @@ function CartPage() {
                                 </button>
                               </div>
 
-                              <p className="text-white font-bold text-sm m-0 w-20 text-right">${(item.price * item.quantity).toFixed(2)}</p>
+                              <p className="text-white font-bold text-sm m-0 w-20 text-right">{formatRupiah(item.price * item.quantity)}</p>
 
                               <button
                                 onClick={() => removeItem(item.id, 'ticket')}
@@ -232,7 +233,7 @@ function CartPage() {
                                 </button>
                               </div>
 
-                              <p className="text-white font-bold text-sm m-0 w-20 text-right">${(item.price * item.quantity).toFixed(2)}</p>
+                              <p className="text-white font-bold text-sm m-0 w-20 text-right">{formatRupiah(item.price * item.quantity)}</p>
 
                               <button
                                 onClick={() => removeItem(item.id, 'merch', item.cartKey)}
@@ -254,25 +255,25 @@ function CartPage() {
                     {group.tickets.length > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-white/50">Tickets ({group.tickets.reduce((sum, item) => sum + item.quantity, 0)})</span>
-                        <span className="text-white">${group.tickets.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}</span>
+                        <span className="text-white">{formatRupiah(group.tickets.reduce((sum, item) => sum + item.price * item.quantity, 0))}</span>
                       </div>
                     )}
                     {group.merch.length > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-white/50">Merchandise ({group.merch.reduce((sum, item) => sum + item.quantity, 0)})</span>
-                        <span className="text-white">${group.merch.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}</span>
+                        <span className="text-white">{formatRupiah(group.merch.reduce((sum, item) => sum + item.price * item.quantity, 0))}</span>
                       </div>
                     )}
                     <div className="flex justify-between text-sm">
                       <span className="text-white/50">Biaya Layanan</span>
-                      <span className="text-white">${group.serviceFee.toFixed(2)}</span>
+                      <span className="text-white">{formatRupiah(group.serviceFee)}</span>
                     </div>
                   </div>
 
                   <div className="border-t border-white/10 pt-4 mb-6">
                     <div className="flex justify-between items-end">
                       <span className="text-white font-bold">Total</span>
-                      <span className="text-white font-bold text-xl">${group.total.toFixed(2)}</span>
+                      <span className="text-white font-bold text-xl">{formatRupiah(group.total)}</span>
                     </div>
                     <p className="text-white/30 text-xs mt-1">Termasuk biaya layanan 5% hanya untuk penyelenggara ini</p>
                   </div>

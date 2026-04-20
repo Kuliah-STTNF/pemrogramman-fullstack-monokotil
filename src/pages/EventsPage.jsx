@@ -5,6 +5,7 @@ import { IoGridOutline, IoListOutline, IoShirtOutline, IoClose } from 'react-ico
 import { getDiscountedPrice } from '../data/events'
 import SearchBar from '../components/SearchBar'
 import { useAuth } from '../context/AuthContext'
+import { formatRupiah } from '../utils/currency'
 
 function EventsPage() {
   const { categories, publicEvents } = useAuth()
@@ -307,11 +308,11 @@ function EventsPage() {
                         <p className="text-white text-sm font-semibold">
                           {event.discount ? (
                             <>
-                              <span className="text-white/40 line-through mr-1">${Math.min(...event.tickets.map(tk => tk.price))}</span>
-                              Dari <span className="text-orange-400">${getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount)}</span>
+                              <span className="text-white/40 line-through mr-1">{formatRupiah(Math.min(...event.tickets.map(tk => tk.price)))}</span>
+                              Dari <span className="text-orange-400">{formatRupiah(getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount))}</span>
                             </>
                           ) : (
-                            <>Mulai dari <span className="text-orange-400">${Math.min(...event.tickets.map(tk => tk.price))}</span></>
+                            <>Mulai dari <span className="text-orange-400">{formatRupiah(Math.min(...event.tickets.map(tk => tk.price)))}</span></>
                           )}
                         </p>
                         <div className="flex gap-1.5">

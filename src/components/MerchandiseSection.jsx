@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoAdd, IoRemove, IoCheckmarkCircle, IoCartOutline } from 'react-icons/io5'
 import { useCart } from '../context/CartContext'
+import { formatRupiah } from '../utils/currency'
 
 function MerchandiseSection({ event }) {
   const { addMerch, items } = useCart()
@@ -91,7 +92,7 @@ function MerchandiseSection({ event }) {
                 />
                 <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
                   <h4 className="text-white font-bold text-sm m-0">{merch.name}</h4>
-                  <span className="text-orange-400 font-bold text-lg">${merch.price}</span>
+                  <span className="text-orange-400 font-bold text-lg">{formatRupiah(merch.price)}</span>
                 </div>
                 {inCart > 0 && (
                   <div className="absolute top-3 right-3 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">

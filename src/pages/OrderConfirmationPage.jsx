@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { IoCheckmarkCircle, IoTicketOutline, IoShirtOutline, IoDownloadOutline, IoHomeOutline, IoCalendarOutline } from 'react-icons/io5'
 import { useAuth } from '../context/AuthContext'
+import { formatRupiah } from '../utils/currency'
 
 function OrderConfirmationPage() {
   const { orderId } = useParams()
@@ -104,7 +105,7 @@ function OrderConfirmationPage() {
                         <p className="text-white text-sm m-0">{item.eventTitle}</p>
                         <p className="text-white/40 text-xs m-0">{item.name} x{item.quantity}</p>
                       </div>
-                      <span className="text-white font-semibold text-sm">${(item.price * item.quantity).toFixed(2)}</span>
+                      <span className="text-white font-semibold text-sm">{formatRupiah(item.price * item.quantity)}</span>
                     </div>
                   ))}
                 </div>
@@ -129,7 +130,7 @@ function OrderConfirmationPage() {
                           <span className="text-white/30 text-xs">x{item.quantity}</span>
                         </div>
                       </div>
-                      <span className="text-white font-semibold text-sm">${(item.price * item.quantity).toFixed(2)}</span>
+                      <span className="text-white font-semibold text-sm">{formatRupiah(item.price * item.quantity)}</span>
                     </div>
                   ))}
                 </div>
@@ -154,21 +155,21 @@ function OrderConfirmationPage() {
             <div className="border-t border-white/10 pt-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-white/50">Subtotal</span>
-                <span className="text-white">${Number(order.subtotal || 0).toFixed(2)}</span>
+                <span className="text-white">{formatRupiah(order.subtotal || 0)}</span>
               </div>
               {Number(order.voucherDiscount || 0) > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-emerald-400">Voucher ({order.voucherCode})</span>
-                  <span className="text-emerald-400">-${Number(order.voucherDiscount || 0).toFixed(2)}</span>
+                  <span className="text-emerald-400">-{formatRupiah(order.voucherDiscount || 0)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-white/50">Biaya Layanan</span>
-                <span className="text-white">${Number(order.serviceFee || 0).toFixed(2)}</span>
+                <span className="text-white">{formatRupiah(order.serviceFee || 0)}</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-white/10">
                 <span className="text-white font-bold text-lg">Total Dibayar</span>
-                <span className="text-orange-400 font-bold text-xl">${Number(order.grandTotal || order.total || 0).toFixed(2)}</span>
+                <span className="text-orange-400 font-bold text-xl">{formatRupiah(order.grandTotal || order.total || 0)}</span>
               </div>
             </div>
           </motion.div>

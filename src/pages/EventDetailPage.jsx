@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext'
 import TicketSelection from '../components/TicketSelection'
 import MerchandiseSection from '../components/MerchandiseSection'
 import OrganizerChat from '../components/OrganizerChat'
+import { formatRupiah } from '../utils/currency'
 
 function EventDetailPage() {
   const { id } = useParams()
@@ -109,9 +110,9 @@ function EventDetailPage() {
               </h1>
               <p className="text-white/60 text-lg">
                 Tiket dari {event.discount && (
-                  <span className="text-white/40 line-through mr-2">${lowestPrice}</span>
+                  <span className="text-white/40 line-through mr-2">{formatRupiah(lowestPrice)}</span>
                 )}
-                <span className="text-orange-400 font-bold">${discountedLowestPrice}</span>
+                <span className="text-orange-400 font-bold">{formatRupiah(discountedLowestPrice)}</span>
                 {event.discount && (
                   <span className="ml-2 text-xs font-semibold px-2 py-1 rounded-full text-emerald-300 inline-block"
                     style={{ background: 'rgba(16,185,129,0.15)' }}
@@ -288,8 +289,8 @@ function EventDetailPage() {
                   <p className="text-white/40 text-xs mb-1">Mulai dari</p>
                   {event.discount ? (
                     <div>
-                      <span className="text-white/40 line-through text-lg mr-2">${lowestPrice}</span>
-                      <span className="text-3xl font-bold text-white">${discountedLowestPrice}</span>
+                      <span className="text-white/40 line-through text-lg mr-2">{formatRupiah(lowestPrice)}</span>
+                      <span className="text-3xl font-bold text-white">{formatRupiah(discountedLowestPrice)}</span>
                       <span className="text-sm text-white/40 font-normal ml-1">/ tiket</span>
                       <div className="mt-2">
                         <span className="text-xs font-semibold px-2.5 py-1 rounded-full text-emerald-300"
@@ -301,7 +302,7 @@ function EventDetailPage() {
                     </div>
                   ) : (
                     <p className="text-3xl font-bold text-white">
-                      ${lowestPrice}
+                      {formatRupiah(lowestPrice)}
                       <span className="text-sm text-white/40 font-normal ml-1">/ tiket</span>
                     </p>
                   )}

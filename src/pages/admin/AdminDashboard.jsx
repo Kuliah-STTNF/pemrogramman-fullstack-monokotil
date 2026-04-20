@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { IoCalendarOutline, IoTicketOutline, IoCashOutline, IoTrendingUpOutline, IoAddCircleOutline, IoEyeOutline } from 'react-icons/io5'
 import { useAuth } from '../../context/AuthContext'
+import { formatRupiah } from '../../utils/currency'
 
 function AdminDashboard() {
   const { getMyEvents, orders, user } = useAuth()
@@ -28,7 +29,7 @@ function AdminDashboard() {
   const statCards = [
     { label: 'Total Events', value: stats.events, icon: IoCalendarOutline, color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
     { label: 'Tickets Sold', value: stats.ticketsSold, icon: IoTicketOutline, color: '#f97316', bg: 'rgba(249,115,22,0.1)' },
-    { label: 'Total Revenue', value: `$${stats.revenue.toLocaleString()}`, icon: IoCashOutline, color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
+    { label: 'Total Revenue', value: formatRupiah(stats.revenue), icon: IoCashOutline, color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
     { label: 'Total Orders', value: stats.orders, icon: IoTrendingUpOutline, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
   ]
 

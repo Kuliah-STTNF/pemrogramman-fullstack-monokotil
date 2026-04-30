@@ -94,50 +94,65 @@ export class EventService {
     }
   }
 
-  async syncTags(eventId, tags) {
-    if (!tags) return
-    await this.eventModel.clearEventTags(eventId)
-    for (const tagName of tags) {
-      const tag = await this.eventModel.upsertTag(tagName)
-      await this.eventModel.addEventTag(eventId, tag.id)
-    }
-  }
-
-  async syncTickets(eventId, tickets) {
-    if (!tickets) return
-    await this.eventModel.clearTicketTypes(eventId)
-    if (!tickets.length) return
-    await this.eventModel.createTicketTypes(
-      tickets.map((t) => ({
-        event_id: BigInt(eventId),
-        type_name: t.type || t.type_name,
-        price: t.price,
-        description: t.description || null,
-        available: t.available || 0,
-      }))
+ async syncTags(targetEventId, tagList) {
+    if (!tagList) return
+    
+    await this.eventModel.clearEventTags(targetEventId)
+    
+    // Menggunakan Promise.all untuk eksekusi asinkronus paralel yang lebih efisien
+    await Promise.all(
+      tagList.map(async (nameOfTag) => {
+        const registeredTag = await this.eventModel.upsertTag(nameOfTag)
+        return this.eventModel.addEventTag(targetEventId, registeredTag.id)
+      })
     )
   }
 
-  async syncMerchandise(eventId, merchandise) {
-    if (!merchandise) return
-    await this.eventModel.clearMerchandise(eventId)
-    for (const m of merchandise) {
-      const merch = await this.eventModel.createMerchandise({
-        event_id: BigInt(eventId),
-        name: m.name,
-        price: m.price,
-        image_url: m.image || m.image_url || null,
-        stock: m.stock || 0,
+  async syncTickets(targetEventId, ticketDataList) {
+    if (!ticketDataList?.length) return
+    
+    await this.eventModel.clearTicketTypes(targetEventId)
+    
+    const formattedTickets = ticketDataList.map((ticketItem) => ({
+      event_id: BigInt(targetEventId),
+      type_name: ticketItem.type ?? ticketItem.type_name,
+      price: ticketItem.price,
+      description: ticketItem.description ?? null,
+      available: ticketItem.available ?? 0,
+    }))
+
+    await this.eventModel.createTicketTypes(formattedTickets)
+  }
+
+  async syncMerchandise(targetEventId, merchandiseList) {
+    if (!merchandiseList) return
+    
+    await this.eventModel.clearMerchandise(targetEventId)
+    
+    // Menggunakan perulangan for...of modern untuk sekuensial data creation yang aman
+    for (const item of merchandiseList) {
+      const createdMerch = await this.eventModel.createMerchandise({
+        event_id: BigInt(targetEventId),
+        name: item.name,
+        price: item.price,
+        image_url: item.image ?? item.image_url ?? null,
+        stock: item.stock ?? 0,
       })
-      if (m.sizes?.length) {
-        await this.eventModel.createMerchandiseSizes(
-          m.sizes.map((s) => ({ merch_id: merch.id, size_name: s }))
-        )
+
+      if (item.sizes?.length) {
+        const mappedSizes = item.sizes.map((size) => ({ 
+          merch_id: createdMerch.id, 
+          size_name: size 
+        }))
+        await this.eventModel.createMerchandiseSizes(mappedSizes)
       }
-      if (m.colors?.length) {
-        await this.eventModel.createMerchandiseColors(
-          m.colors.map((c) => ({ merch_id: merch.id, color_name: c }))
-        )
+
+      if (item.colors?.length) {
+        const mappedColors = item.colors.map((color) => ({ 
+          merch_id: createdMerch.id, 
+          color_name: color 
+        }))
+        await this.eventModel.createMerchandiseColors(mappedColors)
       }
     }
   }

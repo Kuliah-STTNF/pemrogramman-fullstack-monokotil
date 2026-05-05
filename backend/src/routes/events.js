@@ -6,14 +6,24 @@ import { EventController } from '../controllers/EventController.js'
 const router = Router()
 const controller = new EventController()
 
-router.get('/', asyncHandler(controller.listPublic))
-router.get('/admin/my-events', authenticate, authorize('event_admin', 'app_admin'), asyncHandler(controller.listMyEvents))
-router.get('/admin/all', authenticate, authorize('app_admin'), asyncHandler(controller.listAllAdmin))
+const eventAdminAuth = [authenticate, authorize('event_admin', 'app_admin')]
+const appAdminAuth = [authenticate, authorize('app_admin')]
+
+router.get('/admin/my-events', eventAdminAuth, asyncHandler(controller.listMyEvents))
+router.get('/admin/all', appAdminAuth, asyncHandler(controller.listAllAdmin))
+
+router.route('/')
+  .get(asyncHandler(controller.listPublic))
+  .post(eventAdminAuth, asyncHandler(controller.create))
+
 router.get('/:idOrSlug', asyncHandler(controller.getByIdOrSlug))
-router.post('/', authenticate, authorize('event_admin', 'app_admin'), asyncHandler(controller.create))
-router.put('/:id', authenticate, authorize('event_admin', 'app_admin'), asyncHandler(controller.update))
-router.delete('/:id', authenticate, authorize('event_admin', 'app_admin'), asyncHandler(controller.remove))
-router.post('/:id/discount', authenticate, authorize('event_admin', 'app_admin'), asyncHandler(controller.addDiscount))
-router.delete('/:id/discount', authenticate, authorize('event_admin', 'app_admin'), asyncHandler(controller.removeDiscount))
+
+router.route('/:id')
+  .put(eventAdminAuth, asyncHandler(controller.update))
+  .delete(eventAdminAuth, asyncHandler(controller.remove))
+
+router.route('/:id/discount')
+  .post(eventAdminAuth, asyncHandler(controller.addDiscount))
+  .delete(eventAdminAuth, asyncHandler(controller.removeDiscount))
 
 export default router

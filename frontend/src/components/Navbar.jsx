@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { IoMenu, IoClose, IoCartOutline, IoPersonOutline, IoLogOutOutline, IoReceiptOutline, IoGridOutline } from 'react-icons/io5'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -6,7 +6,7 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import logo from '../assets/logo-monora.png'
 
-const navLinks = [
+const NAVIGATION_MENU = [
   { name: 'Beranda', path: '/' },
   { name: 'Tentang', path: '/about' },
   { name: 'Acara', path: '/events' },
@@ -15,9 +15,9 @@ const navLinks = [
   { name: 'Kontak', path: '/contact' },
 ]
 
-/* ── inline style objects ────────────────────────────── */
+/* ── UI Glassmorphism Styles ────────────────────────── */
 
-const glassBase = {
+const BASE_GLASS_THEME = {
   background: 'rgba(255, 255, 255, 0.06)',
   backdropFilter: 'blur(20px) saturate(180%)',
   WebkitBackdropFilter: 'blur(20px) saturate(180%)',
@@ -25,7 +25,7 @@ const glassBase = {
   boxShadow: '0 4px 30px rgba(0, 0, 0, 0.25)',
 }
 
-const glassScrolled = {
+const SCROLLED_GLASS_THEME = {
   background: 'rgba(10, 10, 30, 0.65)',
   backdropFilter: 'blur(28px) saturate(200%)',
   WebkitBackdropFilter: 'blur(28px) saturate(200%)',
@@ -33,13 +33,13 @@ const glassScrolled = {
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.05)',
 }
 
-const activePillStyle = {
+const ACTIVE_PILL_THEME = {
   background: 'rgba(255, 255, 255, 0.12)',
   border: '1px solid rgba(255, 255, 255, 0.18)',
   backdropFilter: 'blur(8px)',
 }
 
-const profileDropdownStyle = {
+const DROPDOWN_PROFILE_THEME = {
   background: 'rgba(15, 15, 35, 0.85)',
   border: '1px solid rgba(255, 255, 255, 0.12)',
   backdropFilter: 'blur(24px) saturate(180%)',
@@ -47,7 +47,7 @@ const profileDropdownStyle = {
   boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05) inset',
 }
 
-const mobileMenuStyle = {
+const MOBILE_CONTAINER_THEME = {
   background: 'rgba(10, 10, 30, 0.82)',
   backdropFilter: 'blur(28px) saturate(180%)',
   WebkitBackdropFilter: 'blur(28px) saturate(180%)',
@@ -55,42 +55,49 @@ const mobileMenuStyle = {
   boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
 }
 
-const cartBadgeStyle = {
+const ORANGE_GRADIENT_ACCENT = {
   background: 'linear-gradient(135deg, #f97316, #ea580c)',
   boxShadow: '0 2px 8px rgba(249,115,22,0.5)',
 }
 
-const loginBtnStyle = {
+const AUTH_BUTTON_THEME = {
   background: 'linear-gradient(135deg, #f97316, #ea580c)',
   boxShadow: '0 4px 20px rgba(249,115,22,0.35)',
 }
 
-const logoBgStyle = {
-  background: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
-  boxShadow: '0 0 16px rgba(6, 182, 212, 0.35)',
-}
-
-/* ── component ───────────────────────────────────────── */
+/* ── Component ───────────────────────────────────────── */
 
 function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [profileOpen, setProfileOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
+  const [hasScrolled, setHasScrolled] = useState(false)
+  
   const { itemCount } = useCart()
   const { user, isAuthenticated, logout } = useAuth()
-  const location = useLocation()
-  const navigate = useNavigate()
+  const currentRoute = useLocation()
+  const sendToPage = useNavigate()
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const handleWindowScroll = () => setHasScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', handleWindowScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleWindowScroll)
   }, [])
 
-  const handleLogout = () => {
+  const executeLogoutProcedure = () => {
     logout()
-    setProfileOpen(false)
-    navigate('/')
+    setIsProfileDropdownOpen(false)
+    sendToPage('/')
+  }
+
+  // Mengambil nama depan user dengan aman
+  const userFirstName = useMemo(() => {
+    return user?.name ? user.name.split(' ')[0] : ''
+  }, [user?.name])
+
+  // Menentukan style navbar berdasarkan posisi scroll
+  const currentNavbarStyle = {
+    ...(hasScrolled ? SCROLLED_GLASS_THEME : BASE_GLASS_THEME),
+    transition: 'background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease',
   }
 
   return (
@@ -99,16 +106,13 @@ function Navbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="fixed top-0 left-0 right-0 z-[9999]"
-      style={{
-        ...(scrolled ? glassScrolled : glassBase),
-        transition: 'background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease',
-      }}
+      style={currentNavbarStyle}
     >
       <div
         className="mx-auto flex items-center justify-between px-6 md:px-10"
         style={{
-          paddingTop: scrolled ? '12px' : '18px',
-          paddingBottom: scrolled ? '12px' : '18px',
+          paddingTop: hasScrolled ? '12px' : '18px',
+          paddingBottom: hasScrolled ? '12px' : '18px',
           transition: 'padding 0.4s ease',
         }}
       >
@@ -119,9 +123,12 @@ function Navbar() {
             transition={{ type: 'spring', stiffness: 300 }}
             className="w-9 h-9 rounded-xl flex items-center justify-center"
           >
-            <img src={logo} alt="" className='w-full h-full object-cover' />
+            <img src={logo} alt="" className="w-full h-full object-cover" />
           </motion.div>
-          <span className="text-white font-extrabold text-xl tracking-tight" style={{ letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}>
+          <span 
+            className="text-white font-extrabold text-xl tracking-tight" 
+            style={{ letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}
+          >
             Monora
           </span>
         </Link>
@@ -136,36 +143,36 @@ function Navbar() {
           }}
         >
           <ul className="flex items-center gap-1 list-none m-0 p-0">
-            {navLinks.map((item) => {
-              const isActive = location.pathname === item.path
+            {NAVIGATION_MENU.map((linkItem) => {
+              const isLinkActive = currentRoute.pathname === linkItem.path
               return (
-                <motion.li key={item.name} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                <motion.li key={linkItem.name} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                   <Link
-                    to={item.path}
+                    to={linkItem.path}
                     className="no-underline block"
                     style={{
                       padding: '7px 16px',
                       borderRadius: '9999px',
                       fontSize: '13px',
-                      fontWeight: isActive ? 600 : 500,
-                      color: isActive ? '#ffffff' : 'rgba(255,255,255,0.7)',
+                      fontWeight: isLinkActive ? 600 : 500,
+                      color: isLinkActive ? '#ffffff' : 'rgba(255,255,255,0.7)',
                       transition: 'all 0.25s ease',
-                      ...(isActive ? activePillStyle : {}),
+                      ...(isLinkActive ? ACTIVE_PILL_THEME : {}),
                     }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.color = '#ffffff'
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                    onMouseEnter={(event) => {
+                      if (!isLinkActive) {
+                        event.currentTarget.style.color = '#ffffff'
+                        event.currentTarget.style.background = 'rgba(255,255,255,0.06)'
                       }
                     }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.color = 'rgba(255,255,255,0.7)'
-                        e.currentTarget.style.background = 'transparent'
+                    onMouseLeave={(event) => {
+                      if (!isLinkActive) {
+                        event.currentTarget.style.color = 'rgba(255,255,255,0.7)'
+                        event.currentTarget.style.background = 'transparent'
                       }
                     }}
                   >
-                    {item.name}
+                    {linkItem.name}
                   </Link>
                 </motion.li>
               )
@@ -186,13 +193,13 @@ function Navbar() {
               borderRadius: '50%',
               transition: 'all 0.25s ease',
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#ffffff'
-              e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+            onMouseEnter={(event) => {
+              event.currentTarget.style.color = '#ffffff'
+              event.currentTarget.style.background = 'rgba(255,255,255,0.08)'
             }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'rgba(255,255,255,0.75)'
-              e.currentTarget.style.background = 'transparent'
+            onMouseLeave={(event) => {
+              event.currentTarget.style.color = 'rgba(255,255,255,0.75)'
+              event.currentTarget.style.background = 'transparent'
             }}
           >
             <IoCartOutline style={{ fontSize: 20 }} />
@@ -209,7 +216,7 @@ function Navbar() {
                   borderRadius: '50%',
                   fontSize: 10,
                   fontWeight: 700,
-                  ...cartBadgeStyle,
+                  ...ORANGE_GRADIENT_ACCENT,
                 }}
               >
                 {itemCount > 99 ? '99+' : itemCount}
@@ -222,7 +229,7 @@ function Navbar() {
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => setProfileOpen(!profileOpen)}
+                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -238,23 +245,23 @@ function Navbar() {
                   fontWeight: 500,
                   transition: 'all 0.25s ease',
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'
+                onMouseEnter={(event) => {
+                  event.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+                  event.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'
                 }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
+                onMouseLeave={(event) => {
+                  event.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                  event.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
                 }}
               >
                 <IoPersonOutline style={{ fontSize: 16 }} />
                 <span style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {user?.name?.split(' ')[0]}
+                  {userFirstName}
                 </span>
               </motion.button>
 
               <AnimatePresence>
-                {profileOpen && (
+                {isProfileDropdownOpen && (
                   <motion.div
                     initial={{ opacity: 0, y: -8, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -266,7 +273,7 @@ function Navbar() {
                       width: 210,
                       borderRadius: 16,
                       overflow: 'hidden',
-                      ...profileDropdownStyle,
+                      ...DROPDOWN_PROFILE_THEME,
                     }}
                   >
                     <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -275,7 +282,7 @@ function Navbar() {
                     </div>
                     <Link
                       to="/my-orders"
-                      onClick={() => setProfileOpen(false)}
+                      onClick={() => setIsProfileDropdownOpen(false)}
                       className="no-underline"
                       style={{
                         display: 'flex',
@@ -286,13 +293,13 @@ function Navbar() {
                         fontSize: 13,
                         transition: 'all 0.2s ease',
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = '#fff'
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                      onMouseEnter={(event) => {
+                        event.currentTarget.style.color = '#fff'
+                        event.currentTarget.style.background = 'rgba(255,255,255,0.06)'
                       }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = 'rgba(255,255,255,0.7)'
-                        e.currentTarget.style.background = 'transparent'
+                      onMouseLeave={(event) => {
+                        event.currentTarget.style.color = 'rgba(255,255,255,0.7)'
+                        event.currentTarget.style.background = 'transparent'
                       }}
                     >
                       <IoReceiptOutline />
@@ -301,7 +308,7 @@ function Navbar() {
                     {(user?.role === 'event_admin' || user?.role === 'app_admin') && (
                       <Link
                         to="/admin/dashboard"
-                        onClick={() => setProfileOpen(false)}
+                        onClick={() => setIsProfileDropdownOpen(false)}
                         className="no-underline"
                         style={{
                           display: 'flex',
@@ -312,13 +319,13 @@ function Navbar() {
                           fontSize: 13,
                           transition: 'all 0.2s ease',
                         }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.color = '#fb923c'
-                          e.currentTarget.style.background = 'rgba(249,115,22,0.08)'
+                        onMouseEnter={(event) => {
+                          event.currentTarget.style.color = '#fb923c'
+                          event.currentTarget.style.background = 'rgba(249,115,22,0.08)'
                         }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.color = '#f97316'
-                          e.currentTarget.style.background = 'transparent'
+                        onMouseLeave={(event) => {
+                          event.currentTarget.style.color = '#f97316'
+                          event.currentTarget.style.background = 'transparent'
                         }}
                       >
                         <IoGridOutline />
@@ -328,7 +335,7 @@ function Navbar() {
                     {user?.role === 'app_admin' && (
                       <Link
                         to="/app-admin/dashboard"
-                        onClick={() => setProfileOpen(false)}
+                        onClick={() => setIsProfileDropdownOpen(false)}
                         className="no-underline"
                         style={{
                           display: 'flex',
@@ -339,13 +346,13 @@ function Navbar() {
                           fontSize: 13,
                           transition: 'all 0.2s ease',
                         }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.color = '#c084fc'
-                          e.currentTarget.style.background = 'rgba(168,85,247,0.08)'
+                        onMouseEnter={(event) => {
+                          event.currentTarget.style.color = '#c084fc'
+                          event.currentTarget.style.background = 'rgba(168,85,247,0.08)'
                         }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.color = '#a855f7'
-                          e.currentTarget.style.background = 'transparent'
+                        onMouseLeave={(event) => {
+                          event.currentTarget.style.color = '#a855f7'
+                          event.currentTarget.style.background = 'transparent'
                         }}
                       >
                         <IoGridOutline />
@@ -353,7 +360,7 @@ function Navbar() {
                       </Link>
                     )}
                     <button
-                      onClick={handleLogout}
+                      onClick={executeLogoutProcedure}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -367,13 +374,13 @@ function Navbar() {
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = '#fca5a5'
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                      onMouseEnter={(event) => {
+                        event.currentTarget.style.color = '#fca5a5'
+                        event.currentTarget.style.background = 'rgba(255,255,255,0.04)'
                       }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = '#f87171'
-                        e.currentTarget.style.background = 'transparent'
+                      onMouseLeave={(event) => {
+                        event.currentTarget.style.color = '#f87171'
+                        event.currentTarget.style.background = 'transparent'
                       }}
                     >
                       <IoLogOutOutline />
@@ -396,7 +403,7 @@ function Navbar() {
                   fontWeight: 600,
                   border: 'none',
                   cursor: 'pointer',
-                  ...loginBtnStyle,
+                  ...AUTH_BUTTON_THEME,
                   transition: 'box-shadow 0.3s ease',
                 }}
               >
@@ -425,7 +432,7 @@ function Navbar() {
                   borderRadius: '50%',
                   fontSize: 9,
                   fontWeight: 700,
-                  ...cartBadgeStyle,
+                  ...ORANGE_GRADIENT_ACCENT,
                 }}
               >
                 {itemCount}
@@ -447,45 +454,45 @@ function Navbar() {
               justifyContent: 'center',
               cursor: 'pointer',
             }}
-            onClick={() => setMobileOpen(!mobileOpen)}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {mobileOpen ? <IoClose /> : <IoMenu />}
+            {isMobileMenuOpen ? <IoClose /> : <IoMenu />}
           </motion.button>
         </div>
       </div>
 
       {/* ── Mobile Menu (Glass) ──────────── */}
       <AnimatePresence>
-        {mobileOpen && (
+        {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="md:hidden overflow-hidden"
-            style={mobileMenuStyle}
+            style={MOBILE_CONTAINER_THEME}
           >
             <div style={{ padding: '12px 20px 16px' }}>
-              {navLinks.map((item) => {
-                const isActive = location.pathname === item.path
+              {NAVIGATION_MENU.map((linkItem) => {
+                const isLinkActive = currentRoute.pathname === linkItem.path
                 return (
                   <Link
-                    key={item.name}
-                    to={item.path}
-                    onClick={() => setMobileOpen(false)}
+                    key={linkItem.name}
+                    to={linkItem.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="no-underline block"
                     style={{
                       padding: '12px 14px',
                       margin: '2px 0',
                       borderRadius: 12,
                       fontSize: 14,
-                      fontWeight: isActive ? 600 : 400,
-                      color: isActive ? '#ffffff' : 'rgba(255,255,255,0.7)',
-                      background: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                      fontWeight: isLinkActive ? 600 : 400,
+                      color: isLinkActive ? '#ffffff' : 'rgba(255,255,255,0.7)',
+                      background: isLinkActive ? 'rgba(255,255,255,0.08)' : 'transparent',
                       transition: 'all 0.2s ease',
                     }}
                   >
-                    {item.name}
+                    {linkItem.name}
                   </Link>
                 )
               })}
@@ -497,7 +504,7 @@ function Navbar() {
                 <>
                   <Link
                     to="/my-orders"
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="no-underline block"
                     style={{
                       padding: '12px 14px',
@@ -512,7 +519,7 @@ function Navbar() {
                   {(user?.role === 'event_admin' || user?.role === 'app_admin') && (
                     <Link
                       to="/admin/dashboard"
-                      onClick={() => setMobileOpen(false)}
+                      onClick={() => setIsMobileMenuOpen(false)}
                       className="no-underline block"
                       style={{
                         padding: '12px 14px',
@@ -528,7 +535,7 @@ function Navbar() {
                   {user?.role === 'app_admin' && (
                     <Link
                       to="/app-admin/dashboard"
-                      onClick={() => setMobileOpen(false)}
+                      onClick={() => setIsMobileMenuOpen(false)}
                       className="no-underline block"
                       style={{
                         padding: '12px 14px',
@@ -542,7 +549,7 @@ function Navbar() {
                     </Link>
                   )}
                   <button
-                    onClick={() => { handleLogout(); setMobileOpen(false) }}
+                    onClick={() => { executeLogoutProcedure(); setIsMobileMenuOpen(false) }}
                     style={{
                       width: '100%',
                       marginTop: 8,
@@ -561,7 +568,7 @@ function Navbar() {
                   </button>
                 </>
               ) : (
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="no-underline block">
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="no-underline block">
                   <button
                     style={{
                       width: '100%',
@@ -573,7 +580,7 @@ function Navbar() {
                       color: '#fff',
                       border: 'none',
                       cursor: 'pointer',
-                      ...loginBtnStyle,
+                      ...AUTH_BUTTON_THEME,
                     }}
                   >
                     Masuk / Daftar

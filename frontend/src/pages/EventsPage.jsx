@@ -161,8 +161,8 @@ function EventsPage() {
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
                   className={`px-5 py-2 rounded-full text-sm font-medium cursor-pointer transition-all border-none ${activeCategory === cat
-                      ? 'text-white'
-                      : 'text-white/50 hover:text-white'
+                    ? 'text-white'
+                    : 'text-white/50 hover:text-white'
                     }`}
                   style={{
                     background: activeCategory === cat
@@ -253,88 +253,108 @@ function EventsPage() {
                 ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'
                 : 'flex flex-col gap-4'
             }>
-              {filteredEvents.map((event, index) => (
-                <Link to={`/event/${event.id}`} key={event.id} className="no-underline">
-                  <motion.div
-                    initial={{ y: 30, opacity: 0 }}
-                    whileInView={{ y: 0, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.05 }}
-                    whileHover={{ y: -4 }}
-                    className={`rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 ${viewMode === 'list' ? 'flex flex-row' : ''
-                      }`}
-                    style={{
-                      background: 'linear-gradient(180deg, rgba(30,30,60,0.8) 0%, rgba(15,15,35,0.95) 100%)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                    }}
-                  >
-                    {/* Image */}
-                    <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-48 h-auto shrink-0' : 'h-[200px]'
-                      }`}>
-                      <img
-                        src={event.thumbnail}
-                        alt={event.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D1A] via-transparent to-transparent opacity-50" />
-                      {event.hasMerch && (
-                        <div className="absolute top-3 right-3 bg-indigo-500/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                          <IoShirtOutline className="text-xs" />
-                          Merch
-                        </div>
-                      )}
-                      {event.discount && (
-                        <div className="absolute top-3 left-3 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full"
-                          style={{ background: 'rgba(16,185,129,0.85)' }}
-                        >
-                          -{event.discount.percentage}% {event.discount.label}
-                        </div>
-                      )}
-                    </div>
+              {filteredEvents.map((event, index) => {
+                // Isolasi pencarian harga tiket terendah agar pembacaan kode di dalam JSX lebih rapi
+                const minimumTicketPrice = Math.min(...event.tickets.map(ticket => ticket.price))
 
-                    {/* Body */}
-                    <div className="p-5 flex-1">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h3 className="text-white font-bold text-base tracking-wide">{event.title}</h3>
-                        <span className="text-xs text-white/30 px-2.5 py-1 rounded-full shrink-0"
-                          style={{ background: 'rgba(255,255,255,0.06)' }}
-                        >
-                          {event.category}
-                        </span>
+                const cardContainerClass = `rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 ${viewMode === 'list' ? 'flex flex-row' : ''
+                  }`
+
+                const imageWrapperClass = `relative overflow-hidden ${viewMode === 'list' ? 'w-48 h-auto shrink-0' : 'h-[200px]'
+                  }`
+
+                return (
+                  <Link to={`/event/${event.id}`} key={event.id} className="no-underline">
+                    <motion.div
+                      initial={{ y: 30, opacity: 0 }}
+                      whileInView={{ y: 0, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                      whileHover={{ y: -4 }}
+                      className={cardContainerClass}
+                      style={{
+                        background: 'linear-gradient(180deg, rgba(30,30,60,0.8) 0%, rgba(15,15,35,0.95) 100%)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                      }}
+                    >
+                      {/* Image */}
+                      <div className={imageWrapperClass}>
+                        <img
+                          src={event.thumbnail}
+                          alt={event.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D1A] via-transparent to-transparent opacity-50" />
+
+                        {event.hasMerch && (
+                          <div className="absolute top-3 right-3 bg-indigo-500/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                            <IoShirtOutline className="text-xs" />
+                            Merch
+                          </div>
+                        )}
+
+                        {event.discount && (
+                          <div
+                            className="absolute top-3 left-3 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full"
+                            style={{ background: 'rgba(16,185,129,0.85)' }}
+                          >
+                            -{event.discount.percentage}% {event.discount.label}
+                          </div>
+                        )}
                       </div>
-                      <p className="text-white/50 text-sm mb-1">{event.date}</p>
-                      <p className="text-white/40 text-sm mb-3">{event.venue}, {event.city}</p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-white text-sm font-semibold">
-                          {event.discount ? (
-                            <>
-                              <span className="text-white/40 line-through mr-1">{formatRupiah(Math.min(...event.tickets.map(tk => tk.price)))}</span>
-                              Dari <span className="text-orange-400">{formatRupiah(getDiscountedPrice(Math.min(...event.tickets.map(tk => tk.price)), event.discount))}</span>
-                            </>
-                          ) : (
-                            <>Mulai dari <span className="text-orange-400">{formatRupiah(Math.min(...event.tickets.map(tk => tk.price)))}</span></>
-                          )}
-                        </p>
-                        <div className="flex gap-1.5">
-                          {event.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="text-[10px] font-semibold px-2.5 py-1 rounded-full text-white"
-                              style={{
-                                background: tag === 'Selling Fast'
-                                  ? 'linear-gradient(135deg, #ef4444, #dc2626)'
-                                  : 'linear-gradient(135deg, #6366f1, #4f46e5)',
-                              }}
-                            >
-                              {tag}
-                            </span>
-                          ))}
+
+                      {/* Body */}
+                      <div className="p-5 flex-1">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="text-white font-bold text-base tracking-wide">{event.title}</h3>
+                          <span
+                            className="text-xs text-white/30 px-2.5 py-1 rounded-full shrink-0"
+                            style={{ background: 'rgba(255,255,255,0.06)' }}
+                          >
+                            {event.category}
+                          </span>
+                        </div>
+
+                        <p className="text-white/50 text-sm mb-1">{event.date}</p>
+                        <p className="text-white/40 text-sm mb-3">{event.venue}, {event.city}</p>
+
+                        <div className="flex items-center justify-between">
+                          <p className="text-white text-sm font-semibold">
+                            {event.discount ? (
+                              <>
+                                <span className="text-white/40 line-through mr-1">
+                                  {formatRupiah(minimumTicketPrice)}
+                                </span>
+                                Dari <span className="text-orange-400">{formatRupiah(getDiscountedPrice(minimumTicketPrice, event.discount))}</span>
+                              </>
+                            ) : (
+                              <>Mulai dari <span className="text-orange-400">{formatRupiah(minimumTicketPrice)}</span></>
+                            )}
+                          </p>
+
+                          <div className="flex gap-1.5">
+                            {event.tags.map((tagName) => {
+                              const tagBackground = tagName === 'Selling Fast'
+                                ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+                                : 'linear-gradient(135deg, #6366f1, #4f46e5)'
+
+                              return (
+                                <span
+                                  key={tagName}
+                                  className="text-[10px] font-semibold px-2.5 py-1 rounded-full text-white"
+                                  style={{ background: tagBackground }}
+                                >
+                                  {tagName}
+                                </span>
+                              )
+                            })}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                </Link>
-              ))}
+                    </motion.div>
+                  </Link>
+                )
+              })}
             </div>
           )}
 
